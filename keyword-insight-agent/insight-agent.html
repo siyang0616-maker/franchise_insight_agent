@@ -14,14 +14,28 @@
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink)}
     button,input,textarea{font:inherit}
-    .app{min-height:100vh;display:grid;grid-template-columns:260px 1fr}
+    .app{min-height:100vh;display:grid;grid-template-columns:320px 1fr}
     .sidebar{background:#f7f9fc;border-right:1px solid var(--line);padding:18px 16px;position:sticky;top:0;height:100vh;overflow:auto}
     .brand{display:flex;align-items:center;gap:9px;margin-bottom:20px;font-weight:900;color:#0d3048}
     .brand-mark{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
     .filter-title{font-size:12px;font-weight:900;color:#3b4958;margin:18px 0 8px;text-transform:uppercase}
     label{display:block;font-size:12px;font-weight:900;margin:12px 0 6px;color:#263443}
     textarea,input{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:9px 10px;line-height:1.45;color:var(--ink)}
-    textarea{min-height:88px;resize:vertical}.compact{min-height:62px}
+    textarea{min-height:92px;resize:vertical}.compact{min-height:62px}
+    .filter-block{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px;margin-bottom:10px}
+    .filter-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+    .filter-head label{margin:0}
+    .count-pill{border-radius:999px;background:#eef3f7;color:#364557;font-size:11px;font-weight:900;padding:4px 7px;white-space:nowrap}
+    .filter-block textarea{border-color:#e5ecf3;background:#fbfdff;max-height:124px;overflow:auto}
+    .filter-block.expanded textarea{max-height:300px}
+    .chip-preview{display:flex;gap:5px;flex-wrap:wrap;max-height:82px;overflow:auto;margin-top:8px;padding-top:8px;border-top:1px solid #edf2f7}
+    .mini-chip{border:1px solid #dce5ee;background:#f8fafc;color:#314154;border-radius:999px;padding:4px 7px;font-size:11px;font-weight:800}
+    .filter-tools{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:8px}
+    .viewer-line{margin:8px 0 0;color:#516170;font-size:12px;line-height:1.45}
+    .search-fields{display:grid;gap:9px}
+    .search-fields input{height:40px}
+    details.advanced{margin-top:10px;border-top:1px solid #edf2f7;padding-top:9px}
+    details.advanced summary{cursor:pointer;color:#3e5163;font-size:12px;font-weight:900}
     .actions{display:grid;gap:8px;margin-top:12px}
     button{border:0;border-radius:7px;padding:9px 11px;background:var(--accent);color:#fff;font-weight:900;cursor:pointer}
     button.secondary{background:#e7edf3;color:#182532}
@@ -30,6 +44,13 @@
     .chips{display:flex;gap:6px;flex-wrap:wrap}
     .chip{border:1px solid var(--line);background:#fff;color:#263443;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800}
     .chip.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+    .group-list{display:grid;gap:8px;max-height:320px;overflow:auto;padding-right:2px}
+    .group-box{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px}
+    .group-box strong{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin-bottom:7px;color:#263443}
+    .group-box strong small{color:var(--muted);font-size:11px}
+    .period-toggle{display:flex;gap:6px;flex-wrap:wrap}
+    .period-toggle button{background:#edf2f7;color:#2c3948;border:1px solid var(--line)}
+    .period-toggle button.active{background:var(--nav);color:#fff;border-color:var(--nav)}
     .main{padding:18px 22px 28px;min-width:0}
     .topbar{height:54px;background:var(--nav);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:0 0 8px 8px;margin:-18px -22px 18px}
     .topbar h1{font-size:18px;margin:0;font-weight:900;letter-spacing:0}
@@ -48,7 +69,7 @@
     .panel-sub{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
     .notice{margin:0 0 12px;padding:10px 12px;border-radius:7px;background:#fff7e6;color:#795000;font-size:13px;line-height:1.5;border:1px solid #ffe2a8}
     .bar-list,.list{display:grid;gap:8px}
-    .bar-row{display:grid;grid-template-columns:112px 1fr 74px;gap:10px;align-items:center;font-size:12px}
+    .bar-row{display:grid;grid-template-columns:112px 1fr 74px;gap:10px;align-items:center;font-size:12px;width:100%;text-align:left}
     .bar-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .bar-track{height:9px;background:#edf2f7;border-radius:999px;overflow:hidden}
     .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
@@ -60,6 +81,7 @@
     .zone strong{display:block;font-size:14px;line-height:1.3}
     .zone small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:6px}
     .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
     .callout{border:1px solid var(--line);background:#fbfdff;border-radius:7px;padding:12px}
     .callout strong{display:block;font-size:14px;margin-bottom:6px}
     .callout p{margin:0;color:#354253;font-size:13px;line-height:1.55}
@@ -76,44 +98,83 @@
     .titles{margin-top:8px;padding-left:16px;color:#455566;font-size:12px;line-height:1.5}
     .empty{margin:0;color:var(--muted);font-size:13px}
     @media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.dashboard,.insight-grid,.kpis,.zone-grid{grid-template-columns:1fr}.topbar{margin:0 0 14px;border-radius:8px}.main{padding:14px}}
+    @media(max-width:1100px){.signal-grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="sidebar">
       <div class="brand"><span class="brand-mark"></span><span>Franchise Insight</span></div>
-      <div class="filter-title">Filters</div>
-      <label for="brands">브랜드</label>
-      <textarea id="brands">메가커피
+      <div class="filter-title">Search</div>
+      <div class="filter-block" id="searchBlock">
+        <div class="filter-head">
+          <label for="brandQuery">분석 조건</label>
+          <span class="count-pill" id="marketCount">시장 기준 0개</span>
+        </div>
+        <div class="search-fields">
+          <input id="brandQuery" placeholder="브랜드: 예) 메가커피" />
+          <input id="regionQuery" placeholder="지역: 예) 서울 노원구" />
+        </div>
+        <p class="viewer-line" id="searchViewer">브랜드나 지역을 입력하고 Enter 또는 분석하기를 누르세요.</p>
+        <details class="advanced">
+          <summary>시장 전체 기준 브랜드/지역 목록</summary>
+          <label for="brands">브랜드 목록</label>
+          <textarea id="brands">메가커피
 컴포즈커피
 투썸플레이스
 파리바게뜨
 롯데리아
 서브웨이
 배스킨라빈스
-샐러디</textarea>
-      <label for="regions">지역</label>
-      <textarea id="regions">서울
+샐러디
+이디야커피
+빽다방
+던킨
+파스쿠찌
+공차
+맘스터치
+버거킹
+맥도날드
+교촌치킨
+BBQ
+BHC
+굽네치킨
+본죽
+한솥도시락
+역전할머니맥주
+홍콩반점</textarea>
+          <label for="regions">지역 목록</label>
+          <textarea id="regions">서울
 경기
 인천
+강남구
+서초구
+송파구
+노원구
+도봉구
+강북구
+마포구
 수원시
 용인시
 부천시
 성남시
-송파구
-마포구
 의정부시
 안양시
 천안시</textarea>
+          <p class="viewer-line">비워두고 분석하면 이 목록 기준으로 시장 전체를 봅니다.</p>
+        </details>
+      </div>
       <label for="customKeywords">추가 키워드</label>
       <textarea id="customKeywords" class="compact" placeholder="예: 수원 메가커피 양도양수"></textarea>
+      <p class="viewer-line" id="customKeywordStatus">추가 키워드는 새 수집 때 별도 분석 대상에 포함됩니다.</p>
       <div class="actions">
+        <button id="analyze">분석하기</button>
         <button id="load">저장 데이터 보기</button>
         <button class="secondary" id="refresh">오늘 데이터 새로 수집</button>
         <button class="ghost" id="reloadStatus">연결 상태 확인</button>
       </div>
-      <div class="filter-title">지역 바로보기</div>
-      <div class="chips" id="regionChips"></div>
+      <div class="filter-title">분석된 지역 빠른 선택</div>
+      <div class="group-list" id="regionGroups"></div>
     </aside>
 
     <main class="main">
@@ -129,8 +190,37 @@
         <section class="panel wide">
           <div class="panel-head">
             <div>
+              <p class="panel-title">오늘 볼 신호</p>
+              <p class="panel-sub">검색량이 큰 후보와 평소 흐름에서 달라진 후보를 따로 봅니다.</p>
+            </div>
+          </div>
+          <div class="signal-grid">
+            <div>
+              <div class="panel-head">
+                <div>
+                  <p class="panel-title">검색량 상위</p>
+                  <p class="panel-sub">월검색량 기준으로 큰 수요를 먼저 봅니다.</p>
+                </div>
+              </div>
+              <div class="list" id="volumeSignals"></div>
+            </div>
+            <div>
+              <div class="panel-head">
+                <div>
+                  <p class="panel-title">이상 신호</p>
+                  <p class="panel-sub">30일 평균 대비 최근 7일 반응이 달라진 조합입니다.</p>
+                </div>
+              </div>
+              <div class="list" id="anomalySignals"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wide">
+          <div class="panel-head">
+            <div>
               <p class="panel-title">권역별 오늘의 방향</p>
-              <p class="panel-sub">권역을 누르면 아래 표와 판단 문구가 해당 지역 중심으로 바뀝니다.</p>
+              <p class="panel-sub">입력한 지역을 생활권별로 묶어 보고, 권역을 누르면 아래 후보가 같이 필터링됩니다.</p>
             </div>
           </div>
           <div class="zone-grid" id="zoneGrid"></div>
@@ -139,8 +229,8 @@
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="panel-title">브랜드 수요 TOP 10</p>
-              <p class="panel-sub">양도양수 검색수요가 높은 브랜드입니다.</p>
+              <p class="panel-title" id="brandRankTitle">브랜드 수요 순위</p>
+              <p class="panel-sub">시장 기준 브랜드 목록 안에서 양도양수 검색수요가 높은 순서입니다.</p>
             </div>
           </div>
           <div class="bar-list" id="brandBars"></div>
@@ -150,7 +240,11 @@
           <div class="panel-head">
             <div>
               <p class="panel-title">선택 지역 흐름</p>
-              <p class="panel-sub">전날 지표와 최근 변화 신호를 대시보드형으로 보여줍니다.</p>
+              <p class="panel-sub">짧은 전날 변화보다 7일/30일 흐름을 우선 봅니다.</p>
+            </div>
+            <div class="period-toggle" id="trendPeriod">
+              <button class="small active" data-trend-days="7">7일</button>
+              <button class="small" data-trend-days="30">30일</button>
             </div>
           </div>
           <div id="regionTrend"></div>
@@ -211,12 +305,66 @@
     const money = (value) => Number(value || 0).toLocaleString("ko-KR");
     const metric = (value, status = "ok") => (status === "partial" || status === "unknown" || value === null || value === undefined) ? "확인 필요" : money(value);
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[ch]);
-    let state = { data: null, selectedRegion: "전체", selectedGroup: "전체", picks: [] };
+    let state = { data: null, selectedBrand: "전체", selectedRegion: "전체", selectedGroup: "전체", picks: [], trendDays: 7 };
+
+    function regionGroupName(region) {
+      const text = String(region || "");
+      if (!text || text === "전체") return "전체";
+      if (/강남|서초|송파|강동/.test(text)) return "서울 동남권";
+      if (/노원|도봉|강북|성북|중랑|동대문/.test(text)) return "서울 동북권";
+      if (/마포|서대문|은평|용산|종로|중구|성동|광진/.test(text)) return "서울 도심·서북권";
+      if (/양천|강서|구로|금천|영등포|동작|관악/.test(text)) return "서울 서남권";
+      if (/서울/.test(text)) return "서울 전체";
+      if (/수원|용인|성남|분당|판교|안양|과천|의왕|군포|화성|오산|평택|안성|동탄/.test(text)) return "경기 남부";
+      if (/부천|김포|광명|시흥|고양|파주/.test(text)) return "경기 서부";
+      if (/의정부|양주|동두천|포천|연천|구리|남양주/.test(text)) return "경기 북부";
+      if (/하남|광주|양평|이천|여주/.test(text)) return "경기 동부";
+      if (/경기/.test(text)) return "경기 전체";
+      if (/인천/.test(text)) return "인천권";
+      return "기타 지역";
+    }
+
+    function refreshFilterPreview() {
+      const brands = splitLines($("brands").value);
+      const regions = splitLines($("regions").value);
+      $("marketCount").textContent = `브랜드 ${brands.length}개 · 지역 ${regions.length}개`;
+      updateSearchViewer();
+      refreshCustomKeywordStatus();
+      renderRegionGroups(state.data);
+    }
+
+    function currentSearch() {
+      return {
+        brand: $("brandQuery").value.trim(),
+        region: $("regionQuery").value.trim()
+      };
+    }
+
+    function updateSearchViewer() {
+      const search = currentSearch();
+      if (search.brand && search.region) {
+        $("searchViewer").textContent = `${search.region} ${search.brand} 조합을 분석합니다.`;
+      } else if (search.brand) {
+        $("searchViewer").textContent = `${search.brand}가 지역별로 어디서 많이 검색되는지 봅니다.`;
+      } else if (search.region) {
+        $("searchViewer").textContent = `${search.region} 안에서 브랜드별 검색 흐름을 봅니다.`;
+      } else {
+        $("searchViewer").textContent = "브랜드나 지역을 입력하지 않으면 시장 전체 기준으로 봅니다.";
+      }
+    }
+
+    function refreshCustomKeywordStatus() {
+      const custom = splitLines($("customKeywords").value);
+      $("customKeywordStatus").textContent = custom.length
+        ? `추가 키워드 ${custom.length}개가 입력됐습니다. 오늘 데이터 새로 수집을 누르면 분석에 포함됩니다.`
+        : "추가 키워드는 새 수집 때 별도 분석 대상에 포함됩니다.";
+    }
 
     function queryString(refresh = false) {
       const qs = new URLSearchParams();
-      const brands = splitLines($("brands").value);
-      const regions = splitLines($("regions").value);
+      const search = currentSearch();
+      const brands = search.brand ? [search.brand] : splitLines($("brands").value);
+      const regions = search.region ? [search.region] : splitLines($("regions").value);
       const custom = splitLines($("customKeywords").value);
       if (refresh) qs.set("refresh", "1");
       if (brands.length) qs.set("brands", brands.join(","));
@@ -277,29 +425,46 @@
 
     function relevantRows() {
       const dashboard = state.data?.dashboard || {};
-      const zones = dashboard.regionalGroups || [];
-      const rows = zones.flatMap((zone) => (zone.rows || []).map((row) => ({ ...row, group: zone.group })));
-      if (state.selectedRegion === "전체") return rows;
-      return rows.filter((row) => row.region === state.selectedRegion || row.group === state.selectedGroup);
+      const rows = dashboard.regionalOpportunities || [];
+      return rows.filter((row) => {
+        const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
+        const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
+        return brandMatch && regionMatch;
+      });
     }
 
-    function renderRegionChips(data) {
+    function groupRegions(data) {
       const regions = new Set(["전체", ...splitLines($("regions").value)]);
-      const rows = (data?.dashboard?.regionalGroups || []).flatMap((zone) => zone.rows || []);
+      const rows = data?.dashboard?.regionalOpportunities || [];
       rows.forEach((row) => regions.add(row.region));
-      $("regionChips").innerHTML = [...regions].filter(Boolean).map((region) =>
-        `<button class="chip ${state.selectedRegion === region ? "active" : ""}" data-region-chip="${escapeHtml(region)}">${escapeHtml(region)}</button>`
-      ).join("");
+      const groups = new Map();
+      for (const region of [...regions].filter(Boolean)) {
+        const group = region === "전체" ? "전체" : regionGroupName(region);
+        if (!groups.has(group)) groups.set(group, []);
+        groups.get(group).push(region);
+      }
+      return [...groups.entries()].map(([group, items]) => ({ group, items }));
+    }
+
+    function renderRegionGroups(data) {
+      const groups = groupRegions(data);
+      $("regionGroups").innerHTML = groups.map(({ group, items }) => `
+        <div class="group-box">
+          <strong>${escapeHtml(group)}<small>${items.length}개</small></strong>
+          <div class="chips">
+            ${items.map((region) => `<button class="chip ${state.selectedRegion === region ? "active" : ""}" data-region-chip="${escapeHtml(region)}" data-region-group="${escapeHtml(group)}">${escapeHtml(region)}</button>`).join("")}
+          </div>
+        </div>
+      `).join("");
     }
 
     function renderSummary(data) {
       const totals = data.dashboard?.totals || {};
       const rows = relevantRows();
       const top = rows[0] || data.dashboard?.writingPicks?.[0];
-      const topBrand = data.dashboard?.brandDemand?.[0];
       $("summary").innerHTML = [
         card("선택 지역", state.selectedRegion, state.selectedRegion === "전체" ? "전체 후보를 보는 중" : `${state.selectedRegion} 중심으로 필터링`),
-        card("우선 브랜드", top?.brand || topBrand?.brand || "-", top ? brief(top) : topBrand?.writeReason || "수집 후 표시됩니다."),
+        card("선택 브랜드", state.selectedBrand, state.selectedBrand === "전체" ? "브랜드를 입력하면 지역별 흐름이 좁혀집니다." : `${state.selectedBrand} 지역별 후보를 보는 중`),
         card("양도양수 월검색", metric(top?.totalSearch ?? totals.transferSearch, top?.searchVolumeStatus), "선택 후보 기준 검색수요"),
         card("블로그 경쟁", top?.competitionLabel || "확인 필요", top?.blogTotal ? `블로그 문서 ${money(top.blogTotal)}건` : "Open API 표본 필요")
       ].join("");
@@ -307,16 +472,39 @@
 
     function renderBrandBars(data) {
       const brands = data.dashboard?.brandDemand || [];
+      const marketCount = splitLines($("brands").value).length;
+      $("brandRankTitle").textContent = `브랜드 수요 순위 (${marketCount}개 중 상위 ${brands.length}개)`;
       const max = Math.max(1, ...brands.map((row) => Number(row.transferSearch || 0)));
       $("brandBars").innerHTML = brands.length ? brands.map((row) => {
         const width = Math.max(4, Math.round((Number(row.transferSearch || 0) / max) * 100));
-        return `<div class="bar-row"><div class="bar-name">${escapeHtml(row.brand)}</div><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><div class="bar-value">${money(row.transferSearch)}</div></div>`;
+        return `<button class="bar-row ghost" data-brand-chip="${escapeHtml(row.brand)}"><div class="bar-name">${escapeHtml(row.brand)}</div><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><div class="bar-value">${money(row.transferSearch)}</div></button>`;
       }).join("") : `<p class="empty">브랜드 수요가 없습니다.</p>`;
+    }
+
+    function filterSignals(rows) {
+      return (rows || []).filter((row) => state.selectedBrand === "전체" || row.brand === state.selectedBrand);
+    }
+
+    function signalRow(row, index, type) {
+      const label = type === "anomaly" ? "이상 신호" : "검색량 상위";
+      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.region || "전국")} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch, row.searchVolumeStatus)}</span><span>${escapeHtml(row.signalReason || row.reason || brief(row))}</span><span class="tag ${type === "anomaly" ? "warn" : ""}">${label}</span></div><button class="small secondary" data-focus-signal="${index}" data-signal-type="${type}">보기</button></div></div>`;
+    }
+
+    function renderSignals(data) {
+      const volumes = filterSignals(data.dashboard?.volumeLeaders);
+      const anomalies = filterSignals(data.dashboard?.anomalySignals);
+      $("volumeSignals").innerHTML = volumes.length ? volumes.slice(0, 4).map((row, index) => signalRow(row, index, "volume")).join("") : `<p class="empty">검색량 상위 후보가 없습니다.</p>`;
+      $("anomalySignals").innerHTML = anomalies.length ? anomalies.slice(0, 4).map((row, index) => signalRow(row, index, "anomaly")).join("") : `<p class="empty">최근 흐름에서 뚜렷한 이상 신호가 없습니다.</p>`;
     }
 
     function renderZones(data) {
       const zones = data.dashboard?.regionalGroups || [];
-      $("zoneGrid").innerHTML = zones.length ? zones.map((zone) => {
+      const scopedZones = zones.map((zone) => {
+        const rows = state.selectedBrand === "전체" ? zone.rows || [] : (zone.rows || []).filter((row) => row.brand === state.selectedBrand);
+        const top = rows[0];
+        return { ...zone, rows, topBrand: top?.brand || zone.topBrand, topRegion: top?.region || zone.topRegion };
+      });
+      $("zoneGrid").innerHTML = scopedZones.length ? scopedZones.map((zone) => {
         const active = state.selectedGroup === zone.group;
         const top = zone.rows?.[0];
         return `<button class="zone ${active ? "active" : ""}" data-zone="${escapeHtml(zone.group)}" data-zone-region="${escapeHtml(zone.topRegion || "전체")}">
@@ -334,14 +522,15 @@
         $("regionTrend").innerHTML = `<p class="empty">선택 지역의 추이 데이터가 없습니다.</p>`;
         return;
       }
-      const base = Number(top.trendYesterday || 35);
-      const delta = Number(top.trendDelta || 0);
-      const points = [base - 8, base - 3, base + 2, base + delta - 2, base + delta + 4, base + delta].map((v) => Math.max(5, Math.min(95, v)));
+      const trend = state.trendDays === 30 ? (top.trend30d || top.trend7d) : top.trend7d;
+      const points = (trend?.points || []).length ? trend.points : [28, 32, 37, 35, 41, 43, 40];
+      const delta = Number(trend?.delta || top.trendDelta || 0);
+      const avg = Number(trend?.average || top.trendYesterday || 0);
       const path = points.map((v, i) => `${i === 0 ? "M" : "L"}${(i / (points.length - 1)) * 100},${100 - v}`).join(" ");
       $("regionTrend").innerHTML = `
-        <div class="callout"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>전날 관심도 ${metric(top.trendYesterday)} · 변화 ${Number(delta || 0) >= 0 ? "상승" : "하락"} 신호입니다.</p></div>
+        <div class="callout"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>${escapeHtml(top.reason || brief(top))}<br>${state.trendDays}일 평균 관심도 ${metric(avg)} · 기간 변화 ${Number(delta || 0) >= 0 ? "+" : ""}${delta}입니다.</p></div>
         <div class="spark"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="#2f6fed" stroke-width="3" vector-effect="non-scaling-stroke"/><path d="${path} L100,100 L0,100 Z" fill="rgba(47,111,237,.13)"/></svg></div>
-        <div class="spark-labels"><span>최근</span><span>전날</span><span>오늘 판단</span></div>`;
+        <div class="spark-labels"><span>${state.trendDays}일 전</span><span>중간</span><span>최근</span></div>`;
     }
 
     function regionalRow(row, index) {
@@ -373,7 +562,8 @@
     function render(data) {
       if (!data) return;
       state.data = data;
-      renderRegionChips(data);
+      refreshFilterPreview();
+      renderSignals(data);
       renderSummary(data);
       renderZones(data);
       renderBrandBars(data);
@@ -407,14 +597,17 @@
     async function fetchInsights(refresh = false) {
       $("status").textContent = refresh ? "새 데이터 수집중" : "저장 데이터 확인중";
       try {
+        updateSearchViewer();
+        const search = currentSearch();
         const res = await fetch(`/api/keywords${queryString(refresh)}`);
         const data = await res.json();
         if (data.setupNeeded) {
           $("status").textContent = "API 설정 필요";
           return;
         }
-        state.selectedRegion = "전체";
-        state.selectedGroup = "전체";
+        state.selectedRegion = search.region || "전체";
+        state.selectedGroup = search.region ? regionGroupName(search.region) : "전체";
+        state.selectedBrand = search.brand || "전체";
         render(data);
         $("status").textContent = "분석 완료";
         loadStatus();
@@ -424,10 +617,44 @@
     }
 
     document.addEventListener("click", (event) => {
-      const region = event.target.closest("[data-region-chip]")?.dataset.regionChip;
-      if (region) setRegion(region, "전체");
+      const regionChip = event.target.closest("[data-region-chip]");
+      const region = regionChip?.dataset.regionChip;
+      if (region) setRegion(region, regionChip?.dataset.regionGroup || "전체");
+      const brand = event.target.closest("[data-brand-chip]")?.dataset.brandChip;
+      if (brand) {
+        state.selectedBrand = brand;
+        $("brandQuery").value = brand === "전체" ? "" : brand;
+        state.selectedRegion = "전체";
+        state.selectedGroup = "전체";
+        render(state.data);
+      }
       const zone = event.target.closest("[data-zone]");
       if (zone) setRegion(zone.dataset.zoneRegion || "전체", zone.dataset.zone || "전체");
+      const signalButton = event.target.closest("[data-focus-signal]");
+      if (signalButton) {
+        const source = signalButton.dataset.signalType === "anomaly" ? filterSignals(state.data?.dashboard?.anomalySignals) : filterSignals(state.data?.dashboard?.volumeLeaders);
+        const row = source[Number(signalButton.dataset.focusSignal)];
+        if (row) {
+          state.selectedBrand = row.brand || "전체";
+          state.selectedRegion = row.region || "전체";
+          state.selectedGroup = row.group || "전체";
+          $("brandQuery").value = row.brand || "";
+          $("regionQuery").value = row.region && row.region !== "전국" ? row.region : "";
+          render(state.data);
+        }
+      }
+      const trendDays = event.target.closest("[data-trend-days]")?.dataset.trendDays;
+      if (trendDays) {
+        state.trendDays = Number(trendDays);
+        document.querySelectorAll("[data-trend-days]").forEach((button) => button.classList.toggle("active", Number(button.dataset.trendDays) === state.trendDays));
+        renderTrend();
+      }
+      const filterId = event.target.closest("[data-toggle-filter]")?.dataset.toggleFilter;
+      if (filterId) {
+        const block = $(filterId);
+        block.classList.toggle("expanded");
+        event.target.textContent = block.classList.contains("expanded") ? "입력칸 줄이기" : "입력칸 크게 보기";
+      }
       const copyIndex = event.target.closest("[data-copy]")?.dataset.copy;
       if (copyIndex !== undefined) copyText(handoff(relevantRows()[Number(copyIndex)]));
       const pickIndex = event.target.closest("[data-copy-pick]")?.dataset.copyPick;
@@ -436,8 +663,16 @@
 
     $("load").addEventListener("click", () => fetchInsights(false));
     $("refresh").addEventListener("click", () => fetchInsights(true));
+    $("analyze").addEventListener("click", () => fetchInsights(false));
     $("reloadStatus").addEventListener("click", loadStatus);
-    $("regions").addEventListener("change", () => renderRegionChips(state.data));
+    $("brandQuery").addEventListener("input", updateSearchViewer);
+    $("regionQuery").addEventListener("input", updateSearchViewer);
+    $("brandQuery").addEventListener("keydown", (event) => { if (event.key === "Enter") fetchInsights(false); });
+    $("regionQuery").addEventListener("keydown", (event) => { if (event.key === "Enter") fetchInsights(false); });
+    $("brands").addEventListener("input", refreshFilterPreview);
+    $("regions").addEventListener("input", refreshFilterPreview);
+    $("customKeywords").addEventListener("input", refreshCustomKeywordStatus);
+    refreshFilterPreview();
     loadStatus();
     fetchInsights(false);
   </script>

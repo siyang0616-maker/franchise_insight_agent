@@ -19,19 +19,40 @@ const DEFAULT_BRANDS = [
   "롯데리아",
   "서브웨이",
   "배스킨라빈스",
-  "샐러디"
+  "샐러디",
+  "이디야커피",
+  "빽다방",
+  "던킨",
+  "파스쿠찌",
+  "공차",
+  "맘스터치",
+  "버거킹",
+  "맥도날드",
+  "교촌치킨",
+  "BBQ",
+  "BHC",
+  "굽네치킨",
+  "본죽",
+  "한솥도시락",
+  "역전할머니맥주",
+  "홍콩반점"
 ];
 
 const DEFAULT_REGIONS = [
   "서울",
   "경기",
   "인천",
+  "강남구",
+  "서초구",
+  "송파구",
+  "노원구",
+  "도봉구",
+  "강북구",
+  "마포구",
   "수원시",
   "용인시",
   "부천시",
   "성남시",
-  "송파구",
-  "마포구",
   "의정부시",
   "안양시",
   "천안시"
@@ -364,13 +385,13 @@ async function brandContext(brand, cfg) {
   return { ok: true, brand: cleanBrand, monthLabel, queries, summary, items };
 }
 
-async function dataLabTrend(query, cfg) {
+async function dataLabTrend(query, cfg, days = 30) {
   if (cfg.openApiMissing?.length) return { yesterday: 0, delta: 0 };
   try {
     const end = new Date();
     end.setDate(end.getDate() - 1);
     const start = new Date(end);
-    start.setDate(start.getDate() - 7);
+    start.setDate(start.getDate() - Math.max(1, days - 1));
     const res = await fetch("https://openapi.naver.com/v1/datalab/search", {
       method: "POST",
       signal: AbortSignal.timeout(6000),
@@ -389,9 +410,18 @@ async function dataLabTrend(query, cfg) {
     if (!res.ok) return { yesterday: 0, delta: 0 };
     const data = await res.json();
     const points = data.results?.[0]?.data || [];
-    const last = Number(points.at(-1)?.ratio || 0);
-    const prev = Number(points.at(-2)?.ratio || 0);
-    return { yesterday: last, delta: Math.round((last - prev) * 10) / 10 };
+    const values = points.map((point) => Number(point.ratio || 0));
+    const last = Number(values.at(-1) || 0);
+    const prev = Number(values.at(-2) || 0);
+    const first = Number(values[0] || 0);
+    const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+    return {
+      yesterday: last,
+      delta: Math.round((last - prev) * 10) / 10,
+      periodDelta: Math.round((last - first) * 10) / 10,
+      average: Math.round(average * 10) / 10,
+      points: values.map((value) => Math.round(value * 10) / 10)
+    };
   } catch {
     return { yesterday: 0, delta: 0 };
   }
@@ -519,7 +549,14 @@ function topBy(rows, fn, limit = 5) {
 }
 
 function shouldUseCache(cached, cfg) {
-  if (!cached?.dashboard?.totals || !Array.isArray(cached?.dashboard?.writingPicks) || !Array.isArray(cached?.dashboard?.regionalGroups)) return false;
+  if (
+    !cached?.dashboard?.totals ||
+    !Array.isArray(cached?.dashboard?.writingPicks) ||
+    !Array.isArray(cached?.dashboard?.regionalGroups) ||
+    !Array.isArray(cached?.dashboard?.regionalOpportunities) ||
+    !Array.isArray(cached?.dashboard?.volumeLeaders) ||
+    !Array.isArray(cached?.dashboard?.anomalySignals)
+  ) return false;
   const cacheDate = cached?.collectedAt ? new Date(cached.collectedAt) : null;
   if (!cacheDate || Number.isNaN(cacheDate.getTime())) return false;
   const ageHours = (Date.now() - cacheDate.getTime()) / 36e5;
@@ -551,11 +588,16 @@ async function readLatestUsableCache(cfg) {
 function regionGroup(region) {
   const text = String(region || "");
   if (!text) return "전국";
-  if (/서울|강남|서초|송파|강동|마포|서대문|은평|용산|중구|종로|성동|광진|동대문|중랑|성북|강북|도봉|노원|양천|강서|구로|금천|영등포|동작|관악/.test(text)) return "서울권";
-  if (/인천|부천|김포|광명|시흥|고양|파주|마포|강서|양천|구로|금천/.test(text)) return "수도권 서부";
-  if (/수원|용인|성남|분당|판교|안양|과천|의왕|군포|화성|오산|평택|안성|동탄/.test(text)) return "수도권 남부";
-  if (/하남|광주|구리|남양주|양평|이천|여주|강동|송파/.test(text)) return "수도권 동부";
-  if (/의정부|양주|동두천|포천|연천|노원|도봉|강북/.test(text)) return "수도권 북부";
+  if (/강남|서초|송파|강동/.test(text)) return "서울 동남권";
+  if (/노원|도봉|강북|성북|중랑|동대문/.test(text)) return "서울 동북권";
+  if (/마포|서대문|은평|용산|중구|종로|성동|광진/.test(text)) return "서울 도심·서북권";
+  if (/양천|강서|구로|금천|영등포|동작|관악/.test(text)) return "서울 서남권";
+  if (/서울/.test(text)) return "서울 전체";
+  if (/인천/.test(text)) return "인천권";
+  if (/부천|김포|광명|시흥|고양|파주/.test(text)) return "경기 서부";
+  if (/수원|용인|성남|분당|판교|안양|과천|의왕|군포|화성|오산|평택|안성|동탄/.test(text)) return "경기 남부";
+  if (/하남|광주|양평|이천|여주/.test(text)) return "경기 동부";
+  if (/의정부|양주|동두천|포천|연천|구리|남양주/.test(text)) return "경기 북부";
   if (/경기/.test(text)) return "경기 전체";
   return "기타 지역";
 }
@@ -605,6 +647,23 @@ function competitionLabel(row) {
   return "블로그 경쟁 낮음";
 }
 
+function trendLift(row) {
+  const seven = Number(row.trend7d?.average || 0);
+  const thirty = Number(row.trend30d?.average || 0);
+  if (!seven || !thirty) return 0;
+  return Math.round(((seven - thirty) / Math.max(thirty, 1)) * 100);
+}
+
+function anomalyReason(row) {
+  const lift = trendLift(row);
+  const parts = [];
+  if (lift > 0) parts.push(`최근 7일 평균이 30일 평균보다 ${lift}% 높습니다`);
+  else if (lift < 0) parts.push(`최근 7일 평균이 30일 평균보다 ${Math.abs(lift)}% 낮습니다`);
+  if (Number(row.totalSearch || 0) > 0) parts.push(`월검색 ${Number(row.totalSearch || 0).toLocaleString("ko-KR")}회`);
+  parts.push(competitionLabel(row));
+  return parts.join(" · ");
+}
+
 function recommendationFromRow(row) {
   return {
     keyword: row.keyword,
@@ -616,6 +675,9 @@ function recommendationFromRow(row) {
     newsTotal: row.newsTotal,
     trendYesterday: row.trendYesterday,
     trendDelta: row.trendDelta,
+    trend7d: row.trend7d,
+    trend30d: row.trend30d,
+    trendLift: trendLift(row),
     competitionLabel: competitionLabel(row),
     blogTitles: row.blogTitles || [],
     blogTitleSignals: row.blogTitleSignals || "",
@@ -699,20 +761,30 @@ function buildDashboard(rows) {
     10
   ).map(recommendationFromRow);
 
-  const westernSouthernEasternNorthern = ["수도권 서부", "수도권 남부", "수도권 동부", "수도권 북부", "서울권"]
-    .map((groupName) => regionalGroups.find((item) => item.group === groupName) || {
-      group: groupName,
-      totalSearch: 0,
-      topBrand: "-",
-      topRegion: "-",
-      topKeyword: "-",
-      writingBrief: "아직 이 권역에서 확인된 지역+브랜드 양도양수 후보가 없습니다.",
-      rows: []
-    });
+  const regionalOpportunities = topBy(
+    safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수"),
+    (row) => Number(row.totalSearch || 0) + opportunityScore(row) * 100,
+    120
+  ).map(recommendationFromRow);
+
+  const volumeLeaders = topBy(
+    safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수"),
+    (row) => Number(row.totalSearch || 0),
+    8
+  ).map((row) => ({ ...recommendationFromRow(row), signalReason: `월검색 ${Number(row.totalSearch || 0).toLocaleString("ko-KR")}회 기준 상위 후보입니다.` }));
+
+  const anomalySignals = topBy(
+    safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수"),
+    (row) => Math.max(0, trendLift(row)) * 12 + opportunityScore(row) * 30 + (competitionLabel(row).includes("낮음") ? 120 : 0),
+    8
+  ).map((row) => ({ ...recommendationFromRow(row), signalReason: anomalyReason(row) }));
 
   return {
     brandDemand,
-    regionalGroups: westernSouthernEasternNorthern,
+    regionalGroups,
+    regionalOpportunities,
+    volumeLeaders,
+    anomalySignals,
     writingPicks,
     totals: {
       totalSearch: sumRows(safeRows),
@@ -763,27 +835,43 @@ async function collectKeywords(cfg) {
     const brandDemand = rows.filter((row) => row.brand && !row.region && row.keyword.includes("양도양수"));
     const regionalDemand = rows.filter((row) => row.brand && row.region && row.keyword.includes("양도양수"));
     const costDemand = rows.filter((row) => row.brand && !row.region && row.keyword.includes("창업비용"));
-    topRows = [...brandDemand, ...regionalDemand.slice(0, 50), ...costDemand];
+    topRows = [...brandDemand, ...regionalDemand.slice(0, 80), ...costDemand];
   } else {
     const highVolume = rows
       .filter((row) => row.totalSearch > 0)
       .sort((a, b) => b.totalSearch - a.totalSearch)
-      .slice(0, 40);
+      .slice(0, 60);
     const brandDemand = rows.filter((row) => row.brand && !row.region && row.keyword.includes("양도양수"));
-    const regionalDemand = rows.filter((row) => row.brand && row.region && row.keyword.includes("양도양수")).slice(0, 30);
+    const regionalDemand = rows
+      .filter((row) => row.brand && row.region && row.keyword.includes("양도양수"))
+      .sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0))
+      .slice(0, 80);
     topRows = [...new Map([...highVolume, ...brandDemand, ...regionalDemand].map((row) => [row.keyword, row])).values()];
   }
 
   await Promise.all(topRows.map(async (row) => {
-    const [blogTotal, newsTotal, trend] = await Promise.all([
+    const [blogTotal, newsTotal, trend30d] = await Promise.all([
       naverSearchTotal(row.keyword, "blog", cfg),
       naverSearchTotal(row.keyword, "news", cfg),
-      dataLabTrend(row.keyword, cfg)
+      dataLabTrend(row.keyword, cfg, 30)
     ]);
+    const trend7Points = (trend30d.points || []).slice(-7);
+    const trend7Average = trend7Points.length ? trend7Points.reduce((sum, value) => sum + value, 0) / trend7Points.length : 0;
+    const trend7d = {
+      points: trend7Points,
+      average: Math.round(trend7Average * 10) / 10,
+      delta: Math.round(((trend7Points.at(-1) || 0) - (trend7Points[0] || 0)) * 10) / 10
+    };
     row.blogTotal = blogTotal;
     row.newsTotal = newsTotal;
-    row.trendYesterday = trend.yesterday;
-    row.trendDelta = trend.delta;
+    row.trendYesterday = trend30d.yesterday;
+    row.trendDelta = trend7d.delta;
+    row.trend7d = trend7d;
+    row.trend30d = {
+      points: trend30d.points || [],
+      average: trend30d.average || 0,
+      delta: trend30d.periodDelta || 0
+    };
     row.score = scoreRow(row);
     row.reason = explainRow(row);
     row.recommendedTitle = `[${row.region || "전국"}] ${row.brand} 창업 양도양수 / ${row.keyword} 검색수요 기반 분석`;
@@ -918,10 +1006,6 @@ const server = http.createServer(async (req, res) => {
       if (!refresh && cached && shouldUseCache(cached, cfg)) {
         return json(res, 200, { ...cached, cacheStatus: "hit" });
       }
-      if (!refresh) {
-        const latestCached = await readLatestUsableCache(cfg);
-        if (latestCached) return json(res, 200, { ...latestCached, cacheStatus: "latest-hit" });
-      }
       const result = await collectKeywords(cfg);
       return json(res, 200, { ...result, cacheStatus: "fresh" });
     }
@@ -955,11 +1039,6 @@ server.listen(nextPort, "127.0.0.1", () => {
   const port = server.address()?.port || DEFAULT_PORT;
   console.log(`Naver Blog Agent running at http://127.0.0.1:${port}/naver-blog-agent.html`);
 });
-
-
-
-
-
 
 
 

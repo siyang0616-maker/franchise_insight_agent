@@ -7,7 +7,7 @@
 GitHub Desktop과 Codex에서 기준으로 삼을 폴더는 이 저장소 루트입니다.
 
 ```text
-franchise_insight_agen
+franchise_insight_agent
 ```
 
 이 폴더 안에 `.git`, `naver-keyword-server.mjs`, `keyword-insight-agent/insight-agent.html`이 함께 있어야 합니다.
@@ -78,4 +78,11 @@ http://127.0.0.1:8766/keyword-insight-agent/insight-agent.html
 Add status dashboard and draft backup tools
 ```
 
+## 다음 작업 인수인계
+
+Windows 컴퓨터나 다음 Codex 세션에서 이어서 작업할 때는 먼저 아래 문서를 확인합니다.
+
+```text
+PROJECT_HANDOFF.md
+```
 
