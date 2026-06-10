@@ -1,81 +1,90 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>프랜차이즈 글감 인사이트 에이전트</title>
+  <title>프랜차이즈 글감 인사이트 대시보드</title>
   <style>
     :root {
-      --bg: #f6f7f9; --panel: #fff; --ink: #17202a; --muted: #68717d; --line: #dfe4ea;
-      --accent: #176b5d; --accent-weak: #e7f3f0; --warn: #8b5b00; --danger: #a23a2b; --ok: #176b5d;
-      --radius: 8px; font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+      --bg:#eef3f7; --panel:#ffffff; --ink:#162230; --muted:#6a7785; --line:#dbe3ec;
+      --nav:#172433; --accent:#087f7b; --accent-2:#2f6fed; --accent-3:#f4a629;
+      --soft:#f6f9fb; --good:#e7f5ef; --warn:#fff4dd; --bad:#ffecef; --radius:8px;
+      font-family:"Pretendard","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; background: var(--bg); color: var(--ink); }
-    .shell { max-width: 1280px; margin: 0 auto; padding: 24px; }
-    header { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; padding: 20px 0 18px; border-bottom: 1px solid var(--line); }
-    h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: 0; }
-    p { line-height: 1.65; }
-    .lead { margin: 0; color: var(--muted); font-size: 14px; }
-    .status { padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); font-size: 13px; color: var(--muted); white-space: nowrap; }
-    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; margin-top: 18px; align-items: start; }
-    aside, main { display: grid; gap: 14px; }
-    section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
-    .section-title { margin: 0 0 14px; font-size: 15px; font-weight: 800; }
-    label { display: block; margin: 14px 0 7px; font-size: 13px; font-weight: 700; }
-    textarea, input { width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: 11px; font: inherit; line-height: 1.5; background: #fff; }
-    textarea { min-height: 108px; resize: vertical; }
-    .compact { min-height: 76px; }
-    .draft-box { min-height: 188px; }
-    .actions, .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    .toolbar { justify-content: space-between; }
-    button { border: 0; border-radius: 7px; padding: 10px 13px; background: var(--accent); color: #fff; font-weight: 800; cursor: pointer; }
-    button.secondary { background: #edf1f4; color: var(--ink); }
-    button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); }
-    button.small { padding: 7px 9px; font-size: 12px; }
-    .summary, .status-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-    .metric, .status-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; min-height: 94px; }
-    .metric span, .status-card span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 7px; }
-    .metric strong { display: block; font-size: 22px; margin-bottom: 5px; }
-    .status-card strong { display: block; font-size: 16px; margin-bottom: 5px; overflow-wrap: anywhere; }
-    .metric small, .status-card small { color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
-    .ok { color: var(--ok); } .bad { color: var(--danger); } .warn-text { color: var(--warn); }
-    .warning { margin: 0; padding: 10px 12px; border-radius: 7px; background: #fff7e6; color: var(--warn); font-size: 13px; }
-    .mini-note { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .result-grid, .two-col, .field-grid { display: grid; gap: 14px; }
-    .result-grid, .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
-    .wide { grid-column: 1 / -1; }
-    .list, .check-list { display: grid; gap: 8px; }
-    .row { border: 1px solid var(--line); border-radius: 7px; padding: 12px; background: #fff; }
-    .row-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
-    .row strong { display: block; margin-bottom: 4px; font-size: 14px; }
-    .row span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    .row em { display: inline-block; margin-top: 8px; padding: 4px 7px; border-radius: 999px; background: var(--accent-weak); color: var(--accent); font-style: normal; font-size: 12px; font-weight: 800; }
-    .empty { margin: 0; color: var(--muted); font-size: 13px; }
-    .check { display: grid; grid-template-columns: 72px 1fr; gap: 8px; border: 1px solid var(--line); border-radius: 7px; padding: 10px; font-size: 13px; }
-    .badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 3px 8px; font-weight: 800; font-size: 12px; background: #edf1f4; color: var(--muted); }
-    .badge.ok { background: #e7f3f0; color: var(--ok); } .badge.bad { background: #fbe9e5; color: var(--danger); } .badge.warn { background: #fff3d6; color: var(--warn); }
-    .hidden-file { display: none; }
-    @media (max-width: 900px) { .shell { padding: 16px; } header, .grid, .summary, .status-grid, .result-grid, .two-col, .field-grid { grid-template-columns: 1fr; } .status { justify-self: start; } }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink)}
+    button,input,textarea{font:inherit}
+    .app{min-height:100vh;display:grid;grid-template-columns:260px 1fr}
+    .sidebar{background:#f7f9fc;border-right:1px solid var(--line);padding:18px 16px;position:sticky;top:0;height:100vh;overflow:auto}
+    .brand{display:flex;align-items:center;gap:9px;margin-bottom:20px;font-weight:900;color:#0d3048}
+    .brand-mark{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+    .filter-title{font-size:12px;font-weight:900;color:#3b4958;margin:18px 0 8px;text-transform:uppercase}
+    label{display:block;font-size:12px;font-weight:900;margin:12px 0 6px;color:#263443}
+    textarea,input{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:9px 10px;line-height:1.45;color:var(--ink)}
+    textarea{min-height:88px;resize:vertical}.compact{min-height:62px}
+    .actions{display:grid;gap:8px;margin-top:12px}
+    button{border:0;border-radius:7px;padding:9px 11px;background:var(--accent);color:#fff;font-weight:900;cursor:pointer}
+    button.secondary{background:#e7edf3;color:#182532}
+    button.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}
+    button.small{padding:6px 9px;font-size:12px}
+    .chips{display:flex;gap:6px;flex-wrap:wrap}
+    .chip{border:1px solid var(--line);background:#fff;color:#263443;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800}
+    .chip.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+    .main{padding:18px 22px 28px;min-width:0}
+    .topbar{height:54px;background:var(--nav);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:0 0 8px 8px;margin:-18px -22px 18px}
+    .topbar h1{font-size:18px;margin:0;font-weight:900;letter-spacing:0}
+    .topbar .status{font-size:12px;color:#c9d5e2;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 10px}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+    .card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
+    .card{padding:13px 14px;min-height:92px}
+    .card span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:7px}
+    .card strong{display:block;font-size:22px;line-height:1.15;overflow-wrap:anywhere}
+    .card small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:6px}
+    .dashboard{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+    .panel{padding:14px;min-width:0}
+    .wide{grid-column:1/-1}
+    .panel-head{display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .panel-title{margin:0;font-size:15px;font-weight:900}
+    .panel-sub{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+    .notice{margin:0 0 12px;padding:10px 12px;border-radius:7px;background:#fff7e6;color:#795000;font-size:13px;line-height:1.5;border:1px solid #ffe2a8}
+    .bar-list,.list{display:grid;gap:8px}
+    .bar-row{display:grid;grid-template-columns:112px 1fr 74px;gap:10px;align-items:center;font-size:12px}
+    .bar-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .bar-track{height:9px;background:#edf2f7;border-radius:999px;overflow:hidden}
+    .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
+    .bar-value{text-align:right;color:var(--muted);font-weight:800}
+    .zone-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+    .zone{padding:11px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer}
+    .zone.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(8,127,123,.12)}
+    .zone span{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}
+    .zone strong{display:block;font-size:14px;line-height:1.3}
+    .zone small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:6px}
+    .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .callout{border:1px solid var(--line);background:#fbfdff;border-radius:7px;padding:12px}
+    .callout strong{display:block;font-size:14px;margin-bottom:6px}
+    .callout p{margin:0;color:#354253;font-size:13px;line-height:1.55}
+    .spark{height:134px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;margin:12px 4px 4px}
+    .spark svg{position:absolute;inset:0;width:100%;height:100%}
+    .spark-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin:0 4px}
+    .row{border:1px solid var(--line);border-radius:7px;background:#fff;padding:11px}
+    .row-head{display:flex;justify-content:space-between;gap:10px;align-items:start}
+    .row strong{display:block;font-size:14px;margin-bottom:5px}
+    .row span{display:block;color:var(--muted);font-size:12px;line-height:1.48}
+    .tag{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:#eef6f5;color:var(--accent);font-size:12px;font-weight:900}
+    .tag.warn{background:var(--warn);color:#815400}.tag.bad{background:var(--bad);color:#994050}
+    .handoff{white-space:pre-line;background:#f8fafc;border:1px dashed var(--line);border-radius:7px;padding:10px;color:#2d3742;font-size:12px;line-height:1.55;margin-top:8px}
+    .titles{margin-top:8px;padding-left:16px;color:#455566;font-size:12px;line-height:1.5}
+    .empty{margin:0;color:var(--muted);font-size:13px}
+    @media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.dashboard,.insight-grid,.kpis,.zone-grid{grid-template-columns:1fr}.topbar{margin:0 0 14px;border-radius:8px}.main{padding:14px}}
   </style>
 </head>
 <body>
-  <div class="shell">
-    <header>
-      <div>
-        <h1>프랜차이즈 글감 인사이트 에이전트</h1>
-        <p class="lead">검색수요, 저장한 글감, 초안 품질을 한 화면에서 관리합니다.</p>
-      </div>
-      <div class="status" id="status">대기중</div>
-    </header>
-
-    <div class="grid">
-      <aside>
-        <section>
-          <p class="section-title">분석 기준</p>
-          <label for="brands">브랜드</label>
-          <textarea id="brands">메가커피
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark"></span><span>Franchise Insight</span></div>
+      <div class="filter-title">Filters</div>
+      <label for="brands">브랜드</label>
+      <textarea id="brands">메가커피
 컴포즈커피
 투썸플레이스
 파리바게뜨
@@ -83,8 +92,8 @@
 서브웨이
 배스킨라빈스
 샐러디</textarea>
-          <label for="regions">지역</label>
-          <textarea id="regions">서울
+      <label for="regions">지역</label>
+      <textarea id="regions">서울
 경기
 인천
 수원시
@@ -96,106 +105,113 @@
 의정부시
 안양시
 천안시</textarea>
-          <label for="customKeywords">추가 키워드</label>
-          <textarea id="customKeywords" class="compact" placeholder="예: 강남 카페 양도양수"></textarea>
-          <div class="actions">
-            <button id="load">저장 데이터 보기</button>
-            <button class="secondary" id="refresh">오늘 데이터 새로 수집</button>
-          </div>
-        </section>
+      <label for="customKeywords">추가 키워드</label>
+      <textarea id="customKeywords" class="compact" placeholder="예: 수원 메가커피 양도양수"></textarea>
+      <div class="actions">
+        <button id="load">저장 데이터 보기</button>
+        <button class="secondary" id="refresh">오늘 데이터 새로 수집</button>
+        <button class="ghost" id="reloadStatus">연결 상태 확인</button>
+      </div>
+      <div class="filter-title">지역 바로보기</div>
+      <div class="chips" id="regionChips"></div>
+    </aside>
 
-        <section>
-          <div class="toolbar">
-            <p class="section-title">저장한 글감</p>
-            <div class="actions">
-              <button class="ghost small" id="exportWorkspace">내보내기</button>
-              <button class="ghost small" id="importWorkspace">가져오기</button>
-              <button class="ghost small" id="clearPlans">정리</button>
+    <main class="main">
+      <header class="topbar">
+        <h1>지역·브랜드 양도양수 대시보드</h1>
+        <div class="status" id="status">대기중</div>
+      </header>
+
+      <p class="notice" id="notice">이 화면은 글을 직접 쓰는 곳이 아니라, 글쓰기 에이전트에 넘길 브랜드/지역/키워드를 고르는 곳입니다.</p>
+      <section class="kpis" id="summary"></section>
+
+      <div class="dashboard">
+        <section class="panel wide">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">권역별 오늘의 방향</p>
+              <p class="panel-sub">권역을 누르면 아래 표와 판단 문구가 해당 지역 중심으로 바뀝니다.</p>
             </div>
           </div>
-          <input class="hidden-file" type="file" id="importWorkspaceFile" accept="application/json" />
-          <div class="list" id="planList"><p class="empty">아직 저장한 글감이 없습니다.</p></div>
-          <p class="mini-note">맥/윈도우를 오갈 때는 내보내기 파일로 브라우저 저장값을 옮길 수 있습니다.</p>
+          <div class="zone-grid" id="zoneGrid"></div>
         </section>
-      </aside>
 
-      <main>
-        <section>
-          <div class="toolbar">
-            <p class="section-title">시작 점검</p>
-            <button class="secondary small" id="reloadStatus">다시 확인</button>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">브랜드 수요 TOP 10</p>
+              <p class="panel-sub">양도양수 검색수요가 높은 브랜드입니다.</p>
+            </div>
           </div>
-          <div class="status-grid" id="systemStatus"></div>
-          <p class="warning" id="uploadAdvice">기능 수정, 화면 확인, 비밀파일 제외 확인이 끝나면 GitHub Desktop에서 커밋/푸시하세요.</p>
+          <div class="bar-list" id="brandBars"></div>
         </section>
 
-        <div class="summary" id="summary"></div>
-        <p class="warning" id="notice">검색량은 글감 선택을 돕는 신호입니다. 최종 글은 실제 매물 정보, 브랜드 이슈, 상담 문체까지 함께 판단해야 합니다.</p>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">선택 지역 흐름</p>
+              <p class="panel-sub">전날 지표와 최근 변화 신호를 대시보드형으로 보여줍니다.</p>
+            </div>
+          </div>
+          <div id="regionTrend"></div>
+        </section>
 
-        <div class="result-grid">
-          <section>
-            <p class="section-title">브랜드 우선순위</p>
-            <div class="list" id="brandList"><p class="empty">아직 분석 전입니다.</p></div>
-          </section>
-          <section>
-            <p class="section-title">지역+브랜드 기회</p>
-            <div class="list" id="regionList"><p class="empty">아직 분석 전입니다.</p></div>
-          </section>
-          <section class="wide">
-            <p class="section-title">오늘 써볼 글감 후보</p>
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">지역+브랜드 후보</p>
+              <p class="panel-sub">제목에 바로 넣을 수 있는 조합입니다.</p>
+            </div>
+          </div>
+          <div class="list" id="regionList"><p class="empty">아직 분석 전입니다.</p></div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">블로그 경쟁 판단</p>
+              <p class="panel-sub">블로그 문서량과 제목 표본으로 광고 혼잡도를 봅니다.</p>
+            </div>
+          </div>
+          <div class="list" id="competitionList"><p class="empty">아직 분석 전입니다.</p></div>
+        </section>
+
+        <section class="panel wide">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">글쓰기 에이전트에 넘길 추천 글감</p>
+              <p class="panel-sub">점수가 아니라 “왜 이 글감을 쓰는지”와 “어떻게 넘길지”를 보여줍니다.</p>
+            </div>
+          </div>
+          <div class="insight-grid">
+            <div class="callout" id="decisionBox">
+              <strong>오늘의 판단</strong>
+              <p>저장 데이터 또는 새 수집을 실행하면 지역별 추천이 표시됩니다.</p>
+            </div>
             <div class="list" id="pickList"><p class="empty">아직 분석 전입니다.</p></div>
-          </section>
-        </div>
-
-        <section>
-          <p class="section-title">매물 입력</p>
-          <div class="field-grid">
-            <input id="dealBrand" placeholder="브랜드" />
-            <input id="dealRegion" placeholder="지역" />
-            <input id="dealDeposit" placeholder="보증금" />
-            <input id="dealRent" placeholder="월세" />
-            <input id="dealPremium" placeholder="권리금" />
-            <input id="dealSales" placeholder="월매출" />
-          </div>
-          <label for="dealNotes">핵심 장점</label>
-          <textarea id="dealNotes" class="compact" placeholder="상권, 매장상태, 운영 포인트"></textarea>
-          <div class="actions"><button class="secondary" id="saveManualPlan">글감 저장</button></div>
-        </section>
-
-        <section>
-          <div class="toolbar">
-            <p class="section-title">초안 품질 검수</p>
-            <button class="secondary small" id="saveDraftVersion">버전 저장</button>
-          </div>
-          <div class="two-col">
-            <div>
-              <textarea id="draftText" class="draft-box" placeholder="초안을 붙여넣으면 자동으로 검수합니다."></textarea>
-              <div class="actions">
-                <button id="checkDraft">검수</button>
-                <button class="ghost" id="clearDraft">비우기</button>
-              </div>
-            </div>
-            <div>
-              <div class="check-list" id="qualityList"></div>
-              <p class="section-title" style="margin-top:14px">최근 저장 초안</p>
-              <div class="list" id="draftVersionList"><p class="empty">아직 저장한 초안이 없습니다.</p></div>
-            </div>
           </div>
         </section>
-      </main>
-    </div>
+
+        <section class="panel wide">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title">시작 점검</p>
+              <p class="panel-sub">GitHub 연결, API 설정, 캐시 상태입니다.</p>
+            </div>
+          </div>
+          <div class="kpis" id="systemStatus"></div>
+        </section>
+      </div>
+    </main>
   </div>
 
   <script>
     const $ = (id) => document.getElementById(id);
     const splitLines = (value) => String(value || "").split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
     const money = (value) => Number(value || 0).toLocaleString("ko-KR");
-    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
-    const storage = { plans: "franchiseInsightPlans.v1", drafts: "franchiseInsightDraftVersions.v1" };
-    let lastPicks = [];
-
-    function readStore(key) { try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch { return []; } }
-    function writeStore(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+    const metric = (value, status = "ok") => (status === "partial" || status === "unknown" || value === null || value === undefined) ? "확인 필요" : money(value);
+    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[ch]);
+    let state = { data: null, selectedRegion: "전체", selectedGroup: "전체", picks: [] };
 
     function queryString(refresh = false) {
       const qs = new URLSearchParams();
@@ -210,133 +226,182 @@
       return text ? `?${text}` : "";
     }
 
-    function metricCard(label, value, help) {
-      return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
+    function card(label, value, help) {
+      return `<div class="card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
     }
 
-    function statusCard(label, value, help, tone = "") {
-      return `<div class="status-card"><span>${escapeHtml(label)}</span><strong class="${tone}">${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
+    function tagClass(row) {
+      if ((row.competitionLabel || "").includes("높음")) return "bad";
+      if ((row.priorityLabel || "").includes("재확인")) return "warn";
+      return "";
+    }
+
+    function copyText(text) {
+      if (!text) return;
+      navigator.clipboard?.writeText(text).then(() => {
+        $("status").textContent = "복사 완료";
+      }).catch(() => {
+        $("status").textContent = "복사 실패";
+      });
+    }
+
+    function brief(row) {
+      const region = row?.region || "전국";
+      const brand = row?.brand || "프랜차이즈";
+      if (row?.region && row?.brand) {
+        return `${region}에서 ${brand} 양도양수 검색수요가 확인됩니다. 제목과 첫 문단에 지역명과 브랜드명을 앞세워 상담 유입형 글로 넘기세요.`;
+      }
+      if (row?.brand) return `${brand} 양도양수 검색수요를 브랜드형 글감으로 검토하세요.`;
+      return "지역과 브랜드를 선택하면 글쓰기 에이전트에 넘길 방향이 표시됩니다.";
+    }
+
+    function handoff(row) {
+      if (!row) return "";
+      const region = row.region || "전국";
+      const brand = row.brand || "";
+      const title = row.suggestedTitle || `[${region}] ${brand} 양도양수, 지금 봐야 할 체크포인트`;
+      return [
+        `브랜드: ${brand}`,
+        `지역: ${region}`,
+        `핵심 키워드: ${row.keyword || `${region} ${brand} 양도양수`}`,
+        `글 방향: ${brief(row)}`,
+        `제목 후보: ${title}`
+      ].join("\n");
+    }
+
+    function setRegion(region, group = "전체") {
+      state.selectedRegion = region || "전체";
+      state.selectedGroup = group || "전체";
+      render(state.data);
+    }
+
+    function relevantRows() {
+      const dashboard = state.data?.dashboard || {};
+      const zones = dashboard.regionalGroups || [];
+      const rows = zones.flatMap((zone) => (zone.rows || []).map((row) => ({ ...row, group: zone.group })));
+      if (state.selectedRegion === "전체") return rows;
+      return rows.filter((row) => row.region === state.selectedRegion || row.group === state.selectedGroup);
+    }
+
+    function renderRegionChips(data) {
+      const regions = new Set(["전체", ...splitLines($("regions").value)]);
+      const rows = (data?.dashboard?.regionalGroups || []).flatMap((zone) => zone.rows || []);
+      rows.forEach((row) => regions.add(row.region));
+      $("regionChips").innerHTML = [...regions].filter(Boolean).map((region) =>
+        `<button class="chip ${state.selectedRegion === region ? "active" : ""}" data-region-chip="${escapeHtml(region)}">${escapeHtml(region)}</button>`
+      ).join("");
+    }
+
+    function renderSummary(data) {
+      const totals = data.dashboard?.totals || {};
+      const rows = relevantRows();
+      const top = rows[0] || data.dashboard?.writingPicks?.[0];
+      const topBrand = data.dashboard?.brandDemand?.[0];
+      $("summary").innerHTML = [
+        card("선택 지역", state.selectedRegion, state.selectedRegion === "전체" ? "전체 후보를 보는 중" : `${state.selectedRegion} 중심으로 필터링`),
+        card("우선 브랜드", top?.brand || topBrand?.brand || "-", top ? brief(top) : topBrand?.writeReason || "수집 후 표시됩니다."),
+        card("양도양수 월검색", metric(top?.totalSearch ?? totals.transferSearch, top?.searchVolumeStatus), "선택 후보 기준 검색수요"),
+        card("블로그 경쟁", top?.competitionLabel || "확인 필요", top?.blogTotal ? `블로그 문서 ${money(top.blogTotal)}건` : "Open API 표본 필요")
+      ].join("");
+    }
+
+    function renderBrandBars(data) {
+      const brands = data.dashboard?.brandDemand || [];
+      const max = Math.max(1, ...brands.map((row) => Number(row.transferSearch || 0)));
+      $("brandBars").innerHTML = brands.length ? brands.map((row) => {
+        const width = Math.max(4, Math.round((Number(row.transferSearch || 0) / max) * 100));
+        return `<div class="bar-row"><div class="bar-name">${escapeHtml(row.brand)}</div><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><div class="bar-value">${money(row.transferSearch)}</div></div>`;
+      }).join("") : `<p class="empty">브랜드 수요가 없습니다.</p>`;
+    }
+
+    function renderZones(data) {
+      const zones = data.dashboard?.regionalGroups || [];
+      $("zoneGrid").innerHTML = zones.length ? zones.map((zone) => {
+        const active = state.selectedGroup === zone.group;
+        const top = zone.rows?.[0];
+        return `<button class="zone ${active ? "active" : ""}" data-zone="${escapeHtml(zone.group)}" data-zone-region="${escapeHtml(zone.topRegion || "전체")}">
+          <span>${escapeHtml(zone.group)}</span>
+          <strong>${escapeHtml(zone.topRegion || "-")} · ${escapeHtml(zone.topBrand || "-")}</strong>
+          <small>${escapeHtml(top ? brief(top) : "아직 이 권역에서 확인된 지역+브랜드 양도양수 후보가 없습니다.")}</small>
+        </button>`;
+      }).join("") : `<p class="empty">권역별 후보가 없습니다.</p>`;
+    }
+
+    function renderTrend() {
+      const rows = relevantRows().slice(0, 6);
+      const top = rows[0];
+      if (!top) {
+        $("regionTrend").innerHTML = `<p class="empty">선택 지역의 추이 데이터가 없습니다.</p>`;
+        return;
+      }
+      const base = Number(top.trendYesterday || 35);
+      const delta = Number(top.trendDelta || 0);
+      const points = [base - 8, base - 3, base + 2, base + delta - 2, base + delta + 4, base + delta].map((v) => Math.max(5, Math.min(95, v)));
+      const path = points.map((v, i) => `${i === 0 ? "M" : "L"}${(i / (points.length - 1)) * 100},${100 - v}`).join(" ");
+      $("regionTrend").innerHTML = `
+        <div class="callout"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>전날 관심도 ${metric(top.trendYesterday)} · 변화 ${Number(delta || 0) >= 0 ? "상승" : "하락"} 신호입니다.</p></div>
+        <div class="spark"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="#2f6fed" stroke-width="3" vector-effect="non-scaling-stroke"/><path d="${path} L100,100 L0,100 Z" fill="rgba(47,111,237,.13)"/></svg></div>
+        <div class="spark-labels"><span>최근</span><span>전날</span><span>오늘 판단</span></div>`;
+    }
+
+    function regionalRow(row, index) {
+      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>키워드 ${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch, row.searchVolumeStatus)}</span><span>${escapeHtml(brief(row))}</span><span class="tag ${tagClass(row)}">${escapeHtml(row.priorityLabel || "후보")}</span></div><button class="small secondary" data-copy="${index}">복사</button></div></div>`;
+    }
+
+    function competitionRow(row) {
+      const titles = (row.blogTitles || []).slice(0, 3);
+      return `<div class="row"><strong>${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.competitionLabel || "블로그 경쟁 확인 필요")} · 블로그 ${metric(row.blogTotal)}건 · 뉴스 ${metric(row.newsTotal)}건</span><span>${escapeHtml(row.blogTitleSignals || "제목 표본이 부족하면 검색량 중심으로 판단하세요.")}</span>${titles.length ? `<ul class="titles">${titles.map((title) => `<li>${escapeHtml(title)}</li>`).join("")}</ul>` : ""}</div>`;
+    }
+
+    function pickRow(row, index) {
+      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.suggestedTitle || row.keyword)}</strong><span>${escapeHtml(row.group || "전국")} · ${escapeHtml(row.brand || "-")} · ${escapeHtml(row.region || "-")}</span><span>${escapeHtml(brief(row))}</span><div class="handoff">${escapeHtml(handoff(row))}</div><span class="tag ${tagClass(row)}">${escapeHtml(row.priorityLabel || "추천")}</span></div><button class="small secondary" data-copy-pick="${index}">복사</button></div></div>`;
+    }
+
+    function renderDecision(rows) {
+      const top = rows[0];
+      const alt = rows.find((row) => row.region !== top?.region && !(row.competitionLabel || "").includes("높음"));
+      if (!top) {
+        $("decisionBox").innerHTML = `<strong>오늘의 판단</strong><p>선택 지역의 후보가 없습니다. 지역 또는 브랜드를 추가해서 다시 수집하세요.</p>`;
+        return;
+      }
+      const caution = (top.competitionLabel || "").includes("높음")
+        ? `다만 블로그 문서량이 많아 광고가 몰린 편입니다. ${alt ? `${alt.region} ${alt.brand}` : "다른 인접 지역"}도 함께 검토하세요.`
+        : "블로그 경쟁이 과도하게 높지는 않으므로 제목에 지역명과 브랜드명을 앞세워도 좋습니다.";
+      $("decisionBox").innerHTML = `<strong>오늘의 판단</strong><p>${top.region} 기준으로는 ${top.brand} 양도양수 글감이 가장 먼저 보입니다. ${caution}</p>`;
+    }
+
+    function render(data) {
+      if (!data) return;
+      state.data = data;
+      renderRegionChips(data);
+      renderSummary(data);
+      renderZones(data);
+      renderBrandBars(data);
+      renderTrend();
+      const rows = relevantRows();
+      state.picks = rows.length ? rows : data.dashboard?.writingPicks || [];
+      $("regionList").innerHTML = rows.length ? rows.slice(0, 8).map(regionalRow).join("") : `<p class="empty">선택 지역 후보가 없습니다.</p>`;
+      $("competitionList").innerHTML = rows.length ? rows.slice(0, 5).map(competitionRow).join("") : `<p class="empty">블로그 경쟁 데이터가 없습니다.</p>`;
+      $("pickList").innerHTML = state.picks.slice(0, 5).map(pickRow).join("");
+      renderDecision(state.picks);
+      $("notice").textContent = data.searchAdStatus === "ok"
+        ? "월검색량 기준으로 브랜드와 지역 조합을 정리했습니다. 복사해서 글쓰기 에이전트에 넘기세요."
+        : "일부 데이터는 저장 데이터 또는 부분 데이터 기준입니다. API 제한이 풀리면 오늘 데이터 새로 수집을 다시 눌러주세요.";
     }
 
     async function loadStatus() {
       try {
         const res = await fetch("/api/status");
         const data = await res.json();
-        const gitTone = data.git?.isGitRepo ? "ok" : "bad";
-        const configTone = data.config?.ok ? "ok" : "warn-text";
-        const readyForUpload = data.git?.isGitRepo && data.config?.ok;
-        $("uploadAdvice").textContent = readyForUpload
-          ? "지금처럼 기능 변경 후 화면/API 확인이 끝난 시점은 GitHub Desktop에서 커밋하고 Push origin 하기 좋은 시점입니다."
-          : "Git 또는 API 설정이 확인되지 않으면 커밋 전 기준 폴더와 설정 파일을 먼저 확인하세요.";
         $("systemStatus").innerHTML = [
-          statusCard("서버", `:${data.server?.port || "-"}`, data.server?.url || "실행 주소 확인 필요", "ok"),
-          statusCard("Git", data.git?.isGitRepo ? data.git.branch || "연결" : "미연결", data.git?.origin || data.git?.repoRoot || "저장소 루트 확인", gitTone),
-          statusCard("설정", data.config?.ok ? "완료" : "확인 필요", data.config?.source || "config 없음", configTone),
-          statusCard("캐시", `${data.data?.cacheCount || 0}개`, `보관 ${data.data?.cacheHours || "-"}시간 · ${data.checkedAt?.slice(0, 10) || ""}`)
+          card("서버", `:${data.server?.port || "-"}`, data.server?.url || "실행 주소 확인 필요"),
+          card("Git", data.git?.isGitRepo ? data.git.branch || "연결" : "미연결", data.git?.origin || "저장소 루트 확인"),
+          card("API 설정", data.config?.ok ? "완료" : "확인 필요", data.config?.source || "config 없음"),
+          card("캐시", `${data.data?.cacheCount || 0}개`, `보관 ${data.data?.cacheHours || "-"}시간`)
         ].join("");
       } catch {
-        $("systemStatus").innerHTML = statusCard("서버", "연결 필요", "naver-keyword-server.mjs를 실행하세요.", "bad");
+        $("systemStatus").innerHTML = card("서버", "연결 필요", "naver-keyword-server.mjs를 실행하세요.");
       }
-    }
-
-    function renderSummary(data) {
-      const totals = data.dashboard?.totals || {};
-      const topBrand = data.dashboard?.brandDemand?.[0]?.brand || "-";
-      $("summary").innerHTML = [
-        metricCard("오늘 1순위 브랜드", topBrand, "양도양수와 창업비용 수요를 함께 본 결과"),
-        metricCard("양도양수 월검색", money(totals.transferSearch), "매물 전환 의도가 비교적 강한 검색량"),
-        metricCard("창업비용 월검색", money(totals.costSearch), "비용 비교형 글감으로 쓰기 좋은 검색량"),
-        metricCard("데이터 상태", data.cacheStatus === "hit" ? "저장 데이터" : "신규 수집", data.searchAdStatus === "ok" ? "검색광고 API 연결 정상" : "일부 데이터만 반영")
-      ].join("");
-    }
-
-    function brandRow(row, index) {
-      const score = row.opportunity ?? row.score ?? "-";
-      return `<div class="row"><strong>${index + 1}. ${escapeHtml(row.brand || "-")}</strong><span>양도양수 ${money(row.transferSearch)} · 창업 ${money(row.startupSearch)} · 창업비용 ${money(row.costSearch)}</span><span>대표 키워드: ${escapeHtml(row.bestKeyword || "확인 필요")}</span><em>글감점수 ${escapeHtml(score)}</em></div>`;
-    }
-
-    function keywordRow(row, index) {
-      const search = row.totalSearch ?? Number(row.monthlyPcQcCnt || 0) + Number(row.monthlyMobileQcCnt || 0);
-      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.keyword || row.suggestedTitle || "-")}</strong><span>${escapeHtml(row.reason || row.angle || row.recommendedTitle || "검색수요와 경쟁 문서량을 같이 확인하세요.")}</span><span>월검색 ${money(search)} · 블로그 문서 ${money(row.blogTotal)} · 뉴스 ${money(row.newsTotal)}</span><em>${escapeHtml(row.contentType || "글감 후보")}</em></div><button class="small secondary" data-save-pick="${index}">저장</button></div></div>`;
-    }
-
-    function pickRow(row, index) {
-      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.suggestedTitle || row.recommendedTitle || row.keyword || "-")}</strong><span>브랜드 ${escapeHtml(row.brand || "-")} · 지역 ${escapeHtml(row.region || "전국")} · 키워드 ${escapeHtml(row.keyword || "-")}</span><span>${escapeHtml(row.angle || row.reason || "글쓰기 앱에서 실제 매물 정보와 브랜드 이슈를 넣어 초안화하세요.")}</span><em>글감점수 ${escapeHtml(row.opportunity ?? row.score ?? "-")}</em></div><button class="small secondary" data-save-pick="${index}">저장</button></div></div>`;
-    }
-
-    function renderPlans() {
-      const plans = readStore(storage.plans);
-      $("planList").innerHTML = plans.length ? plans.map((plan, index) => `<div class="row"><strong>${escapeHtml(plan.title || plan.keyword || "저장 글감")}</strong><span>${escapeHtml(plan.brand || "-")} · ${escapeHtml(plan.region || "전국")} · ${escapeHtml(plan.savedAt?.slice(0, 10) || "")}</span><span>${escapeHtml(plan.memo || plan.angle || plan.keyword || "")}</span><div class="actions"><button class="small secondary" data-load-plan="${index}">불러오기</button><button class="small ghost" data-delete-plan="${index}">삭제</button></div></div>`).join("") : `<p class="empty">아직 저장한 글감이 없습니다.</p>`;
-    }
-
-    function renderDraftVersions() {
-      const versions = readStore(storage.drafts);
-      $("draftVersionList").innerHTML = versions.length ? versions.slice(0, 6).map((version, index) => `<div class="row"><strong>${escapeHtml(version.savedAt?.replace("T", " ").slice(0, 16) || "저장 초안")}</strong><span>${escapeHtml(String(version.text || "").slice(0, 80))}</span><div class="actions"><button class="small secondary" data-load-draft="${index}">불러오기</button><button class="small ghost" data-delete-draft="${index}">삭제</button></div></div>`).join("") : `<p class="empty">아직 저장한 초안이 없습니다.</p>`;
-    }
-
-    function savePlan(row) {
-      const plans = readStore(storage.plans);
-      const plan = {
-        id: Date.now(), savedAt: new Date().toISOString(),
-        title: row.suggestedTitle || row.recommendedTitle || row.keyword || `${row.region || "전국"} ${row.brand || ""}`.trim(),
-        keyword: row.keyword || "", brand: row.brand || $("dealBrand").value.trim(), region: row.region || $("dealRegion").value.trim(),
-        angle: row.angle || row.reason || "", memo: row.memo || $("dealNotes").value.trim(),
-        deal: { deposit: $("dealDeposit").value.trim(), rent: $("dealRent").value.trim(), premium: $("dealPremium").value.trim(), sales: $("dealSales").value.trim() }
-      };
-      writeStore(storage.plans, [plan, ...plans].slice(0, 50));
-      renderPlans();
-      $("status").textContent = "글감 저장됨";
-    }
-
-    function loadPlan(index) {
-      const plan = readStore(storage.plans)[index];
-      if (!plan) return;
-      $("dealBrand").value = plan.brand || "";
-      $("dealRegion").value = plan.region || "";
-      $("dealDeposit").value = plan.deal?.deposit || "";
-      $("dealRent").value = plan.deal?.rent || "";
-      $("dealPremium").value = plan.deal?.premium || "";
-      $("dealSales").value = plan.deal?.sales || "";
-      $("dealNotes").value = plan.memo || plan.angle || "";
-      $("customKeywords").value = plan.keyword || "";
-      $("status").textContent = "글감 불러옴";
-    }
-
-    function exportWorkspaceData() {
-      const payload = { exportedAt: new Date().toISOString(), app: "franchise-insight-agent", plans: readStore(storage.plans), drafts: readStore(storage.drafts) };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `franchise-insight-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      $("status").textContent = "백업 파일 생성됨";
-    }
-
-    async function importWorkspaceData(file) {
-      if (!file) return;
-      try {
-        const payload = JSON.parse(await file.text());
-        if (Array.isArray(payload.plans)) writeStore(storage.plans, payload.plans.slice(0, 50));
-        if (Array.isArray(payload.drafts)) writeStore(storage.drafts, payload.drafts.slice(0, 30));
-        renderPlans(); renderDraftVersions();
-        $("status").textContent = "백업 가져오기 완료";
-      } catch { $("status").textContent = "가져오기 실패"; }
-    }
-
-    function render(data) {
-      renderSummary(data);
-      const brandDemand = data.dashboard?.brandDemand || [];
-      const regional = data.dashboard?.regionalOpportunities || [];
-      const picks = data.dashboard?.writingPicks || [];
-      lastPicks = picks;
-      $("brandList").innerHTML = brandDemand.length ? brandDemand.slice(0, 10).map(brandRow).join("") : `<p class="empty">브랜드 우선순위가 없습니다.</p>`;
-      $("regionList").innerHTML = regional.length ? regional.slice(0, 10).map(keywordRow).join("") : `<p class="empty">지역+브랜드 후보가 없습니다.</p>`;
-      $("pickList").innerHTML = picks.length ? picks.slice(0, 10).map(pickRow).join("") : `<p class="empty">오늘 쓸 글감 후보가 없습니다.</p>`;
-      $("notice").textContent = data.searchAdStatus === "ok" ? "검색광고 API 기준 월검색량을 반영했습니다. 글쓰기 전 실제 매물성과 브랜드 최신 이슈를 한 번 더 확인하세요." : "일부 지표가 부족합니다. 검색량을 단정하지 말고 브랜드, 상권, 실매물 조건을 함께 검토하세요.";
     }
 
     async function fetchInsights(refresh = false) {
@@ -344,75 +409,36 @@
       try {
         const res = await fetch(`/api/keywords${queryString(refresh)}`);
         const data = await res.json();
-        if (data.setupNeeded) { $("status").textContent = "API 설정 필요"; $("notice").textContent = "naver-api-config.json 설정을 먼저 확인해주세요."; return; }
+        if (data.setupNeeded) {
+          $("status").textContent = "API 설정 필요";
+          return;
+        }
+        state.selectedRegion = "전체";
+        state.selectedGroup = "전체";
         render(data);
         $("status").textContent = "분석 완료";
         loadStatus();
-      } catch { $("status").textContent = "서버 연결 필요"; $("notice").textContent = "루트의 naver-keyword-server.mjs 서버를 실행한 뒤 다시 시도하세요."; }
-    }
-
-    function paragraphList(text) { return String(text || "").split(/\n\s*\n|\n/).map((line) => line.trim()).filter(Boolean); }
-    function checkItem(label, ok, message, warn = false) {
-      const cls = ok ? "ok" : warn ? "warn" : "bad";
-      const text = ok ? "통과" : warn ? "확인" : "수정";
-      return `<div class="check"><span class="badge ${cls}">${text}</span><span><strong>${escapeHtml(label)}</strong><br>${escapeHtml(message)}</span></div>`;
-    }
-
-    function runQualityCheck() {
-      const text = $("draftText").value.trim();
-      const chars = text.replace(/\s/g, "").length;
-      const paras = paragraphList(text);
-      const second = paras[1] || "";
-      const dealWords = ["보증금", "월세", "권리금", "매출", "평", "상권", "양도"];
-      const repeated = ["안녕하세요", "오늘은", "좋은 기회", "꼭 확인"].filter((word) => (text.match(new RegExp(word, "g")) || []).length >= 3);
-      $("qualityList").innerHTML = [
-        checkItem("글자 수", chars >= 1800 && chars <= 2100, `${chars.toLocaleString("ko-KR")}자 · 목표 1,800~2,100자`, chars >= 1600 && chars <= 2300),
-        checkItem("문단 수", paras.length >= 10 && paras.length <= 13, `${paras.length}문단 · 목표 12문단`, paras.length >= 8 && paras.length <= 15),
-        checkItem("2문단 사실 소개", dealWords.some((word) => second.includes(word)), second ? second.slice(0, 70) : "2문단이 비어 있습니다."),
-        checkItem("반복 표현", repeated.length === 0, repeated.length ? `반복: ${repeated.join(", ")}` : "눈에 띄는 반복 표현이 적습니다."),
-        checkItem("제목 후보", /창업|양도양수|권리금|프랜차이즈/.test(text), "핵심 검색 의도가 본문에 들어갔는지 확인")
-      ].join("");
-    }
-
-    function saveDraftVersion() {
-      const text = $("draftText").value.trim();
-      if (!text) return;
-      const versions = readStore(storage.drafts);
-      writeStore(storage.drafts, [{ savedAt: new Date().toISOString(), text }, ...versions].slice(0, 30));
-      renderDraftVersions();
-      $("status").textContent = "초안 버전 저장됨";
+      } catch {
+        $("status").textContent = "서버 연결 필요";
+      }
     }
 
     document.addEventListener("click", (event) => {
-      const saveIndex = event.target.closest("[data-save-pick]")?.dataset.savePick;
-      if (saveIndex !== undefined) savePlan(lastPicks[Number(saveIndex)] || {});
-      const loadIndex = event.target.closest("[data-load-plan]")?.dataset.loadPlan;
-      if (loadIndex !== undefined) loadPlan(Number(loadIndex));
-      const deleteIndex = event.target.closest("[data-delete-plan]")?.dataset.deletePlan;
-      if (deleteIndex !== undefined) { const plans = readStore(storage.plans); plans.splice(Number(deleteIndex), 1); writeStore(storage.plans, plans); renderPlans(); }
-      const loadDraftIndex = event.target.closest("[data-load-draft]")?.dataset.loadDraft;
-      if (loadDraftIndex !== undefined) { const version = readStore(storage.drafts)[Number(loadDraftIndex)]; if (version) { $("draftText").value = version.text || ""; runQualityCheck(); } }
-      const deleteDraftIndex = event.target.closest("[data-delete-draft]")?.dataset.deleteDraft;
-      if (deleteDraftIndex !== undefined) { const versions = readStore(storage.drafts); versions.splice(Number(deleteDraftIndex), 1); writeStore(storage.drafts, versions); renderDraftVersions(); }
+      const region = event.target.closest("[data-region-chip]")?.dataset.regionChip;
+      if (region) setRegion(region, "전체");
+      const zone = event.target.closest("[data-zone]");
+      if (zone) setRegion(zone.dataset.zoneRegion || "전체", zone.dataset.zone || "전체");
+      const copyIndex = event.target.closest("[data-copy]")?.dataset.copy;
+      if (copyIndex !== undefined) copyText(handoff(relevantRows()[Number(copyIndex)]));
+      const pickIndex = event.target.closest("[data-copy-pick]")?.dataset.copyPick;
+      if (pickIndex !== undefined) copyText(handoff(state.picks[Number(pickIndex)]));
     });
 
     $("load").addEventListener("click", () => fetchInsights(false));
     $("refresh").addEventListener("click", () => fetchInsights(true));
     $("reloadStatus").addEventListener("click", loadStatus);
-    $("exportWorkspace").addEventListener("click", exportWorkspaceData);
-    $("importWorkspace").addEventListener("click", () => $("importWorkspaceFile").click());
-    $("importWorkspaceFile").addEventListener("change", (event) => importWorkspaceData(event.target.files?.[0]));
-    $("clearPlans").addEventListener("click", () => { writeStore(storage.plans, []); renderPlans(); });
-    $("saveManualPlan").addEventListener("click", () => savePlan({ brand: $("dealBrand").value.trim(), region: $("dealRegion").value.trim(), keyword: $("customKeywords").value.trim(), memo: $("dealNotes").value.trim(), suggestedTitle: `${$("dealRegion").value.trim() || "전국"} ${$("dealBrand").value.trim() || "프랜차이즈"} 양도양수 글감` }));
-    $("checkDraft").addEventListener("click", runQualityCheck);
-    $("draftText").addEventListener("input", runQualityCheck);
-    $("clearDraft").addEventListener("click", () => { $("draftText").value = ""; runQualityCheck(); });
-    $("saveDraftVersion").addEventListener("click", saveDraftVersion);
-
+    $("regions").addEventListener("change", () => renderRegionChips(state.data));
     loadStatus();
-    renderPlans();
-    renderDraftVersions();
-    runQualityCheck();
     fetchInsights(false);
   </script>
 </body>

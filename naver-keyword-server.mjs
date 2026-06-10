@@ -446,13 +446,50 @@ function intentWeight(keyword) {
   return 0.8;
 }
 
+
+function rowConfidence(row) {
+  if (row.searchVolumeStatus === "partial") return "부분";
+  if (row.searchVolumeStatus === "unknown") return "확인필요";
+  if (Number(row.totalSearch || 0) > 0 && (Number(row.blogTotal || 0) > 0 || Number(row.newsTotal || 0) > 0)) return "높음";
+  if (Number(row.totalSearch || 0) > 0) return "검색량확인";
+  return "낮음";
+}
+
+function recommendationLabel(row) {
+  if (row.searchVolumeStatus === "partial") return "검색량 재확인";
+  const score = opportunityScore(row);
+  if (score >= 10 && keywordIntent(row.keyword) === "양도양수") return "오늘 작성";
+  if (score >= 8) return "상위 후보";
+  if (row.region && row.brand) return "지역 후보";
+  return "보조 후보";
+}
+
+function nextAction(row) {
+  if (row.searchVolumeStatus === "partial") return "검색광고 API 제한이 풀린 뒤 새로 수집해서 월검색량을 확인하세요.";
+  if (keywordIntent(row.keyword) === "양도양수" && row.region) return `${row.region} 지역명과 ${row.brand} 브랜드를 앞세워 상담 유입형 글로 작성하세요.`;
+  if (keywordIntent(row.keyword) === "창업비용") return "신규창업 비용과 양도양수 비용을 비교하는 구조로 작성하세요.";
+  if (keywordIntent(row.keyword) === "양도양수") return "브랜드 수요와 실제 양도 조건을 연결해 상담형 글로 작성하세요.";
+  return "브랜드 이슈와 상권 조건을 확인한 뒤 보조 글감으로 검토하세요.";
+}
+
+function enrichRecommendation(row) {
+  return {
+    confidence: rowConfidence(row),
+    recommendationLabel: recommendationLabel(row),
+    nextAction: nextAction(row),
+    searchVolumeStatus: row.searchVolumeStatus || "ok"
+  };
+}
 function opportunityScore(row) {
-  const searchScore = Math.min(10, Math.log(row.totalSearch + 1) * 1.15);
+  const totalSearch = Number(row.totalSearch || 0);
+  const searchScore = Math.min(10, Math.log(totalSearch + 1) * 1.15);
   const competitionBonus = row.competition === "낮음" ? 1.4 : row.competition === "중간" ? 0.7 : 0;
-  const docOpportunity = row.blogTotal ? Math.min(2, row.totalSearch / Math.max(row.blogTotal, 1) * 4) : 1;
-  const trendBonus = Math.max(-1, Math.min(2, row.trendDelta / 10));
+  const docOpportunity = row.blogTotal ? Math.min(2, totalSearch / Math.max(row.blogTotal, 1) * 4) : 1;
+  const trendBonus = Math.max(-1, Math.min(2, Number(row.trendDelta || 0) / 10));
   const intentBonus = intentWeight(row.keyword);
-  return Math.round((searchScore + competitionBonus + docOpportunity + trendBonus) * intentBonus * 10) / 10;
+  const regionBonus = row.region && keywordIntent(row.keyword) === "양도양수" ? 0.6 : 0;
+  const dataPenalty = row.searchVolumeStatus === "partial" ? -1.5 : row.searchVolumeStatus === "unknown" ? -0.6 : 0;
+  return Math.max(0, Math.round((searchScore + competitionBonus + docOpportunity + trendBonus + regionBonus + dataPenalty) * intentBonus * 10) / 10);
 }
 
 function scoreRow(row) {
@@ -465,7 +502,9 @@ function explainRow(row) {
   if (intent === "양도양수") parts.push("매물 전환 의도가 있는 양도양수 키워드");
   if (intent === "창업비용") parts.push("비용 비교형 글감으로 클릭 유도 가능");
   if (row.region) parts.push(`${row.region} 지역성을 제목에 바로 반영 가능`);
-  if (Number(row.totalSearch || 0) > 0) parts.push(`월 검색량 ${row.totalSearch.toLocaleString("ko-KR")}회`);
+  if (row.searchVolumeStatus === "partial") parts.push("검색광고 제한으로 월검색량 재확인 필요");
+  else if (Number(row.totalSearch || 0) > 0) parts.push(`월 검색량 ${row.totalSearch.toLocaleString("ko-KR")}회`);
+  else parts.push("월검색량 확인 필요");
   if (row.competition === "낮음" || row.competition === "중간") parts.push(`경쟁도 ${row.competition}`);
   if (Number(row.trendDelta || 0) > 0) parts.push(`전일 관심도 +${row.trendDelta}`);
   return parts.join(" · ") || "검색 의도 확인용 후보";
@@ -480,7 +519,7 @@ function topBy(rows, fn, limit = 5) {
 }
 
 function shouldUseCache(cached, cfg) {
-  if (!cached?.dashboard?.totals || !Array.isArray(cached?.dashboard?.writingPicks)) return false;
+  if (!cached?.dashboard?.totals || !Array.isArray(cached?.dashboard?.writingPicks) || !Array.isArray(cached?.dashboard?.regionalGroups)) return false;
   const cacheDate = cached?.collectedAt ? new Date(cached.collectedAt) : null;
   if (!cacheDate || Number.isNaN(cacheDate.getTime())) return false;
   const ageHours = (Date.now() - cacheDate.getTime()) / 36e5;
@@ -491,6 +530,105 @@ function shouldUseCache(cached, cfg) {
   todayRefresh.setHours(cfg.dailyRefreshHour, 0, 0, 0);
   if (now >= todayRefresh && cacheDate < todayRefresh) return false;
   return true;
+}
+
+async function readLatestUsableCache(cfg) {
+  const files = (await fs.readdir(__dirname))
+    .filter((name) => /^keyword-cache-.+\.json$/.test(name))
+    .map((name) => path.join(__dirname, name));
+  const byTime = await Promise.all(files.map(async (file) => ({
+    file,
+    mtime: (await fs.stat(file)).mtimeMs
+  })));
+  byTime.sort((a, b) => b.mtime - a.mtime);
+  for (const item of byTime) {
+    const cached = await readJsonIfExists(item.file);
+    if (shouldUseCache(cached, cfg)) return cached;
+  }
+  return null;
+}
+
+function regionGroup(region) {
+  const text = String(region || "");
+  if (!text) return "전국";
+  if (/서울|강남|서초|송파|강동|마포|서대문|은평|용산|중구|종로|성동|광진|동대문|중랑|성북|강북|도봉|노원|양천|강서|구로|금천|영등포|동작|관악/.test(text)) return "서울권";
+  if (/인천|부천|김포|광명|시흥|고양|파주|마포|강서|양천|구로|금천/.test(text)) return "수도권 서부";
+  if (/수원|용인|성남|분당|판교|안양|과천|의왕|군포|화성|오산|평택|안성|동탄/.test(text)) return "수도권 남부";
+  if (/하남|광주|구리|남양주|양평|이천|여주|강동|송파/.test(text)) return "수도권 동부";
+  if (/의정부|양주|동두천|포천|연천|노원|도봉|강북/.test(text)) return "수도권 북부";
+  if (/경기/.test(text)) return "경기 전체";
+  return "기타 지역";
+}
+
+function priorityLabel(row) {
+  if (row.searchVolumeStatus === "partial") return "검색량 재확인";
+  const search = Number(row.totalSearch || 0);
+  if (keywordIntent(row.keyword) === "양도양수" && row.region && search >= 50) return "바로 작성";
+  if (keywordIntent(row.keyword) === "양도양수" && search >= 200) return "브랜드 글감";
+  if (keywordIntent(row.keyword) === "창업비용" && search >= 500) return "비교글 보조";
+  if (row.region && row.brand) return "지역 보조";
+  return "참고";
+}
+
+function writingBrief(row) {
+  const region = row.region || "전국";
+  const brand = row.brand || "프랜차이즈";
+  if (keywordIntent(row.keyword) === "양도양수" && row.region) {
+    return `${region}에서 ${brand} 양도양수를 찾는 수요가 있으니, 지역명과 브랜드명을 앞세운 상담 유입용 글을 작성하세요.`;
+  }
+  if (keywordIntent(row.keyword) === "양도양수") {
+    return `${brand} 양도양수 검색수요가 높으니, 브랜드 수요와 실제 양도 조건을 연결한 글을 작성하세요.`;
+  }
+  if (keywordIntent(row.keyword) === "창업비용") {
+    return `${brand} 창업비용 수요를 활용해 신규창업 비용과 양도양수 비용을 비교하는 보조 글감으로 쓰세요.`;
+  }
+  return `${region} ${brand} 검색 흐름을 참고해 보조 글감으로 검토하세요.`;
+}
+
+function handoffText(row) {
+  const region = row.region || "전국";
+  const brand = row.brand || "";
+  return [
+    `브랜드: ${brand}`,
+    `지역: ${region}`,
+    `핵심 키워드: ${row.keyword}`,
+    `글 방향: ${writingBrief(row)}`,
+    `제목 후보: ${row.suggestedTitle || row.recommendedTitle || `${region} ${brand} 양도양수 체크포인트`}`
+  ].join("\n");
+}
+
+function competitionLabel(row) {
+  const total = Number(row.blogTotal || 0);
+  if (!total) return "블로그 경쟁 확인 필요";
+  if (total >= 10000) return "블로그 경쟁 높음";
+  if (total >= 3000) return "블로그 경쟁 보통";
+  return "블로그 경쟁 낮음";
+}
+
+function recommendationFromRow(row) {
+  return {
+    keyword: row.keyword,
+    brand: row.brand,
+    region: row.region || "전국",
+    group: regionGroup(row.region),
+    totalSearch: row.totalSearch,
+    blogTotal: row.blogTotal,
+    newsTotal: row.newsTotal,
+    trendYesterday: row.trendYesterday,
+    trendDelta: row.trendDelta,
+    competitionLabel: competitionLabel(row),
+    blogTitles: row.blogTitles || [],
+    blogTitleSignals: row.blogTitleSignals || "",
+    searchVolumeStatus: row.searchVolumeStatus || "ok",
+    priorityLabel: priorityLabel(row),
+    confidence: rowConfidence(row),
+    reason: explainRow(row),
+    writingBrief: writingBrief(row),
+    handoffText: handoffText(row),
+    suggestedTitle: row.region
+      ? `[${row.region}] ${row.brand} 양도양수, 지금 봐야 할 체크포인트`
+      : `${row.brand} 양도양수, 검색수요로 보는 오늘의 글감`
+  };
 }
 
 function buildDashboard(rows) {
@@ -504,8 +642,6 @@ function buildDashboard(rows) {
       transferSearch: 0,
       startupSearch: 0,
       costSearch: 0,
-      trendYesterday: 0,
-      trendDelta: 0,
       count: 0,
       bestRows: []
     };
@@ -513,75 +649,70 @@ function buildDashboard(rows) {
     if (keywordIntent(row.keyword) === "양도양수") current.transferSearch += Number(row.totalSearch || 0);
     if (keywordIntent(row.keyword) === "창업") current.startupSearch += Number(row.totalSearch || 0);
     if (keywordIntent(row.keyword) === "창업비용") current.costSearch += Number(row.totalSearch || 0);
-    current.trendYesterday += Number(row.trendYesterday || 0);
-    current.trendDelta += Number(row.trendDelta || 0);
     current.count += 1;
     current.bestRows.push(row);
     byBrand.set(row.brand, current);
   }
 
   const brandDemand = [...byBrand.values()]
-    .map((row) => ({
-      ...row,
-      trendYesterday: Math.round(row.trendYesterday * 10) / 10,
-      trendDelta: Math.round(row.trendDelta * 10) / 10,
-      opportunity: Math.round(topBy(row.bestRows, opportunityScore, 3).reduce((sum, item) => sum + opportunityScore(item), 0) * 10) / 10,
-      bestKeyword: topBy(row.bestRows, opportunityScore, 1)[0]?.keyword || ""
-    }))
-    .sort((a, b) => (b.transferSearch * 1.25 + b.costSearch * 1.05 + b.opportunity * 10) - (a.transferSearch * 1.25 + a.costSearch * 1.05 + a.opportunity * 10))
-    .slice(0, 8);
+    .map((row) => {
+      const best = topBy(row.bestRows, opportunityScore, 1)[0];
+      return {
+        ...row,
+        bestKeyword: best?.keyword || "",
+        recommendedRegion: topBy(row.bestRows.filter((item) => item.region && keywordIntent(item.keyword) === "양도양수"), opportunityScore, 1)[0]?.region || "전국",
+        writeReason: `${row.brand} 양도양수 ${row.transferSearch.toLocaleString("ko-KR")}회, 창업비용 ${row.costSearch.toLocaleString("ko-KR")}회 기준으로 글감 가치가 있습니다.`
+      };
+    })
+    .sort((a, b) => (b.transferSearch * 1.4 + b.costSearch * 0.4) - (a.transferSearch * 1.4 + a.costSearch * 0.4))
+    .slice(0, 10);
 
-  const rising = [...safeRows]
-    .sort((a, b) => Number(b.trendDelta || 0) - Number(a.trendDelta || 0))
-    .slice(0, 5);
+  const regionalRows = safeRows.filter((row) => row.region && row.brand && keywordIntent(row.keyword) === "양도양수");
+  const groupMap = new Map();
+  for (const row of regionalRows) {
+    const group = regionGroup(row.region);
+    const current = groupMap.get(group) || { group, totalSearch: 0, rows: [] };
+    current.totalSearch += Number(row.totalSearch || 0);
+    current.rows.push(row);
+    groupMap.set(group, current);
+  }
 
-  const lowCompetition = [...safeRows]
-    .filter((row) => row.competition === "낮음" || row.competition === "중간")
-    .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))
-    .slice(0, 5);
-
-  const regionalOpportunities = topBy(
-    safeRows.filter((row) => row.region && row.brand),
-    (row) => opportunityScore(row) + (keywordIntent(row.keyword) === "양도양수" ? 2 : 0),
-    10
-  ).map((row) => ({
-    keyword: row.keyword,
-    brand: row.brand,
-    region: row.region,
-    totalSearch: row.totalSearch,
-    competition: row.competition,
-    score: row.score,
-    reason: explainRow(row),
-    suggestedTitle: `[${row.region}] ${row.brand} 창업보다 양도양수를 먼저 봐야 하는 이유`
-  }));
+  const regionalGroups = [...groupMap.values()]
+    .map((group) => {
+      const topRows = topBy(group.rows, (row) => Number(row.totalSearch || 0) + opportunityScore(row), 5);
+      const top = topRows[0];
+      return {
+        group: group.group,
+        totalSearch: group.totalSearch,
+        topBrand: top?.brand || "-",
+        topRegion: top?.region || "-",
+        topKeyword: top?.keyword || "-",
+        writingBrief: top ? writingBrief(top) : "해당 권역의 양도양수 후보를 더 수집하세요.",
+        rows: topRows.map(recommendationFromRow)
+      };
+    })
+    .sort((a, b) => b.totalSearch - a.totalSearch);
 
   const writingPicks = topBy(
-    safeRows,
-    (row) => opportunityScore(row) + (row.region ? 0.8 : 0) + (keywordIntent(row.keyword) === "양도양수" ? 1.5 : 0),
+    safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수"),
+    (row) => Number(row.totalSearch || 0) + (row.region ? 300 : 120) + (row.searchVolumeStatus === "partial" ? -200 : 0),
     10
-  ).map((row) => ({
-    keyword: row.keyword,
-    brand: row.brand,
-    region: row.region,
-    totalSearch: row.totalSearch,
-    competition: row.competition,
-    score: row.score,
-    reason: explainRow(row),
-    angle: keywordIntent(row.keyword) === "창업비용"
-      ? "신규창업 비용과 양도양수 비용을 비교하는 글"
-      : row.region
-        ? `${row.region} 상권에서 ${row.brand} 양도양수를 검토하는 글`
-        : `${row.brand} 브랜드 수요와 양도양수 타이밍을 설명하는 글`,
-    suggestedTitle: row.region
-      ? `[${row.region}] ${row.brand} 창업 양도양수, 지금 봐야 할 체크포인트`
-      : `${row.brand} 창업 양도양수, 검색수요로 보는 오늘의 글감`
-  }));
+  ).map(recommendationFromRow);
+
+  const westernSouthernEasternNorthern = ["수도권 서부", "수도권 남부", "수도권 동부", "수도권 북부", "서울권"]
+    .map((groupName) => regionalGroups.find((item) => item.group === groupName) || {
+      group: groupName,
+      totalSearch: 0,
+      topBrand: "-",
+      topRegion: "-",
+      topKeyword: "-",
+      writingBrief: "아직 이 권역에서 확인된 지역+브랜드 양도양수 후보가 없습니다.",
+      rows: []
+    });
 
   return {
     brandDemand,
-    rising,
-    lowCompetition,
-    regionalOpportunities,
+    regionalGroups: westernSouthernEasternNorthern,
     writingPicks,
     totals: {
       totalSearch: sumRows(safeRows),
@@ -591,7 +722,6 @@ function buildDashboard(rows) {
     }
   };
 }
-
 async function collectKeywords(cfg) {
   const candidates = buildCandidateKeywords(cfg.brands, cfg.regions, cfg.customKeywords);
   const keywordMap = new Map();
@@ -611,15 +741,18 @@ async function collectKeywords(cfg) {
 
   const rows = candidates.map((keyword) => {
     const item = keywordMap.get(normalizeKeyword(keyword)) || {};
-    const pc = parseNumber(item.monthlyPcQcCnt);
-    const mobile = parseNumber(item.monthlyMobileQcCnt);
+    const hasSearchAdData = Boolean(item.relKeyword);
+    const pc = hasSearchAdData ? parseNumber(item.monthlyPcQcCnt) : null;
+    const mobile = hasSearchAdData ? parseNumber(item.monthlyMobileQcCnt) : null;
+    const searchVolumeStatus = hasSearchAdData ? "ok" : searchAdError ? "partial" : "unknown";
     return {
       keyword,
       brand: cfg.brands.find((brand) => keyword.includes(brand)) || "",
       region: cfg.regions.find((region) => keyword.includes(region)) || "",
       pcSearch: pc,
       mobileSearch: mobile,
-      totalSearch: pc + mobile,
+      totalSearch: hasSearchAdData ? pc + mobile : null,
+      searchVolumeStatus,
       competition: item.compIdx || "확인필요",
       contentType: pickContentType(keyword)
     };
@@ -656,7 +789,21 @@ async function collectKeywords(cfg) {
     row.recommendedTitle = `[${row.region || "전국"}] ${row.brand} 창업 양도양수 / ${row.keyword} 검색수요 기반 분석`;
   }));
 
+  const evidenceRows = topRows
+    .filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수")
+    .sort((a, b) => opportunityScore(b) - opportunityScore(a))
+    .slice(0, 12);
+  await Promise.all(evidenceRows.map(async (row) => {
+    const items = await naverSearchItems(row.keyword, "blog", cfg, 3);
+    const titles = items.map((item) => stripTags(item.title || "")).filter(Boolean);
+    row.blogTitles = titles;
+    row.blogTitleSignals = titles.length
+      ? `${row.region} ${row.brand} 관련 블로그 제목 ${titles.length}건을 참고했습니다.`
+      : "블로그 제목 표본이 부족해 검색량 중심으로 판단하세요.";
+  }));
+
   const result = {
+    dashboardVersion: "region-dashboard-v3",
     collectedAt: new Date().toISOString(),
     source: "naver-searchad + naver-datalab + naver-search",
     searchAdStatus: searchAdError ? (keywordMap.size ? "partial" : "error") : "ok",
@@ -667,6 +814,12 @@ async function collectKeywords(cfg) {
     regions: cfg.regions,
     customKeywords: cfg.customKeywords || [],
     dashboard: buildDashboard(topRows),
+    recommendationGuide: {
+      today: "오늘 작성은 양도양수 의도와 검색량이 함께 확인된 후보입니다.",
+      verify: "검색량 재확인은 API 제한 또는 부분 데이터라서 발행 전 새로 수집이 필요한 후보입니다.",
+      regional: "지역 후보는 제목에 지역명과 브랜드명을 함께 넣기 좋은 후보입니다.",
+      handoff: "복사 문구를 글쓰기 에이전트에 넘기면 브랜드, 지역, 키워드가 한 번에 전달됩니다."
+    },
     apiUsageEstimate: {
       keywordCandidates: candidates.length,
       searchAdCalls: Math.ceil(candidates.length / 5),
@@ -765,6 +918,10 @@ const server = http.createServer(async (req, res) => {
       if (!refresh && cached && shouldUseCache(cached, cfg)) {
         return json(res, 200, { ...cached, cacheStatus: "hit" });
       }
+      if (!refresh) {
+        const latestCached = await readLatestUsableCache(cfg);
+        if (latestCached) return json(res, 200, { ...latestCached, cacheStatus: "latest-hit" });
+      }
       const result = await collectKeywords(cfg);
       return json(res, 200, { ...result, cacheStatus: "fresh" });
     }
@@ -798,4 +955,12 @@ server.listen(nextPort, "127.0.0.1", () => {
   const port = server.address()?.port || DEFAULT_PORT;
   console.log(`Naver Blog Agent running at http://127.0.0.1:${port}/naver-blog-agent.html`);
 });
+
+
+
+
+
+
+
+
 
