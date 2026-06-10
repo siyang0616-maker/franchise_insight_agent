@@ -1,0 +1,419 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>프랜차이즈 글감 인사이트 에이전트</title>
+  <style>
+    :root {
+      --bg: #f6f7f9; --panel: #fff; --ink: #17202a; --muted: #68717d; --line: #dfe4ea;
+      --accent: #176b5d; --accent-weak: #e7f3f0; --warn: #8b5b00; --danger: #a23a2b; --ok: #176b5d;
+      --radius: 8px; font-family: "Pretendard", "Noto Sans KR", "Malgun Gothic", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    .shell { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    header { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end; padding: 20px 0 18px; border-bottom: 1px solid var(--line); }
+    h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: 0; }
+    p { line-height: 1.65; }
+    .lead { margin: 0; color: var(--muted); font-size: 14px; }
+    .status { padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); font-size: 13px; color: var(--muted); white-space: nowrap; }
+    .grid { display: grid; grid-template-columns: 360px 1fr; gap: 18px; margin-top: 18px; align-items: start; }
+    aside, main { display: grid; gap: 14px; }
+    section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+    .section-title { margin: 0 0 14px; font-size: 15px; font-weight: 800; }
+    label { display: block; margin: 14px 0 7px; font-size: 13px; font-weight: 700; }
+    textarea, input { width: 100%; border: 1px solid var(--line); border-radius: 7px; padding: 11px; font: inherit; line-height: 1.5; background: #fff; }
+    textarea { min-height: 108px; resize: vertical; }
+    .compact { min-height: 76px; }
+    .draft-box { min-height: 188px; }
+    .actions, .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .toolbar { justify-content: space-between; }
+    button { border: 0; border-radius: 7px; padding: 10px 13px; background: var(--accent); color: #fff; font-weight: 800; cursor: pointer; }
+    button.secondary { background: #edf1f4; color: var(--ink); }
+    button.ghost { background: transparent; color: var(--accent); border: 1px solid var(--line); }
+    button.small { padding: 7px 9px; font-size: 12px; }
+    .summary, .status-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .metric, .status-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; min-height: 94px; }
+    .metric span, .status-card span { display: block; color: var(--muted); font-size: 12px; margin-bottom: 7px; }
+    .metric strong { display: block; font-size: 22px; margin-bottom: 5px; }
+    .status-card strong { display: block; font-size: 16px; margin-bottom: 5px; overflow-wrap: anywhere; }
+    .metric small, .status-card small { color: var(--muted); line-height: 1.45; overflow-wrap: anywhere; }
+    .ok { color: var(--ok); } .bad { color: var(--danger); } .warn-text { color: var(--warn); }
+    .warning { margin: 0; padding: 10px 12px; border-radius: 7px; background: #fff7e6; color: var(--warn); font-size: 13px; }
+    .mini-note { margin: 8px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .result-grid, .two-col, .field-grid { display: grid; gap: 14px; }
+    .result-grid, .two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .wide { grid-column: 1 / -1; }
+    .list, .check-list { display: grid; gap: 8px; }
+    .row { border: 1px solid var(--line); border-radius: 7px; padding: 12px; background: #fff; }
+    .row-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; }
+    .row strong { display: block; margin-bottom: 4px; font-size: 14px; }
+    .row span { display: block; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .row em { display: inline-block; margin-top: 8px; padding: 4px 7px; border-radius: 999px; background: var(--accent-weak); color: var(--accent); font-style: normal; font-size: 12px; font-weight: 800; }
+    .empty { margin: 0; color: var(--muted); font-size: 13px; }
+    .check { display: grid; grid-template-columns: 72px 1fr; gap: 8px; border: 1px solid var(--line); border-radius: 7px; padding: 10px; font-size: 13px; }
+    .badge { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; padding: 3px 8px; font-weight: 800; font-size: 12px; background: #edf1f4; color: var(--muted); }
+    .badge.ok { background: #e7f3f0; color: var(--ok); } .badge.bad { background: #fbe9e5; color: var(--danger); } .badge.warn { background: #fff3d6; color: var(--warn); }
+    .hidden-file { display: none; }
+    @media (max-width: 900px) { .shell { padding: 16px; } header, .grid, .summary, .status-grid, .result-grid, .two-col, .field-grid { grid-template-columns: 1fr; } .status { justify-self: start; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <h1>프랜차이즈 글감 인사이트 에이전트</h1>
+        <p class="lead">검색수요, 저장한 글감, 초안 품질을 한 화면에서 관리합니다.</p>
+      </div>
+      <div class="status" id="status">대기중</div>
+    </header>
+
+    <div class="grid">
+      <aside>
+        <section>
+          <p class="section-title">분석 기준</p>
+          <label for="brands">브랜드</label>
+          <textarea id="brands">메가커피
+컴포즈커피
+투썸플레이스
+파리바게뜨
+롯데리아
+서브웨이
+배스킨라빈스
+샐러디</textarea>
+          <label for="regions">지역</label>
+          <textarea id="regions">서울
+경기
+인천
+수원시
+용인시
+부천시
+성남시
+송파구
+마포구
+의정부시
+안양시
+천안시</textarea>
+          <label for="customKeywords">추가 키워드</label>
+          <textarea id="customKeywords" class="compact" placeholder="예: 강남 카페 양도양수"></textarea>
+          <div class="actions">
+            <button id="load">저장 데이터 보기</button>
+            <button class="secondary" id="refresh">오늘 데이터 새로 수집</button>
+          </div>
+        </section>
+
+        <section>
+          <div class="toolbar">
+            <p class="section-title">저장한 글감</p>
+            <div class="actions">
+              <button class="ghost small" id="exportWorkspace">내보내기</button>
+              <button class="ghost small" id="importWorkspace">가져오기</button>
+              <button class="ghost small" id="clearPlans">정리</button>
+            </div>
+          </div>
+          <input class="hidden-file" type="file" id="importWorkspaceFile" accept="application/json" />
+          <div class="list" id="planList"><p class="empty">아직 저장한 글감이 없습니다.</p></div>
+          <p class="mini-note">맥/윈도우를 오갈 때는 내보내기 파일로 브라우저 저장값을 옮길 수 있습니다.</p>
+        </section>
+      </aside>
+
+      <main>
+        <section>
+          <div class="toolbar">
+            <p class="section-title">시작 점검</p>
+            <button class="secondary small" id="reloadStatus">다시 확인</button>
+          </div>
+          <div class="status-grid" id="systemStatus"></div>
+          <p class="warning" id="uploadAdvice">기능 수정, 화면 확인, 비밀파일 제외 확인이 끝나면 GitHub Desktop에서 커밋/푸시하세요.</p>
+        </section>
+
+        <div class="summary" id="summary"></div>
+        <p class="warning" id="notice">검색량은 글감 선택을 돕는 신호입니다. 최종 글은 실제 매물 정보, 브랜드 이슈, 상담 문체까지 함께 판단해야 합니다.</p>
+
+        <div class="result-grid">
+          <section>
+            <p class="section-title">브랜드 우선순위</p>
+            <div class="list" id="brandList"><p class="empty">아직 분석 전입니다.</p></div>
+          </section>
+          <section>
+            <p class="section-title">지역+브랜드 기회</p>
+            <div class="list" id="regionList"><p class="empty">아직 분석 전입니다.</p></div>
+          </section>
+          <section class="wide">
+            <p class="section-title">오늘 써볼 글감 후보</p>
+            <div class="list" id="pickList"><p class="empty">아직 분석 전입니다.</p></div>
+          </section>
+        </div>
+
+        <section>
+          <p class="section-title">매물 입력</p>
+          <div class="field-grid">
+            <input id="dealBrand" placeholder="브랜드" />
+            <input id="dealRegion" placeholder="지역" />
+            <input id="dealDeposit" placeholder="보증금" />
+            <input id="dealRent" placeholder="월세" />
+            <input id="dealPremium" placeholder="권리금" />
+            <input id="dealSales" placeholder="월매출" />
+          </div>
+          <label for="dealNotes">핵심 장점</label>
+          <textarea id="dealNotes" class="compact" placeholder="상권, 매장상태, 운영 포인트"></textarea>
+          <div class="actions"><button class="secondary" id="saveManualPlan">글감 저장</button></div>
+        </section>
+
+        <section>
+          <div class="toolbar">
+            <p class="section-title">초안 품질 검수</p>
+            <button class="secondary small" id="saveDraftVersion">버전 저장</button>
+          </div>
+          <div class="two-col">
+            <div>
+              <textarea id="draftText" class="draft-box" placeholder="초안을 붙여넣으면 자동으로 검수합니다."></textarea>
+              <div class="actions">
+                <button id="checkDraft">검수</button>
+                <button class="ghost" id="clearDraft">비우기</button>
+              </div>
+            </div>
+            <div>
+              <div class="check-list" id="qualityList"></div>
+              <p class="section-title" style="margin-top:14px">최근 저장 초안</p>
+              <div class="list" id="draftVersionList"><p class="empty">아직 저장한 초안이 없습니다.</p></div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const splitLines = (value) => String(value || "").split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
+    const money = (value) => Number(value || 0).toLocaleString("ko-KR");
+    const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+    const storage = { plans: "franchiseInsightPlans.v1", drafts: "franchiseInsightDraftVersions.v1" };
+    let lastPicks = [];
+
+    function readStore(key) { try { return JSON.parse(localStorage.getItem(key) || "[]"); } catch { return []; } }
+    function writeStore(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+
+    function queryString(refresh = false) {
+      const qs = new URLSearchParams();
+      const brands = splitLines($("brands").value);
+      const regions = splitLines($("regions").value);
+      const custom = splitLines($("customKeywords").value);
+      if (refresh) qs.set("refresh", "1");
+      if (brands.length) qs.set("brands", brands.join(","));
+      if (regions.length) qs.set("regions", regions.join(","));
+      if (custom.length) qs.set("keywords", custom.join(","));
+      const text = qs.toString();
+      return text ? `?${text}` : "";
+    }
+
+    function metricCard(label, value, help) {
+      return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
+    }
+
+    function statusCard(label, value, help, tone = "") {
+      return `<div class="status-card"><span>${escapeHtml(label)}</span><strong class="${tone}">${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
+    }
+
+    async function loadStatus() {
+      try {
+        const res = await fetch("/api/status");
+        const data = await res.json();
+        const gitTone = data.git?.isGitRepo ? "ok" : "bad";
+        const configTone = data.config?.ok ? "ok" : "warn-text";
+        const readyForUpload = data.git?.isGitRepo && data.config?.ok;
+        $("uploadAdvice").textContent = readyForUpload
+          ? "지금처럼 기능 변경 후 화면/API 확인이 끝난 시점은 GitHub Desktop에서 커밋하고 Push origin 하기 좋은 시점입니다."
+          : "Git 또는 API 설정이 확인되지 않으면 커밋 전 기준 폴더와 설정 파일을 먼저 확인하세요.";
+        $("systemStatus").innerHTML = [
+          statusCard("서버", `:${data.server?.port || "-"}`, data.server?.url || "실행 주소 확인 필요", "ok"),
+          statusCard("Git", data.git?.isGitRepo ? data.git.branch || "연결" : "미연결", data.git?.origin || data.git?.repoRoot || "저장소 루트 확인", gitTone),
+          statusCard("설정", data.config?.ok ? "완료" : "확인 필요", data.config?.source || "config 없음", configTone),
+          statusCard("캐시", `${data.data?.cacheCount || 0}개`, `보관 ${data.data?.cacheHours || "-"}시간 · ${data.checkedAt?.slice(0, 10) || ""}`)
+        ].join("");
+      } catch {
+        $("systemStatus").innerHTML = statusCard("서버", "연결 필요", "naver-keyword-server.mjs를 실행하세요.", "bad");
+      }
+    }
+
+    function renderSummary(data) {
+      const totals = data.dashboard?.totals || {};
+      const topBrand = data.dashboard?.brandDemand?.[0]?.brand || "-";
+      $("summary").innerHTML = [
+        metricCard("오늘 1순위 브랜드", topBrand, "양도양수와 창업비용 수요를 함께 본 결과"),
+        metricCard("양도양수 월검색", money(totals.transferSearch), "매물 전환 의도가 비교적 강한 검색량"),
+        metricCard("창업비용 월검색", money(totals.costSearch), "비용 비교형 글감으로 쓰기 좋은 검색량"),
+        metricCard("데이터 상태", data.cacheStatus === "hit" ? "저장 데이터" : "신규 수집", data.searchAdStatus === "ok" ? "검색광고 API 연결 정상" : "일부 데이터만 반영")
+      ].join("");
+    }
+
+    function brandRow(row, index) {
+      const score = row.opportunity ?? row.score ?? "-";
+      return `<div class="row"><strong>${index + 1}. ${escapeHtml(row.brand || "-")}</strong><span>양도양수 ${money(row.transferSearch)} · 창업 ${money(row.startupSearch)} · 창업비용 ${money(row.costSearch)}</span><span>대표 키워드: ${escapeHtml(row.bestKeyword || "확인 필요")}</span><em>글감점수 ${escapeHtml(score)}</em></div>`;
+    }
+
+    function keywordRow(row, index) {
+      const search = row.totalSearch ?? Number(row.monthlyPcQcCnt || 0) + Number(row.monthlyMobileQcCnt || 0);
+      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.keyword || row.suggestedTitle || "-")}</strong><span>${escapeHtml(row.reason || row.angle || row.recommendedTitle || "검색수요와 경쟁 문서량을 같이 확인하세요.")}</span><span>월검색 ${money(search)} · 블로그 문서 ${money(row.blogTotal)} · 뉴스 ${money(row.newsTotal)}</span><em>${escapeHtml(row.contentType || "글감 후보")}</em></div><button class="small secondary" data-save-pick="${index}">저장</button></div></div>`;
+    }
+
+    function pickRow(row, index) {
+      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.suggestedTitle || row.recommendedTitle || row.keyword || "-")}</strong><span>브랜드 ${escapeHtml(row.brand || "-")} · 지역 ${escapeHtml(row.region || "전국")} · 키워드 ${escapeHtml(row.keyword || "-")}</span><span>${escapeHtml(row.angle || row.reason || "글쓰기 앱에서 실제 매물 정보와 브랜드 이슈를 넣어 초안화하세요.")}</span><em>글감점수 ${escapeHtml(row.opportunity ?? row.score ?? "-")}</em></div><button class="small secondary" data-save-pick="${index}">저장</button></div></div>`;
+    }
+
+    function renderPlans() {
+      const plans = readStore(storage.plans);
+      $("planList").innerHTML = plans.length ? plans.map((plan, index) => `<div class="row"><strong>${escapeHtml(plan.title || plan.keyword || "저장 글감")}</strong><span>${escapeHtml(plan.brand || "-")} · ${escapeHtml(plan.region || "전국")} · ${escapeHtml(plan.savedAt?.slice(0, 10) || "")}</span><span>${escapeHtml(plan.memo || plan.angle || plan.keyword || "")}</span><div class="actions"><button class="small secondary" data-load-plan="${index}">불러오기</button><button class="small ghost" data-delete-plan="${index}">삭제</button></div></div>`).join("") : `<p class="empty">아직 저장한 글감이 없습니다.</p>`;
+    }
+
+    function renderDraftVersions() {
+      const versions = readStore(storage.drafts);
+      $("draftVersionList").innerHTML = versions.length ? versions.slice(0, 6).map((version, index) => `<div class="row"><strong>${escapeHtml(version.savedAt?.replace("T", " ").slice(0, 16) || "저장 초안")}</strong><span>${escapeHtml(String(version.text || "").slice(0, 80))}</span><div class="actions"><button class="small secondary" data-load-draft="${index}">불러오기</button><button class="small ghost" data-delete-draft="${index}">삭제</button></div></div>`).join("") : `<p class="empty">아직 저장한 초안이 없습니다.</p>`;
+    }
+
+    function savePlan(row) {
+      const plans = readStore(storage.plans);
+      const plan = {
+        id: Date.now(), savedAt: new Date().toISOString(),
+        title: row.suggestedTitle || row.recommendedTitle || row.keyword || `${row.region || "전국"} ${row.brand || ""}`.trim(),
+        keyword: row.keyword || "", brand: row.brand || $("dealBrand").value.trim(), region: row.region || $("dealRegion").value.trim(),
+        angle: row.angle || row.reason || "", memo: row.memo || $("dealNotes").value.trim(),
+        deal: { deposit: $("dealDeposit").value.trim(), rent: $("dealRent").value.trim(), premium: $("dealPremium").value.trim(), sales: $("dealSales").value.trim() }
+      };
+      writeStore(storage.plans, [plan, ...plans].slice(0, 50));
+      renderPlans();
+      $("status").textContent = "글감 저장됨";
+    }
+
+    function loadPlan(index) {
+      const plan = readStore(storage.plans)[index];
+      if (!plan) return;
+      $("dealBrand").value = plan.brand || "";
+      $("dealRegion").value = plan.region || "";
+      $("dealDeposit").value = plan.deal?.deposit || "";
+      $("dealRent").value = plan.deal?.rent || "";
+      $("dealPremium").value = plan.deal?.premium || "";
+      $("dealSales").value = plan.deal?.sales || "";
+      $("dealNotes").value = plan.memo || plan.angle || "";
+      $("customKeywords").value = plan.keyword || "";
+      $("status").textContent = "글감 불러옴";
+    }
+
+    function exportWorkspaceData() {
+      const payload = { exportedAt: new Date().toISOString(), app: "franchise-insight-agent", plans: readStore(storage.plans), drafts: readStore(storage.drafts) };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `franchise-insight-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      $("status").textContent = "백업 파일 생성됨";
+    }
+
+    async function importWorkspaceData(file) {
+      if (!file) return;
+      try {
+        const payload = JSON.parse(await file.text());
+        if (Array.isArray(payload.plans)) writeStore(storage.plans, payload.plans.slice(0, 50));
+        if (Array.isArray(payload.drafts)) writeStore(storage.drafts, payload.drafts.slice(0, 30));
+        renderPlans(); renderDraftVersions();
+        $("status").textContent = "백업 가져오기 완료";
+      } catch { $("status").textContent = "가져오기 실패"; }
+    }
+
+    function render(data) {
+      renderSummary(data);
+      const brandDemand = data.dashboard?.brandDemand || [];
+      const regional = data.dashboard?.regionalOpportunities || [];
+      const picks = data.dashboard?.writingPicks || [];
+      lastPicks = picks;
+      $("brandList").innerHTML = brandDemand.length ? brandDemand.slice(0, 10).map(brandRow).join("") : `<p class="empty">브랜드 우선순위가 없습니다.</p>`;
+      $("regionList").innerHTML = regional.length ? regional.slice(0, 10).map(keywordRow).join("") : `<p class="empty">지역+브랜드 후보가 없습니다.</p>`;
+      $("pickList").innerHTML = picks.length ? picks.slice(0, 10).map(pickRow).join("") : `<p class="empty">오늘 쓸 글감 후보가 없습니다.</p>`;
+      $("notice").textContent = data.searchAdStatus === "ok" ? "검색광고 API 기준 월검색량을 반영했습니다. 글쓰기 전 실제 매물성과 브랜드 최신 이슈를 한 번 더 확인하세요." : "일부 지표가 부족합니다. 검색량을 단정하지 말고 브랜드, 상권, 실매물 조건을 함께 검토하세요.";
+    }
+
+    async function fetchInsights(refresh = false) {
+      $("status").textContent = refresh ? "새 데이터 수집중" : "저장 데이터 확인중";
+      try {
+        const res = await fetch(`/api/keywords${queryString(refresh)}`);
+        const data = await res.json();
+        if (data.setupNeeded) { $("status").textContent = "API 설정 필요"; $("notice").textContent = "naver-api-config.json 설정을 먼저 확인해주세요."; return; }
+        render(data);
+        $("status").textContent = "분석 완료";
+        loadStatus();
+      } catch { $("status").textContent = "서버 연결 필요"; $("notice").textContent = "루트의 naver-keyword-server.mjs 서버를 실행한 뒤 다시 시도하세요."; }
+    }
+
+    function paragraphList(text) { return String(text || "").split(/\n\s*\n|\n/).map((line) => line.trim()).filter(Boolean); }
+    function checkItem(label, ok, message, warn = false) {
+      const cls = ok ? "ok" : warn ? "warn" : "bad";
+      const text = ok ? "통과" : warn ? "확인" : "수정";
+      return `<div class="check"><span class="badge ${cls}">${text}</span><span><strong>${escapeHtml(label)}</strong><br>${escapeHtml(message)}</span></div>`;
+    }
+
+    function runQualityCheck() {
+      const text = $("draftText").value.trim();
+      const chars = text.replace(/\s/g, "").length;
+      const paras = paragraphList(text);
+      const second = paras[1] || "";
+      const dealWords = ["보증금", "월세", "권리금", "매출", "평", "상권", "양도"];
+      const repeated = ["안녕하세요", "오늘은", "좋은 기회", "꼭 확인"].filter((word) => (text.match(new RegExp(word, "g")) || []).length >= 3);
+      $("qualityList").innerHTML = [
+        checkItem("글자 수", chars >= 1800 && chars <= 2100, `${chars.toLocaleString("ko-KR")}자 · 목표 1,800~2,100자`, chars >= 1600 && chars <= 2300),
+        checkItem("문단 수", paras.length >= 10 && paras.length <= 13, `${paras.length}문단 · 목표 12문단`, paras.length >= 8 && paras.length <= 15),
+        checkItem("2문단 사실 소개", dealWords.some((word) => second.includes(word)), second ? second.slice(0, 70) : "2문단이 비어 있습니다."),
+        checkItem("반복 표현", repeated.length === 0, repeated.length ? `반복: ${repeated.join(", ")}` : "눈에 띄는 반복 표현이 적습니다."),
+        checkItem("제목 후보", /창업|양도양수|권리금|프랜차이즈/.test(text), "핵심 검색 의도가 본문에 들어갔는지 확인")
+      ].join("");
+    }
+
+    function saveDraftVersion() {
+      const text = $("draftText").value.trim();
+      if (!text) return;
+      const versions = readStore(storage.drafts);
+      writeStore(storage.drafts, [{ savedAt: new Date().toISOString(), text }, ...versions].slice(0, 30));
+      renderDraftVersions();
+      $("status").textContent = "초안 버전 저장됨";
+    }
+
+    document.addEventListener("click", (event) => {
+      const saveIndex = event.target.closest("[data-save-pick]")?.dataset.savePick;
+      if (saveIndex !== undefined) savePlan(lastPicks[Number(saveIndex)] || {});
+      const loadIndex = event.target.closest("[data-load-plan]")?.dataset.loadPlan;
+      if (loadIndex !== undefined) loadPlan(Number(loadIndex));
+      const deleteIndex = event.target.closest("[data-delete-plan]")?.dataset.deletePlan;
+      if (deleteIndex !== undefined) { const plans = readStore(storage.plans); plans.splice(Number(deleteIndex), 1); writeStore(storage.plans, plans); renderPlans(); }
+      const loadDraftIndex = event.target.closest("[data-load-draft]")?.dataset.loadDraft;
+      if (loadDraftIndex !== undefined) { const version = readStore(storage.drafts)[Number(loadDraftIndex)]; if (version) { $("draftText").value = version.text || ""; runQualityCheck(); } }
+      const deleteDraftIndex = event.target.closest("[data-delete-draft]")?.dataset.deleteDraft;
+      if (deleteDraftIndex !== undefined) { const versions = readStore(storage.drafts); versions.splice(Number(deleteDraftIndex), 1); writeStore(storage.drafts, versions); renderDraftVersions(); }
+    });
+
+    $("load").addEventListener("click", () => fetchInsights(false));
+    $("refresh").addEventListener("click", () => fetchInsights(true));
+    $("reloadStatus").addEventListener("click", loadStatus);
+    $("exportWorkspace").addEventListener("click", exportWorkspaceData);
+    $("importWorkspace").addEventListener("click", () => $("importWorkspaceFile").click());
+    $("importWorkspaceFile").addEventListener("change", (event) => importWorkspaceData(event.target.files?.[0]));
+    $("clearPlans").addEventListener("click", () => { writeStore(storage.plans, []); renderPlans(); });
+    $("saveManualPlan").addEventListener("click", () => savePlan({ brand: $("dealBrand").value.trim(), region: $("dealRegion").value.trim(), keyword: $("customKeywords").value.trim(), memo: $("dealNotes").value.trim(), suggestedTitle: `${$("dealRegion").value.trim() || "전국"} ${$("dealBrand").value.trim() || "프랜차이즈"} 양도양수 글감` }));
+    $("checkDraft").addEventListener("click", runQualityCheck);
+    $("draftText").addEventListener("input", runQualityCheck);
+    $("clearDraft").addEventListener("click", () => { $("draftText").value = ""; runQualityCheck(); });
+    $("saveDraftVersion").addEventListener("click", saveDraftVersion);
+
+    loadStatus();
+    renderPlans();
+    renderDraftVersions();
+    runQualityCheck();
+    fetchInsights(false);
+  </script>
+</body>
+</html>

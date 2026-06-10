@@ -1,0 +1,34 @@
+{
+  "searchAdCustomerId": "YOUR_CUSTOMER_ID",
+  "searchAdAccessLicense": "YOUR_ACCESS_LICENSE",
+  "searchAdSecretKey": "YOUR_SECRET_KEY",
+  "naverClientId": "YOUR_NAVER_CLIENT_ID",
+  "naverClientSecret": "YOUR_NAVER_CLIENT_SECRET",
+  "brands": [
+    "메가커피",
+    "컴포즈커피",
+    "투썸플레이스",
+    "파리바게뜨",
+    "롯데리아",
+    "서브웨이",
+    "배스킨라빈스",
+    "샐러디"
+  ],
+  "regions": [
+    "서울",
+    "경기",
+    "인천",
+    "수원시",
+    "용인시",
+    "부천시",
+    "성남시",
+    "송파구",
+    "마포구",
+    "의정부시",
+    "안양시",
+    "천안시"
+  ],
+  "customKeywords": [],
+  "cacheHours": 24,
+  "dailyRefreshHour": 8
+}
