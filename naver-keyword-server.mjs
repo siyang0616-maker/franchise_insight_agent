@@ -958,6 +958,39 @@ function applyKeywordOverrides(cfg, url) {
   };
 }
 
+function apiUsageEstimateFor(cfg) {
+  const candidates = buildCandidateKeywords(cfg.brands, cfg.regions, cfg.customKeywords || []);
+  const estimatedTopRows = Math.min(candidates.length, 140);
+  return {
+    keywordCandidates: candidates.length,
+    searchAdCalls: Math.ceil(candidates.length / 5),
+    openApiCalls: estimatedTopRows * 3,
+    cacheHours: cfg.cacheHours,
+    dailyRefreshHour: cfg.dailyRefreshHour
+  };
+}
+
+function emptyKeywordResult(cfg, cacheStatus = "miss") {
+  return {
+    dashboardVersion: "region-dashboard-v4-empty",
+    collectedAt: new Date().toISOString(),
+    source: "cache-only",
+    searchAdStatus: "none",
+    openApiStatus: cfg.openApiMissing?.length ? "missing" : "ok",
+    openApiMissing: cfg.openApiMissing || [],
+    searchAdError: "",
+    brands: cfg.brands,
+    regions: cfg.regions,
+    customKeywords: cfg.customKeywords || [],
+    dashboard: buildDashboard([]),
+    recommendationGuide: {},
+    apiUsageEstimate: apiUsageEstimateFor(cfg),
+    rows: [],
+    cacheStatus,
+    cacheOnlyMiss: true
+  };
+}
+
 async function serveFile(req, res, port) {
   const url = new URL(req.url, `http://127.0.0.1:${port}`);
   const pathname = url.pathname === "/" ? "/naver-blog-agent.html" : url.pathname;
@@ -1027,15 +1060,13 @@ const server = http.createServer(async (req, res) => {
         });
       }
       const refresh = url.searchParams.get("refresh") === "1";
+      const cacheOnly = url.searchParams.get("cacheOnly") === "1";
       const cached = await readJsonIfExists(cachePathFor(cfg));
       if (!refresh && cached && shouldUseCache(cached, cfg)) {
         return json(res, 200, { ...cached, cacheStatus: "hit" });
       }
-      if (!refresh) {
-        const latestCached = await readLatestUsableCache(cfg);
-        if (latestCached) return json(res, 200, { ...latestCached, cacheStatus: "latest-hit" });
-        const staleCached = await readLatestDashboardCache();
-        if (staleCached) return json(res, 200, { ...staleCached, cacheStatus: "stale-latest" });
+      if (cacheOnly) {
+        return json(res, 200, emptyKeywordResult(cfg, "miss"));
       }
       const result = await collectKeywords(cfg);
       return json(res, 200, { ...result, cacheStatus: "fresh" });
@@ -1070,7 +1101,6 @@ server.listen(nextPort, "127.0.0.1", () => {
   const port = server.address()?.port || DEFAULT_PORT;
   console.log(`Naver Blog Agent running at http://127.0.0.1:${port}/naver-blog-agent.html`);
 });
-
 
 
 
