@@ -56,6 +56,17 @@
     .topbar h1{font-size:18px;margin:0;font-weight:900;letter-spacing:0}
     .topbar .status{font-size:12px;color:#c9d5e2;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 10px}
     .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
+    .strategy-board{display:grid;grid-template-columns:1.35fr .9fr .9fr .9fr;gap:10px;margin-bottom:12px}
+    .strategy-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;min-height:126px}
+    .strategy-card.primary{background:#f7fbff;border-color:#c8d9ee}
+    .strategy-card.warning{background:#fffaf0;border-color:#f4d7a0}
+    .strategy-card.good{background:#f3fbf7;border-color:#bfe3d0}
+    .strategy-card span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}
+    .strategy-card strong{display:block;font-size:18px;line-height:1.25;margin-bottom:7px}
+    .strategy-card p{margin:0;color:#334155;font-size:13px;line-height:1.55}
+    .decision-ribbon{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+    .ribbon{border-radius:999px;padding:5px 8px;background:#edf2f7;color:#263443;font-size:11px;font-weight:900}
+    .ribbon.good{background:#dcf5e8;color:#16613d}.ribbon.warn{background:#fff0ca;color:#7a5400}.ribbon.bad{background:#ffe4e8;color:#8c3540}
     .card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
     .card{padding:13px 14px;min-height:92px}
     .card span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:7px}
@@ -87,7 +98,12 @@
     .callout p{margin:0;color:#354253;font-size:13px;line-height:1.55}
     .spark{height:134px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;margin:12px 4px 4px}
     .spark svg{position:absolute;inset:0;width:100%;height:100%}
+    .trend-wrap{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:stretch}
+    .y-axis{display:flex;flex-direction:column;justify-content:space-between;color:#7a8796;font-size:11px;padding:8px 0 18px;text-align:right}
     .spark-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin:0 4px}
+    .filter-reset{display:none;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;padding:10px 12px;border:1px solid #c8d9ee;border-radius:8px;background:#f7fbff;color:#263443;font-size:13px}
+    .filter-reset.active{display:flex}
+    .filter-reset strong{font-size:13px}
     .row{border:1px solid var(--line);border-radius:7px;background:#fff;padding:11px}
     .row-head{display:flex;justify-content:space-between;gap:10px;align-items:start}
     .row strong{display:block;font-size:14px;margin-bottom:5px}
@@ -97,7 +113,7 @@
     .handoff{white-space:pre-line;background:#f8fafc;border:1px dashed var(--line);border-radius:7px;padding:10px;color:#2d3742;font-size:12px;line-height:1.55;margin-top:8px}
     .titles{margin-top:8px;padding-left:16px;color:#455566;font-size:12px;line-height:1.5}
     .empty{margin:0;color:var(--muted);font-size:13px}
-    @media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.dashboard,.insight-grid,.kpis,.zone-grid{grid-template-columns:1fr}.topbar{margin:0 0 14px;border-radius:8px}.main{padding:14px}}
+    @media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.dashboard,.insight-grid,.kpis,.strategy-board,.zone-grid{grid-template-columns:1fr}.topbar{margin:0 0 14px;border-radius:8px}.main{padding:14px}}
     @media(max-width:1100px){.signal-grid{grid-template-columns:1fr}}
   </style>
 </head>
@@ -184,6 +200,7 @@ BHC
       </header>
 
       <p class="notice" id="notice">이 화면은 글을 직접 쓰는 곳이 아니라, 글쓰기 에이전트에 넘길 브랜드/지역/키워드를 고르는 곳입니다.</p>
+      <section class="strategy-board" id="strategyBoard"></section>
       <section class="kpis" id="summary"></section>
 
       <div class="dashboard">
@@ -193,6 +210,10 @@ BHC
               <p class="panel-title">오늘 볼 신호</p>
               <p class="panel-sub">검색량이 큰 후보와 평소 흐름에서 달라진 후보를 따로 봅니다.</p>
             </div>
+          </div>
+          <div class="filter-reset" id="activeFilter">
+            <strong id="activeFilterText">필터 적용중</strong>
+            <button class="small secondary" id="clearFilter" type="button">전체 다시 보기</button>
           </div>
           <div class="signal-grid">
             <div>
@@ -305,7 +326,7 @@ BHC
     const money = (value) => Number(value || 0).toLocaleString("ko-KR");
     const metric = (value, status = "ok") => (status === "partial" || status === "unknown" || value === null || value === undefined) ? "확인 필요" : money(value);
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[ch]);
-    let state = { data: null, selectedBrand: "전체", selectedRegion: "전체", selectedGroup: "전체", picks: [], trendDays: 7 };
+    let state = { data: null, selectedBrand: "전체", selectedRegion: "전체", selectedGroup: "전체", picks: [], trendDays: 7, focusedBySignal: false };
 
     function regionGroupName(region) {
       const text = String(region || "");
@@ -378,6 +399,89 @@ BHC
       return `<div class="card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
     }
 
+    function allOpportunityRows() {
+      const dashboard = state.data?.dashboard || {};
+      const fromOpportunities = dashboard.regionalOpportunities || [];
+      if (fromOpportunities.length) return fromOpportunities;
+      return (dashboard.regionalGroups || []).flatMap((zone) => (zone.rows || []).map((row) => ({ ...row, group: zone.group })));
+    }
+
+    function rowSearch(row) {
+      return Number(row?.totalSearch || 0);
+    }
+
+    function isCompetitionHigh(row) {
+      return (row?.competitionLabel || "").includes("높음") || Number(row?.blogTotal || 0) >= 10000;
+    }
+
+    function isDataWeak(row) {
+      return !row || row.searchVolumeStatus === "partial" || row.searchVolumeStatus === "unknown" || row.totalSearch === null || row.totalSearch === undefined;
+    }
+
+    function marketLabel(row) {
+      if (isDataWeak(row)) return "재확인";
+      if (isCompetitionHigh(row) && rowSearch(row) >= 50) return "경쟁 과열";
+      if (!isCompetitionHigh(row) && rowSearch(row) >= 10 && rowSearch(row) < 80) return "틈새 가능";
+      if (rowSearch(row) >= 80) return "우선 작성";
+      return "보조 후보";
+    }
+
+    function marketReason(row) {
+      if (!row) return "분석할 후보가 없습니다.";
+      const search = isDataWeak(row) ? "월검색 확인 필요" : `월검색 ${money(row.totalSearch)}회`;
+      const competition = row.competitionLabel || "블로그 경쟁 확인 필요";
+      const trend = Number(row.trendLift || 0);
+      const trendText = trend ? `최근 흐름 ${trend > 0 ? "+" : ""}${trend}%` : "추이 신호 약함";
+      return `${search} · ${competition} · ${trendText}`;
+    }
+
+    function pickStrategyRows() {
+      const rows = allOpportunityRows().filter((row) => {
+        const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
+        const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
+        return brandMatch && regionMatch;
+      });
+      const scored = rows.map((row) => {
+        const search = rowSearch(row);
+        const weak = isDataWeak(row);
+        const highCompetition = isCompetitionHigh(row);
+        const lift = Number(row.trendLift || 0);
+        const decisionScore = (weak ? -80 : 0) + Math.min(120, search) + (highCompetition ? -35 : 20) + Math.max(0, lift);
+        return { ...row, decisionScore };
+      }).sort((a, b) => b.decisionScore - a.decisionScore);
+      const primary = scored.find((row) => !isDataWeak(row)) || scored[0];
+      const niche = scored.find((row) => !isDataWeak(row) && !isCompetitionHigh(row) && rowSearch(row) >= 10 && row.region !== primary?.region);
+      const caution = scored.find((row) => isDataWeak(row) || isCompetitionHigh(row));
+      return { primary, niche, caution, rows: scored };
+    }
+
+    function strategyCard(kind, label, row, fallback) {
+      if (!row) return `<div class="strategy-card ${kind}"><span>${escapeHtml(label)}</span><strong>후보 없음</strong><p>${escapeHtml(fallback)}</p></div>`;
+      const verdict = marketLabel(row);
+      const tagClassName = verdict === "우선 작성" ? "good" : verdict === "재확인" || verdict === "경쟁 과열" ? "warn" : "";
+      return `<div class="strategy-card ${kind}">
+        <span>${escapeHtml(label)}</span>
+        <strong>${escapeHtml(row.region || "전국")} ${escapeHtml(row.brand || "")}</strong>
+        <p>${escapeHtml(marketReason(row))}</p>
+        <div class="decision-ribbon">
+          <span class="ribbon ${tagClassName}">${escapeHtml(verdict)}</span>
+          <span class="ribbon">${escapeHtml(row.keyword || "키워드 확인")}</span>
+        </div>
+      </div>`;
+    }
+
+    function renderStrategyBoard() {
+      const strategy = pickStrategyRows();
+      const data = state.data || {};
+      const cacheStatus = data.cacheStatus === "stale-latest" ? "어제 저장 데이터" : data.cacheStatus === "fresh" ? "오늘 새 수집" : "저장 데이터";
+      $("strategyBoard").innerHTML = [
+        strategyCard("primary", "오늘 1순위", strategy.primary, "브랜드 또는 지역을 입력하면 1순위 후보가 나옵니다."),
+        strategyCard("good", "틈새 후보", strategy.niche, "검색은 작아도 경쟁이 낮은 후보를 찾는 자리입니다."),
+        strategyCard("warning", "보류/재확인", strategy.caution, "API 제한 또는 경쟁 과열 후보가 표시됩니다."),
+        `<div class="strategy-card"><span>데이터 신뢰도</span><strong>${escapeHtml(cacheStatus)}</strong><p>${data.searchAdStatus === "ok" ? "검색광고 월검색량을 반영했습니다." : "일부 수치는 부분 데이터입니다. 새 수집은 API 제한이 풀렸을 때 누르세요."}</p><div class="decision-ribbon"><span class="ribbon ${data.searchAdStatus === "ok" ? "good" : "warn"}">${escapeHtml(data.searchAdStatus || "unknown")}</span></div></div>`
+      ].join("");
+    }
+
     function tagClass(row) {
       if ((row.competitionLabel || "").includes("높음")) return "bad";
       if ((row.priorityLabel || "").includes("재확인")) return "warn";
@@ -420,22 +524,32 @@ BHC
     function setRegion(region, group = "전체") {
       state.selectedRegion = region || "전체";
       state.selectedGroup = group || "전체";
+      state.focusedBySignal = false;
+      render(state.data);
+    }
+
+    function clearFilters() {
+      state.selectedBrand = "전체";
+      state.selectedRegion = "전체";
+      state.selectedGroup = "전체";
+      state.focusedBySignal = false;
+      $("brandQuery").value = "";
+      $("regionQuery").value = "";
       render(state.data);
     }
 
     function relevantRows() {
-      const dashboard = state.data?.dashboard || {};
-      const rows = dashboard.regionalOpportunities || [];
+      const rows = allOpportunityRows();
       return rows.filter((row) => {
         const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
         const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
         return brandMatch && regionMatch;
-      });
+      }).sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0));
     }
 
     function groupRegions(data) {
       const regions = new Set(["전체", ...splitLines($("regions").value)]);
-      const rows = data?.dashboard?.regionalOpportunities || [];
+      const rows = allOpportunityRows();
       rows.forEach((row) => regions.add(row.region));
       const groups = new Map();
       for (const region of [...regions].filter(Boolean)) {
@@ -482,17 +596,31 @@ BHC
     }
 
     function filterSignals(rows) {
-      return (rows || []).filter((row) => state.selectedBrand === "전체" || row.brand === state.selectedBrand);
+      return (rows || []).filter((row) => {
+        const hasRegion = row.region && row.region !== "전국";
+        const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
+        const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
+        return hasRegion && brandMatch && regionMatch;
+      });
+    }
+
+    function signalReasonText(row) {
+      const reason = row.signalReason || brief(row);
+      if (String(reason).includes("월검색")) return reason;
+      return `월검색 ${metric(row.totalSearch, row.searchVolumeStatus)} · ${reason}`;
     }
 
     function signalRow(row, index, type) {
       const label = type === "anomaly" ? "이상 신호" : "검색량 상위";
-      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.region || "전국")} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch, row.searchVolumeStatus)}</span><span>${escapeHtml(row.signalReason || row.reason || brief(row))}</span><span class="tag ${type === "anomaly" ? "warn" : ""}">${label}</span></div><button class="small secondary" data-focus-signal="${index}" data-signal-type="${type}">보기</button></div></div>`;
+      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)}</span><span>${escapeHtml(signalReasonText(row))}</span><span class="tag ${type === "anomaly" ? "warn" : ""}">${label}</span></div><button class="small secondary" data-focus-signal="${index}" data-signal-type="${type}">이 조합 보기</button></div></div>`;
     }
 
     function renderSignals(data) {
-      const volumes = filterSignals(data.dashboard?.volumeLeaders);
-      const anomalies = filterSignals(data.dashboard?.anomalySignals);
+      const volumeSource = filterSignals(data.dashboard?.volumeLeaders).length
+        ? data.dashboard?.volumeLeaders
+        : allOpportunityRows();
+      const volumes = filterSignals(volumeSource).sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0));
+      const anomalies = filterSignals(data.dashboard?.anomalySignals).sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0));
       $("volumeSignals").innerHTML = volumes.length ? volumes.slice(0, 4).map((row, index) => signalRow(row, index, "volume")).join("") : `<p class="empty">검색량 상위 후보가 없습니다.</p>`;
       $("anomalySignals").innerHTML = anomalies.length ? anomalies.slice(0, 4).map((row, index) => signalRow(row, index, "anomaly")).join("") : `<p class="empty">최근 흐름에서 뚜렷한 이상 신호가 없습니다.</p>`;
     }
@@ -526,11 +654,20 @@ BHC
       const points = (trend?.points || []).length ? trend.points : [28, 32, 37, 35, 41, 43, 40];
       const delta = Number(trend?.delta || top.trendDelta || 0);
       const avg = Number(trend?.average || top.trendYesterday || 0);
-      const path = points.map((v, i) => `${i === 0 ? "M" : "L"}${(i / (points.length - 1)) * 100},${100 - v}`).join(" ");
+      const maxPoint = Math.max(10, ...points);
+      const axisMax = Math.ceil(maxPoint / 10) * 10;
+      const axis = [0, Math.round(axisMax * 0.25), Math.round(axisMax * 0.5), Math.round(axisMax * 0.75), axisMax];
+      const scaleY = (v) => 100 - (Math.max(0, Math.min(axisMax, v)) / axisMax) * 100;
+      const path = points.map((v, i) => `${i === 0 ? "M" : "L"}${(i / (points.length - 1)) * 100},${scaleY(v)}`).join(" ");
       $("regionTrend").innerHTML = `
         <div class="callout"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>${escapeHtml(top.reason || brief(top))}<br>${state.trendDays}일 평균 관심도 ${metric(avg)} · 기간 변화 ${Number(delta || 0) >= 0 ? "+" : ""}${delta}입니다.</p></div>
-        <div class="spark"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="#2f6fed" stroke-width="3" vector-effect="non-scaling-stroke"/><path d="${path} L100,100 L0,100 Z" fill="rgba(47,111,237,.13)"/></svg></div>
-        <div class="spark-labels"><span>${state.trendDays}일 전</span><span>중간</span><span>최근</span></div>`;
+        <div class="trend-wrap">
+          <div class="y-axis">${axis.slice().reverse().map((value) => `<span>${value}</span>`).join("")}</div>
+          <div>
+            <div class="spark"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,75 L100,75 M0,50 L100,50 M0,25 L100,25" stroke="#e5edf5" stroke-width="1" vector-effect="non-scaling-stroke"/><path d="${path}" fill="none" stroke="#2f6fed" stroke-width="3" vector-effect="non-scaling-stroke"/><path d="${path} L100,100 L0,100 Z" fill="rgba(47,111,237,.13)"/></svg></div>
+            <div class="spark-labels"><span>${state.trendDays}일 전</span><span>중간</span><span>최근</span></div>
+          </div>
+        </div>`;
     }
 
     function regionalRow(row, index) {
@@ -563,12 +700,18 @@ BHC
       if (!data) return;
       state.data = data;
       refreshFilterPreview();
+      renderStrategyBoard();
       renderSignals(data);
       renderSummary(data);
       renderZones(data);
       renderBrandBars(data);
       renderTrend();
       const rows = relevantRows();
+      const filterActive = state.selectedBrand !== "전체" || state.selectedRegion !== "전체";
+      $("activeFilter").classList.toggle("active", filterActive);
+      $("activeFilterText").textContent = filterActive
+        ? `${state.selectedRegion !== "전체" ? state.selectedRegion : "전체 지역"} · ${state.selectedBrand !== "전체" ? state.selectedBrand : "전체 브랜드"}만 보는 중`
+        : "전체 후보를 보는 중";
       state.picks = rows.length ? rows : data.dashboard?.writingPicks || [];
       $("regionList").innerHTML = rows.length ? rows.slice(0, 8).map(regionalRow).join("") : `<p class="empty">선택 지역 후보가 없습니다.</p>`;
       $("competitionList").innerHTML = rows.length ? rows.slice(0, 5).map(competitionRow).join("") : `<p class="empty">블로그 경쟁 데이터가 없습니다.</p>`;
@@ -638,6 +781,7 @@ BHC
           state.selectedBrand = row.brand || "전체";
           state.selectedRegion = row.region || "전체";
           state.selectedGroup = row.group || "전체";
+          state.focusedBySignal = true;
           $("brandQuery").value = row.brand || "";
           $("regionQuery").value = row.region && row.region !== "전국" ? row.region : "";
           render(state.data);
@@ -665,6 +809,7 @@ BHC
     $("refresh").addEventListener("click", () => fetchInsights(true));
     $("analyze").addEventListener("click", () => fetchInsights(false));
     $("reloadStatus").addEventListener("click", loadStatus);
+    $("clearFilter").addEventListener("click", clearFilters);
     $("brandQuery").addEventListener("input", updateSearchViewer);
     $("regionQuery").addEventListener("input", updateSearchViewer);
     $("brandQuery").addEventListener("keydown", (event) => { if (event.key === "Enter") fetchInsights(false); });

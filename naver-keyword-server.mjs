@@ -585,6 +585,26 @@ async function readLatestUsableCache(cfg) {
   return null;
 }
 
+function hasDashboardCacheShape(cached) {
+  return Boolean(cached?.dashboard?.totals && Array.isArray(cached?.dashboard?.writingPicks));
+}
+
+async function readLatestDashboardCache() {
+  const files = (await fs.readdir(__dirname))
+    .filter((name) => /^keyword-cache-.+\.json$/.test(name))
+    .map((name) => path.join(__dirname, name));
+  const byTime = await Promise.all(files.map(async (file) => ({
+    file,
+    mtime: (await fs.stat(file)).mtimeMs
+  })));
+  byTime.sort((a, b) => b.mtime - a.mtime);
+  for (const item of byTime) {
+    const cached = await readJsonIfExists(item.file);
+    if (hasDashboardCacheShape(cached)) return cached;
+  }
+  return null;
+}
+
 function regionGroup(region) {
   const text = String(region || "");
   if (!text) return "전국";
@@ -755,23 +775,28 @@ function buildDashboard(rows) {
     })
     .sort((a, b) => b.totalSearch - a.totalSearch);
 
+  const regionalTransferRows = safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수");
+  const writingSourceRows = regionalTransferRows.length
+    ? regionalTransferRows
+    : safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수");
+
   const writingPicks = topBy(
-    safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수"),
-    (row) => Number(row.totalSearch || 0) + (row.region ? 300 : 120) + (row.searchVolumeStatus === "partial" ? -200 : 0),
+    writingSourceRows,
+    (row) => Number(row.totalSearch || 0) + (row.region ? 300 : 0) + (row.searchVolumeStatus === "partial" ? -200 : 0),
     10
   ).map(recommendationFromRow);
 
   const regionalOpportunities = topBy(
-    safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수"),
+    regionalTransferRows,
     (row) => Number(row.totalSearch || 0) + opportunityScore(row) * 100,
     120
   ).map(recommendationFromRow);
 
   const volumeLeaders = topBy(
-    safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수"),
+    writingSourceRows,
     (row) => Number(row.totalSearch || 0),
     8
-  ).map((row) => ({ ...recommendationFromRow(row), signalReason: `월검색 ${Number(row.totalSearch || 0).toLocaleString("ko-KR")}회 기준 상위 후보입니다.` }));
+  ).map((row) => ({ ...recommendationFromRow(row), signalReason: row.region ? "지역명이 붙은 양도양수 후보 중 검색량이 높은 조합입니다." : "브랜드 단위 검색량이 큰 참고 후보입니다." }));
 
   const anomalySignals = topBy(
     safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수"),
@@ -1005,6 +1030,12 @@ const server = http.createServer(async (req, res) => {
       const cached = await readJsonIfExists(cachePathFor(cfg));
       if (!refresh && cached && shouldUseCache(cached, cfg)) {
         return json(res, 200, { ...cached, cacheStatus: "hit" });
+      }
+      if (!refresh) {
+        const latestCached = await readLatestUsableCache(cfg);
+        if (latestCached) return json(res, 200, { ...latestCached, cacheStatus: "latest-hit" });
+        const staleCached = await readLatestDashboardCache();
+        if (staleCached) return json(res, 200, { ...staleCached, cacheStatus: "stale-latest" });
       }
       const result = await collectKeywords(cfg);
       return json(res, 200, { ...result, cacheStatus: "fresh" });
