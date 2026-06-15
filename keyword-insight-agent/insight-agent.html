@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>프랜차이즈 글감 인사이트 대시보드</title>
+  <title>Franchise Insight Dashboard</title>
   <style>
-    :root {
-      --bg:#eef3f7; --panel:#ffffff; --ink:#162230; --muted:#6a7785; --line:#dbe3ec;
-      --nav:#172433; --accent:#087f7b; --accent-2:#2f6fed; --accent-3:#f4a629;
-      --soft:#f6f9fb; --good:#e7f5ef; --warn:#fff4dd; --bad:#ffecef; --radius:8px;
+    :root{
+      --bg:#edf2f6; --surface:#ffffff; --ink:#101928; --muted:#667085; --line:#d8e0ea;
+      --nav:#111827; --teal:#0f9f8f; --blue:#2563eb; --amber:#f59e0b; --rose:#e11d48;
+      --green:#16a34a; --soft:#f8fafc; --shadow:0 18px 42px rgba(15,23,42,.08);
       font-family:"Pretendard","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink)}
     button,input,textarea{font:inherit}
+<<<<<<< Updated upstream
     .app{min-height:100vh;display:grid;grid-template-columns:320px 1fr}
     .sidebar{background:#f7f9fc;border-right:1px solid var(--line);padding:18px 16px;position:sticky;top:0;height:100vh;overflow:auto}
     .brand{display:flex;align-items:center;gap:9px;margin-bottom:20px;font-weight:900;color:#0d3048}
@@ -133,18 +134,98 @@
     .empty{margin:0;color:var(--muted);font-size:13px}
     @media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.dashboard,.insight-grid,.kpis,.strategy-board,.zone-grid,.map-layout{grid-template-columns:1fr}.topbar{margin:0 0 14px;border-radius:8px}.main{padding:14px}}
     @media(max-width:1100px){.signal-grid{grid-template-columns:1fr}}
+=======
+    button{border:0;cursor:pointer}
+    .app{min-height:100vh;display:grid;grid-template-columns:252px 1fr;gap:0}
+    .rail{background:#f7fafc;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:17px;color:#0f273a}
+    .brand-mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--blue));box-shadow:0 10px 22px rgba(37,99,235,.22)}
+    .nav-note{font-size:12px;line-height:1.55;color:var(--muted);margin:0}
+    .filter-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}
+    .label{display:block;font-size:12px;font-weight:900;color:#344054;margin:11px 0 6px}
+    input,textarea{width:100%;border:1px solid #d7e0ea;border-radius:8px;background:#fff;padding:10px 11px;color:var(--ink);line-height:1.45}
+    textarea{min-height:76px;resize:vertical}
+    .rail-actions{display:grid;gap:8px;margin-top:12px}
+    .btn{border-radius:8px;padding:10px 12px;font-weight:900;background:var(--teal);color:#fff}
+    .btn.secondary{background:#e7edf4;color:#1f2937}
+    .btn.ghost{background:#fff;color:#1f2937;border:1px solid var(--line)}
+    .small{padding:7px 9px;border-radius:7px;font-size:12px}
+    .main{padding:18px 20px 24px;min-width:0}
+    .topbar{height:60px;background:var(--nav);border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .topbar h1{font-size:19px;margin:0;font-weight:950;letter-spacing:0}
+    .top-meta{display:flex;align-items:center;gap:8px;color:#cbd5e1;font-size:12px}
+    .status{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 10px}
+    .notice{margin:0 0 14px;padding:10px 12px;border-radius:10px;background:#fff7e6;border:1px solid #ffdea3;color:#7a4f00;font-size:13px;line-height:1.5}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+    .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 15px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
+    .kpi span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}
+    .kpi strong{display:block;font-size:24px;line-height:1.08}
+    .kpi small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:7px}
+    .dashboard{display:grid;grid-template-columns:minmax(640px,1.45fr) minmax(360px,.75fr);gap:14px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 10px 28px rgba(15,23,42,.05);min-width:0}
+    .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .title{margin:0;font-size:16px;font-weight:950}
+    .sub{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+    .map-layout{display:grid;grid-template-columns:1fr 280px;gap:14px}
+    .map-stage{position:relative;min-height:570px;border:1px solid #d9e3ef;border-radius:16px;background:
+      radial-gradient(circle at 22% 18%,rgba(37,99,235,.10),transparent 24%),
+      radial-gradient(circle at 82% 70%,rgba(15,159,143,.12),transparent 24%),
+      linear-gradient(180deg,#f8fbff,#eef4f9);overflow:hidden}
+    .map-svg{width:100%;height:570px;display:block}
+    .zone-shape{stroke:#fff;stroke-width:4;filter:drop-shadow(0 8px 14px rgba(15,23,42,.08));cursor:pointer;transition:.18s ease}
+    .zone-shape:hover{filter:drop-shadow(0 12px 18px rgba(15,23,42,.16));transform:translateY(-1px)}
+    .zone-shape.active{stroke:#102033;stroke-width:5}
+    .map-label{font-size:13px;font-weight:950;fill:#172033;pointer-events:none}
+    .map-value{font-size:11px;font-weight:800;fill:#4b5b6d;pointer-events:none}
+    .map-pin{fill:#102033;stroke:#fff;stroke-width:3}
+    .legend{position:absolute;left:14px;bottom:14px;display:flex;gap:8px;flex-wrap:wrap;background:rgba(255,255,255,.86);border:1px solid #dce5ef;border-radius:999px;padding:8px 10px;backdrop-filter:blur(8px)}
+    .legend span{font-size:11px;font-weight:900;color:#475467}
+    .swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+    .detail-stack{display:grid;gap:10px}
+    .decision{border-radius:12px;border:1px solid #cbdaf0;background:#f7fbff;padding:14px}
+    .decision strong{display:block;font-size:20px;margin-bottom:7px}.decision p{margin:0;color:#344054;font-size:13px;line-height:1.55}
+    .tag{display:inline-block;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:950;margin-top:9px;background:#edf2f7;color:#263443}
+    .tag.good{background:#dcfce7;color:#166534}.tag.warn{background:#fef3c7;color:#92400e}.tag.bad{background:#ffe4e6;color:#9f1239}
+    .rank-list{display:grid;gap:8px}
+    .rank-row{border:1px solid #dfe7f0;border-radius:10px;background:#fff;padding:10px}
+    .rank-row strong{display:block;font-size:13px;margin-bottom:4px}.rank-row span{display:block;font-size:12px;color:var(--muted);line-height:1.45}
+    .side{display:grid;gap:14px;align-content:start}
+    .bar-list{display:grid;gap:9px}
+    .bar-row{display:grid;grid-template-columns:112px 1fr 54px;gap:9px;align-items:center;border:1px solid #dfe7f0;border-radius:10px;background:#fff;color:#111827;text-align:left;padding:10px}
+    .bar-name{font-weight:950;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .bar-track{height:8px;border-radius:999px;background:#edf2f7;overflow:hidden}
+    .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+    .bar-val{text-align:right;font-size:12px;color:#475467;font-weight:900}
+    .content-list{display:grid;gap:8px;max-height:430px;overflow:auto;padding-right:4px}
+    .content-row{border:1px solid #dfe7f0;border-radius:10px;background:#fff;padding:10px}
+    .content-row a{display:block;color:#102033;text-decoration:none;font-size:13px;font-weight:950;line-height:1.4}
+    .content-row span{display:block;color:#667085;font-size:11px;line-height:1.45;margin-top:4px}
+    .lower-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+    .table{width:100%;border-collapse:collapse;font-size:12px}
+    .table th,.table td{border-bottom:1px solid #e5edf5;padding:9px 8px;text-align:left}.table th{color:#667085;font-size:11px}
+    .empty{margin:0;color:var(--muted);font-size:13px}
+    @media(max-width:1180px){.app{grid-template-columns:1fr}.dashboard,.map-layout,.lower-grid,.kpi-grid{grid-template-columns:1fr}.rail{position:relative}.map-svg{height:500px}.map-stage{min-height:500px}}
+>>>>>>> Stashed changes
   </style>
 </head>
 <body>
   <div class="app">
-    <aside class="sidebar">
+    <aside class="rail">
       <div class="brand"><span class="brand-mark"></span><span>Franchise Insight</span></div>
-      <div class="filter-title">Search</div>
-      <div class="filter-block" id="searchBlock">
-        <div class="filter-head">
-          <label for="brandQuery">분석 조건</label>
-          <span class="count-pill" id="marketCount">시장 기준 0개</span>
+      <p class="nav-note">지역을 먼저 보고, 오른쪽에서 브랜드 수요와 최근 광고글을 확인하는 경쟁 인사이트 화면입니다.</p>
+      <section class="filter-card">
+        <label class="label" for="brandQuery">브랜드</label>
+        <input id="brandQuery" placeholder="예: 메가커피" />
+        <label class="label" for="regionQuery">지역</label>
+        <input id="regionQuery" placeholder="예: 수원시, 노원구" />
+        <label class="label" for="customKeywords">추가 키워드</label>
+        <textarea id="customKeywords" placeholder="예: 수원 메가커피 양도양수"></textarea>
+        <div class="rail-actions">
+          <button class="btn" id="analyze">분석하기</button>
+          <button class="btn secondary" id="load">저장 데이터 보기</button>
+          <button class="btn ghost" id="refresh">오늘 데이터 새로 수집</button>
         </div>
+<<<<<<< Updated upstream
         <div class="search-fields">
           <input id="brandQuery" placeholder="브랜드: 예) 메가커피" />
           <input id="regionQuery" placeholder="지역: 예) 서울 노원구" />
@@ -154,6 +235,12 @@
           <summary>시장 전체 기준 브랜드/지역 목록</summary>
           <label for="brands">브랜드 목록</label>
           <textarea id="brands">메가커피
+=======
+      </section>
+      <section class="filter-card">
+        <label class="label" for="brands">브랜드 목록</label>
+        <textarea id="brands">메가커피
+>>>>>>> Stashed changes
 컴포즈커피
 투썸플레이스
 파리바게뜨
@@ -177,8 +264,8 @@ BHC
 한솥도시락
 역전할머니맥주
 홍콩반점</textarea>
-          <label for="regions">지역 목록</label>
-          <textarea id="regions">서울
+        <label class="label" for="regions">지역 목록</label>
+        <textarea id="regions">서울
 경기
 인천
 강남구
@@ -195,6 +282,7 @@ BHC
 의정부시
 안양시
 천안시</textarea>
+<<<<<<< Updated upstream
           <p class="viewer-line">비워두고 분석하면 이 목록 기준으로 시장 전체를 봅니다.</p>
         </details>
       </div>
@@ -207,49 +295,54 @@ BHC
         <button class="secondary" id="refresh">오늘 데이터 새로 수집</button>
         <button class="ghost" id="reloadStatus">연결 상태 새로고침</button>
       </div>
+=======
+      </section>
+>>>>>>> Stashed changes
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <h1>지역·브랜드 양도양수 대시보드</h1>
-        <div class="status" id="status">대기중</div>
+        <h1>지도 기반 지역 경쟁 인사이트</h1>
+        <div class="top-meta"><span id="dataStamp">저장 데이터</span><span class="status" id="status">대기중</span></div>
       </header>
-
-      <p class="notice" id="notice">이 화면은 글을 직접 쓰는 곳이 아니라, 글쓰기 에이전트에 넘길 브랜드/지역/키워드를 고르는 곳입니다.</p>
-      <section class="strategy-board" id="strategyBoard"></section>
-      <section class="kpis" id="summary"></section>
+      <p class="notice">실제 클릭률과 개별 글 조회수는 공식 API로 제공되지 않습니다. 이 화면은 지역 검색량, 최근 블로그/카페글, 제목 패턴을 종합해 노출 경쟁도를 판단합니다.</p>
+      <section class="kpi-grid" id="summary"></section>
 
       <div class="dashboard">
-        <section class="panel wide">
+        <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="panel-title">오늘 볼 신호</p>
-              <p class="panel-sub">검색량이 큰 후보와 평소 흐름에서 달라진 후보를 따로 봅니다.</p>
+              <p class="title">수도권 지역 경쟁 지도</p>
+              <p class="sub">색이 진할수록 검색 수요 또는 경쟁 신호가 강합니다. 지역을 클릭하면 우측 패널이 갱신됩니다.</p>
+            </div>
+            <button class="btn secondary small" id="clearRegion">전체 보기</button>
+          </div>
+          <div class="map-layout">
+            <div class="map-stage">
+              <svg class="map-svg" viewBox="0 0 720 570" role="img" aria-label="수도권 지역 경쟁 지도" id="mapSvg"></svg>
+              <div class="legend">
+                <span><i class="swatch" style="background:#0f9f8f"></i>틈새</span>
+                <span><i class="swatch" style="background:#f59e0b"></i>집중</span>
+                <span><i class="swatch" style="background:#2563eb"></i>관찰</span>
+                <span><i class="swatch" style="background:#e11d48"></i>과열</span>
+              </div>
+            </div>
+            <div class="detail-stack">
+              <div class="decision" id="decisionBox"></div>
+              <div class="rank-list" id="regionEvidence"></div>
             </div>
           </div>
-          <div class="filter-reset" id="activeFilter">
-            <strong id="activeFilterText">필터 적용중</strong>
-            <button class="small secondary" id="clearFilter" type="button">전체 다시 보기</button>
-          </div>
-          <div class="signal-grid">
-            <div>
-              <div class="panel-head">
-                <div>
-                  <p class="panel-title">검색량 상위</p>
-                  <p class="panel-sub">월검색량 기준으로 큰 수요를 먼저 봅니다.</p>
-                </div>
+        </section>
+
+        <aside class="side">
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="title">많이 검색된 브랜드 TOP 10</p>
+                <p class="sub">선택 지역 기준으로 먼저 보여줍니다.</p>
               </div>
-              <div class="list" id="volumeSignals"></div>
             </div>
-            <div>
-              <div class="panel-head">
-                <div>
-                  <p class="panel-title">이상 신호</p>
-                  <p class="panel-sub">30일 평균 대비 최근 7일 반응이 달라진 조합입니다.</p>
-                </div>
-              </div>
-              <div class="list" id="anomalySignals"></div>
-            </div>
+<<<<<<< Updated upstream
           </div>
         </section>
 
@@ -275,81 +368,40 @@ BHC
             <div>
               <p class="panel-title">권역별 오늘의 방향</p>
               <p class="panel-sub">입력한 지역을 생활권별로 묶어 보고, 권역을 누르면 아래 후보가 같이 필터링됩니다.</p>
+=======
+            <div class="bar-list" id="brandTop10"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <p class="title">최근 블로그·카페 광고글 TOP 10</p>
+                <p class="sub">한 달 이내 글을 우선합니다. 조회수는 공식 API 미제공입니다.</p>
+              </div>
+              <button class="btn secondary small" id="reloadContentIntel">갱신</button>
+>>>>>>> Stashed changes
             </div>
-          </div>
-          <div class="zone-grid" id="zoneGrid"></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title" id="brandRankTitle">브랜드 수요 순위</p>
-              <p class="panel-sub">시장 기준 브랜드 목록 안에서 양도양수 검색수요가 높은 순서입니다.</p>
-            </div>
-          </div>
-          <div class="bar-list" id="brandBars"></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">선택 지역 흐름</p>
-              <p class="panel-sub">짧은 전날 변화보다 7일/30일 흐름을 우선 봅니다.</p>
-            </div>
-            <div class="period-toggle" id="trendPeriod">
-              <button class="small active" data-trend-days="7">7일</button>
-              <button class="small" data-trend-days="30">30일</button>
-            </div>
-          </div>
-          <div id="regionTrend"></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">지역+브랜드 후보</p>
-              <p class="panel-sub">제목에 바로 넣을 수 있는 조합입니다.</p>
-            </div>
-          </div>
-          <div class="list" id="regionList"><p class="empty">아직 분석 전입니다.</p></div>
-        </section>
-
-        <section class="panel">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">블로그 경쟁 판단</p>
-              <p class="panel-sub">블로그 문서량과 제목 표본으로 광고 혼잡도를 봅니다.</p>
-            </div>
-          </div>
-          <div class="list" id="competitionList"><p class="empty">아직 분석 전입니다.</p></div>
-        </section>
-
-        <section class="panel wide">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">글쓰기 에이전트에 넘길 추천 글감</p>
-              <p class="panel-sub">점수가 아니라 “왜 이 글감을 쓰는지”와 “어떻게 넘길지”를 보여줍니다.</p>
-            </div>
-          </div>
-          <div class="insight-grid">
-            <div class="callout" id="decisionBox">
-              <strong>오늘의 판단</strong>
-              <p>저장 데이터 또는 새 수집을 실행하면 지역별 추천이 표시됩니다.</p>
-            </div>
-            <div class="list" id="pickList"><p class="empty">아직 분석 전입니다.</p></div>
-          </div>
-        </section>
-
-        <section class="panel wide">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">시작 점검</p>
-              <p class="panel-sub">GitHub 연결, API 설정, 캐시 상태입니다.</p>
-            </div>
-          </div>
-          <div class="kpis" id="systemStatus"></div>
-        </section>
+            <div class="content-list" id="recentContentTop10"></div>
+          </section>
+          <section class="panel">
+            <p class="title">글쓰기 액션</p>
+            <div class="rank-list" id="actionList" style="margin-top:10px"></div>
+          </section>
+        </aside>
       </div>
+
+      <section class="lower-grid">
+        <div class="panel">
+          <p class="title">지역별 근거 테이블</p>
+          <table class="table">
+            <thead><tr><th>지역</th><th>대표 브랜드</th><th>검색량</th><th>판단</th></tr></thead>
+            <tbody id="evidenceTable"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <p class="title">선택 지역 브랜드 후보</p>
+          <div class="rank-list" id="selectedBrandList"></div>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -357,26 +409,42 @@ BHC
     const $ = (id) => document.getElementById(id);
     const splitLines = (value) => String(value || "").split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
     const money = (value) => Number(value || 0).toLocaleString("ko-KR");
-    const metric = (value, status = "ok") => (status === "partial" || status === "unknown" || value === null || value === undefined) ? "확인 필요" : money(value);
+    const metric = (value) => value === null || value === undefined ? "확인 필요" : money(value);
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[ch]);
-    let state = { data: null, selectedBrand: "전체", selectedRegion: "전체", selectedGroup: "전체", picks: [], trendDays: 7, focusedBySignal: false };
-
-    function regionGroupName(region) {
-      const text = String(region || "");
-      if (!text || text === "전체") return "전체";
-      if (/강남|서초|송파|강동/.test(text)) return "서울 동남권";
-      if (/노원|도봉|강북|성북|중랑|동대문/.test(text)) return "서울 동북권";
-      if (/마포|서대문|은평|용산|종로|중구|성동|광진/.test(text)) return "서울 도심·서북권";
-      if (/양천|강서|구로|금천|영등포|동작|관악/.test(text)) return "서울 서남권";
-      if (/서울/.test(text)) return "서울 전체";
-      if (/수원|용인|성남|분당|판교|안양|과천|의왕|군포|화성|오산|평택|안성|동탄/.test(text)) return "경기 남부";
-      if (/부천|김포|광명|시흥|고양|파주/.test(text)) return "경기 서부";
-      if (/의정부|양주|동두천|포천|연천|구리|남양주/.test(text)) return "경기 북부";
-      if (/하남|광주|양평|이천|여주/.test(text)) return "경기 동부";
-      if (/경기/.test(text)) return "경기 전체";
-      if (/인천/.test(text)) return "인천권";
-      return "기타 지역";
+    const state = { data:null, content:null, selectedRegion:"전체", selectedBrand:"전체" };
+    const regionLayout = {
+      인천:{x:84,y:252,w:145,h:122,path:"M80 220 L190 198 L238 250 L214 332 L103 342 L58 286 Z"},
+      서울:{x:296,y:214,w:142,h:124,path:"M292 188 L414 184 L460 252 L412 328 L292 316 L246 244 Z"},
+      경기:{x:298,y:360,w:156,h:118,path:"M250 348 L402 326 L484 390 L438 492 L278 502 L206 430 Z"},
+      강남구:{x:432,y:306,w:106,h:92,path:"M420 292 L526 284 L552 346 L502 396 L422 374 Z"},
+      서초구:{x:350,y:330,w:96,h:86,path:"M344 316 L424 322 L418 388 L348 402 L312 360 Z"},
+      송파구:{x:528,y:286,w:102,h:86,path:"M524 274 L620 266 L656 324 L608 384 L540 354 Z"},
+      노원구:{x:418,y:92,w:94,h:94,path:"M408 66 L494 74 L528 132 L486 186 L410 164 L382 112 Z"},
+      도봉구:{x:328,y:72,w:88,h:90,path:"M318 54 L394 48 L424 100 L392 158 L320 148 L292 94 Z"},
+      강북구:{x:248,y:112,w:88,h:92,path:"M238 92 L314 84 L348 140 L306 200 L234 178 L206 132 Z"},
+      마포구:{x:192,y:194,w:94,h:84,path:"M180 176 L268 168 L302 220 L258 278 L176 258 L146 212 Z"},
+      수원시:{x:372,y:460,w:110,h:88,path:"M362 444 L462 436 L500 492 L458 548 L366 536 L328 486 Z"},
+      용인시:{x:504,y:428,w:118,h:96,path:"M496 408 L606 400 L656 470 L604 548 L506 526 L466 466 Z"},
+      부천시:{x:162,y:332,w:96,h:86,path:"M150 316 L236 304 L276 358 L232 420 L150 404 L116 354 Z"},
+      성남시:{x:506,y:352,w:94,h:82,path:"M498 338 L586 334 L620 386 L580 438 L500 420 L466 376 Z"},
+      의정부시:{x:520,y:128,w:104,h:88,path:"M512 106 L606 102 L648 156 L608 214 L520 198 L486 148 Z"},
+      안양시:{x:278,y:406,w:94,h:78,path:"M270 392 L354 388 L388 438 L348 490 L270 476 L238 430 Z"},
+      천안시:{x:154,y:456,w:108,h:82,path:"M144 438 L244 428 L286 480 L238 542 L150 526 L112 478 Z"}
+    };
+    function regionGroupName(region){
+      const text=String(region||"");
+      if(/강남|서초|송파|강동/.test(text))return"서울 동남권";
+      if(/노원|도봉|강북|성북|중랑|동대문/.test(text))return"서울 동북권";
+      if(/마포|서대문|은평|용산|종로|중구|성동|광진/.test(text))return"서울 도심권";
+      if(/수원|용인|성남|안양|화성|평택|동탄/.test(text))return"경기 남부";
+      if(/부천|김포|광명|시흥|고양|파주/.test(text))return"경기 서부";
+      if(/의정부|양주|포천|구리|남양주/.test(text))return"경기 북부";
+      if(/인천/.test(text))return"인천권";
+      if(/서울/.test(text))return"서울 전체";
+      if(/경기/.test(text))return"경기 전체";
+      return"기타";
     }
+<<<<<<< Updated upstream
 
     function refreshFilterPreview() {
       const brands = splitLines($("brands").value);
@@ -385,14 +453,26 @@ BHC
       updateSearchViewer();
       refreshCustomKeywordStatus();
       updateApiEstimate();
+=======
+    function currentSearch(){return{brand:$("brandQuery").value.trim(),region:$("regionQuery").value.trim()}}
+    function queryString(refresh=false){
+      const s=currentSearch(), qs=new URLSearchParams();
+      const brands=s.brand?[s.brand]:splitLines($("brands").value);
+      const regions=s.region?[s.region]:splitLines($("regions").value);
+      const custom=splitLines($("customKeywords").value);
+      if(refresh)qs.set("refresh","1"); if(brands.length)qs.set("brands",brands.join(",")); if(regions.length)qs.set("regions",regions.join(",")); if(custom.length)qs.set("keywords",custom.join(","));
+      const text=qs.toString(); return text?`?${text}`:"";
+>>>>>>> Stashed changes
     }
-
-    function currentSearch() {
-      return {
-        brand: $("brandQuery").value.trim(),
-        region: $("regionQuery").value.trim()
-      };
+    function rows(){return state.data?.dashboard?.regionalOpportunities||[]}
+    function filteredRows(){
+      return rows().filter((row)=>{
+        const r=state.selectedRegion==="전체"||row.region===state.selectedRegion||row.group===regionGroupName(state.selectedRegion);
+        const b=state.selectedBrand==="전체"||row.brand===state.selectedBrand;
+        return r&&b;
+      }).sort((a,b)=>Number(b.totalSearch||0)-Number(a.totalSearch||0));
     }
+<<<<<<< Updated upstream
 
     function updateSearchViewer() {
       const search = currentSearch();
@@ -404,15 +484,27 @@ BHC
         $("searchViewer").textContent = `${search.region} 안에서 브랜드별 저장 결과를 봅니다.`;
       } else {
         $("searchViewer").textContent = "브랜드나 지역을 입력하지 않으면 시장 전체 기준 저장 결과를 봅니다.";
+=======
+    function regionStats(){
+      const map=new Map();
+      for(const row of rows()){
+        if(!row.region||row.region==="전국")continue;
+        const cur=map.get(row.region)||{region:row.region,total:0,brands:new Map(),rows:[]};
+        cur.total+=Number(row.totalSearch||0); cur.rows.push(row);
+        cur.brands.set(row.brand,(cur.brands.get(row.brand)||0)+Number(row.totalSearch||0));
+        map.set(row.region,cur);
+>>>>>>> Stashed changes
       }
+      return [...map.values()].sort((a,b)=>b.total-a.total);
     }
-
-    function refreshCustomKeywordStatus() {
-      const custom = splitLines($("customKeywords").value);
-      $("customKeywordStatus").textContent = custom.length
-        ? `추가 키워드 ${custom.length}개가 입력됐습니다. 오늘 데이터 새로 수집을 누르면 분석에 포함됩니다.`
-        : "추가 키워드는 새 수집 때 별도 분석 대상에 포함됩니다.";
+    function colorFor(stat){
+      if(!stat||stat.total<=0)return"#dbe6f1";
+      if(stat.total>=90)return"#f59e0b";
+      if(stat.total>=30)return"#0f9f8f";
+      if(stat.total>=10)return"#2563eb";
+      return"#94a3b8";
     }
+<<<<<<< Updated upstream
 
     function currentQueryLists() {
       const search = currentSearch();
@@ -449,94 +541,25 @@ BHC
       if (custom.length) qs.set("keywords", custom.join(","));
       const text = qs.toString();
       return text ? `?${text}` : "";
+=======
+    function verdict(stat){
+      if(!stat||stat.total<=0)return{label:"관찰",cls:""};
+      if(stat.total>=90)return{label:"검색 집중",cls:"warn"};
+      if(stat.total>=30)return{label:"틈새 가능",cls:"good"};
+      return{label:"관찰",cls:""};
+>>>>>>> Stashed changes
     }
-
-    function card(label, value, help) {
-      return `<div class="card"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`;
-    }
-
-    function allOpportunityRows() {
-      const dashboard = state.data?.dashboard || {};
-      const fromOpportunities = dashboard.regionalOpportunities || [];
-      if (fromOpportunities.length) return fromOpportunities;
-      return (dashboard.regionalGroups || []).flatMap((zone) => (zone.rows || []).map((row) => ({ ...row, group: zone.group })));
-    }
-
-    function rowSearch(row) {
-      return Number(row?.totalSearch || 0);
-    }
-
-    function isCompetitionHigh(row) {
-      return (row?.competitionLabel || "").includes("높음") || Number(row?.blogTotal || 0) >= 10000;
-    }
-
-    function isDataWeak(row) {
-      return !row || row.searchVolumeStatus === "partial" || row.searchVolumeStatus === "unknown" || row.totalSearch === null || row.totalSearch === undefined;
-    }
-
-    function marketLabel(row) {
-      if (isDataWeak(row)) return "재확인";
-      if (isCompetitionHigh(row) && rowSearch(row) >= 50) return "경쟁 과열";
-      if (!isCompetitionHigh(row) && rowSearch(row) >= 10 && rowSearch(row) < 80) return "틈새 가능";
-      if (rowSearch(row) >= 80) return "우선 작성";
-      return "보조 후보";
-    }
-
-    function marketReason(row) {
-      if (!row) return "분석할 후보가 없습니다.";
-      const search = isDataWeak(row) ? "월검색 확인 필요" : `월검색 ${money(row.totalSearch)}회`;
-      const competition = row.competitionLabel || "블로그 경쟁 확인 필요";
-      const trend = Number(row.trendLift || 0);
-      const trendText = trend ? `최근 흐름 ${trend > 0 ? "+" : ""}${trend}%` : "추이 신호 약함";
-      return `${search} · ${competition} · ${trendText}`;
-    }
-
-    function pickStrategyRows() {
-      const rows = allOpportunityRows().filter((row) => {
-        const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
-        const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
-        return brandMatch && regionMatch;
-      });
-      const scored = rows.map((row) => {
-        const search = rowSearch(row);
-        const weak = isDataWeak(row);
-        const highCompetition = isCompetitionHigh(row);
-        const lift = Number(row.trendLift || 0);
-        const decisionScore = (weak ? -80 : 0) + Math.min(120, search) + (highCompetition ? -35 : 20) + Math.max(0, lift);
-        return { ...row, decisionScore };
-      }).sort((a, b) => b.decisionScore - a.decisionScore);
-      const primary = scored.find((row) => !isDataWeak(row)) || scored[0];
-      const niche = scored.find((row) => !isDataWeak(row) && !isCompetitionHigh(row) && rowSearch(row) >= 10 && row.region !== primary?.region);
-      const caution = scored.find((row) => isDataWeak(row) || isCompetitionHigh(row));
-      return { primary, niche, caution, rows: scored };
-    }
-
-    function strategyCard(kind, label, row, fallback) {
-      if (!row) return `<div class="strategy-card ${kind}"><span>${escapeHtml(label)}</span><strong>후보 없음</strong><p>${escapeHtml(fallback)}</p></div>`;
-      const verdict = marketLabel(row);
-      const tagClassName = verdict === "우선 작성" ? "good" : verdict === "재확인" || verdict === "경쟁 과열" ? "warn" : "";
-      return `<div class="strategy-card ${kind}">
-        <span>${escapeHtml(label)}</span>
-        <strong>${escapeHtml(row.region || "전국")} ${escapeHtml(row.brand || "")}</strong>
-        <p>${escapeHtml(marketReason(row))}</p>
-        <div class="decision-ribbon">
-          <span class="ribbon ${tagClassName}">${escapeHtml(verdict)}</span>
-          <span class="ribbon">${escapeHtml(row.keyword || "키워드 확인")}</span>
-        </div>
-      </div>`;
-    }
-
-    function renderStrategyBoard() {
-      const strategy = pickStrategyRows();
-      const data = state.data || {};
-      const cacheStatus = data.cacheStatus === "stale-latest" ? "어제 저장 데이터" : data.cacheStatus === "fresh" ? "오늘 새 수집" : "저장 데이터";
-      $("strategyBoard").innerHTML = [
-        strategyCard("primary", "오늘 1순위", strategy.primary, "브랜드 또는 지역을 입력하면 1순위 후보가 나옵니다."),
-        strategyCard("good", "틈새 후보", strategy.niche, "검색은 작아도 경쟁이 낮은 후보를 찾는 자리입니다."),
-        strategyCard("warning", "보류/재확인", strategy.caution, "API 제한 또는 경쟁 과열 후보가 표시됩니다."),
-        `<div class="strategy-card"><span>데이터 신뢰도</span><strong>${escapeHtml(cacheStatus)}</strong><p>${data.searchAdStatus === "ok" ? "검색광고 월검색량을 반영했습니다." : "일부 수치는 부분 데이터입니다. 새 수집은 API 제한이 풀렸을 때 누르세요."}</p><div class="decision-ribbon"><span class="ribbon ${data.searchAdStatus === "ok" ? "good" : "warn"}">${escapeHtml(data.searchAdStatus || "unknown")}</span></div></div>`
+    function topRegion(){return filteredRows()[0]||rows()[0]}
+    function renderSummary(){
+      const top=topRegion(); const contents=flattenContent();
+      $("summary").innerHTML=[
+        kpi("선택 지역",state.selectedRegion,state.selectedRegion==="전체"?"전체 지도 기준":"클릭 지역 기준"),
+        kpi("대표 조합",top?`${top.region} ${top.brand}`:"-",top?.keyword||"지역을 선택하세요"),
+        kpi("지역 검색량",top?metric(top.totalSearch):"확인 필요","지역+브랜드 양도양수"),
+        kpi("최근 광고글",`${contents.length}건`,"블로그/카페 한 달 이내")
       ].join("");
     }
+<<<<<<< Updated upstream
 
     function tagClass(row) {
       if ((row.competitionLabel || "").includes("높음")) return "bad";
@@ -897,40 +920,70 @@ BHC
         state.selectedRegion = "전체";
         state.selectedGroup = "전체";
         render(state.data);
+=======
+    function kpi(label,value,help){return`<div class="kpi"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`}
+    function renderMap(){
+      const stats=new Map(regionStats().map(s=>[s.region,s]));
+      const svg=$("mapSvg");
+      svg.innerHTML=`<defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#dfe7f0" stroke-width="1"/></pattern></defs><rect x="0" y="0" width="720" height="570" fill="url(#grid)" opacity=".35"/>`;
+      for(const [region,layout] of Object.entries(regionLayout)){
+        const stat=stats.get(region)||{region,total:0,brands:new Map(),rows:[]};
+        const active=state.selectedRegion===region;
+        const group=document.createElementNS("http://www.w3.org/2000/svg","g");
+        group.dataset.region=region; group.style.cursor="pointer";
+        group.innerHTML=`<path class="zone-shape ${active?"active":""}" d="${layout.path}" fill="${colorFor(stat)}" opacity="${stat.total?'.9':'.52'}"></path>
+          <circle class="map-pin" cx="${layout.x}" cy="${layout.y-20}" r="${Math.max(5,Math.min(15,Math.sqrt(stat.total||1)*1.2))}"></circle>
+          <text class="map-label" x="${layout.x}" y="${layout.y+4}" text-anchor="middle">${region}</text>
+          <text class="map-value" x="${layout.x}" y="${layout.y+22}" text-anchor="middle">검색 ${money(stat.total||0)}</text>`;
+        svg.appendChild(group);
       }
-      const zone = event.target.closest("[data-zone]");
-      if (zone) setRegion(zone.dataset.zoneRegion || "전체", zone.dataset.zone || "전체");
-      const signalButton = event.target.closest("[data-focus-signal]");
-      if (signalButton) {
-        const source = signalButton.dataset.signalType === "anomaly" ? filterSignals(state.data?.dashboard?.anomalySignals) : filterSignals(state.data?.dashboard?.volumeLeaders);
-        const row = source[Number(signalButton.dataset.focusSignal)];
-        if (row) {
-          state.selectedBrand = row.brand || "전체";
-          state.selectedRegion = row.region || "전체";
-          state.selectedGroup = row.group || "전체";
-          state.focusedBySignal = true;
-          $("brandQuery").value = row.brand || "";
-          $("regionQuery").value = row.region && row.region !== "전국" ? row.region : "";
-          render(state.data);
-        }
+    }
+    function renderDecision(){
+      const rowsNow=filteredRows(); const top=rowsNow[0]; const stat=regionStats().find(s=>s.region===(state.selectedRegion==="전체"?top?.region:state.selectedRegion)); const v=verdict(stat);
+      $("decisionBox").innerHTML=top?`<strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>검색량 ${metric(top.totalSearch)} 기준 대표 조합입니다. 오른쪽 최근 광고글과 함께 따라쓸지 피할지 판단하세요.</p><span class="tag ${v.cls}">${escapeHtml(v.label)}</span>`:`<strong>지역 선택</strong><p>지도에서 지역을 클릭하면 상세 인사이트가 나타납니다.</p>`;
+      $("regionEvidence").innerHTML=rowsNow.slice(0,5).map((row,i)=>`<div class="rank-row"><strong>${i+1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch)}</span></div>`).join("")||`<p class="empty">후보가 없습니다.</p>`;
+      $("evidenceTable").innerHTML=regionStats().slice(0,10).map((s)=>{const topRow=s.rows.sort((a,b)=>Number(b.totalSearch||0)-Number(a.totalSearch||0))[0];const v=verdict(s);return`<tr><td>${escapeHtml(s.region)}</td><td>${escapeHtml(topRow?.brand||"-")}</td><td>${money(s.total)}</td><td>${escapeHtml(v.label)}</td></tr>`}).join("");
+      $("selectedBrandList").innerHTML=rowsNow.slice(0,8).map((row,i)=>`<div class="rank-row"><strong>${i+1}. ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch)}</span></div>`).join("")||`<p class="empty">선택 지역 후보가 없습니다.</p>`;
+    }
+    function brandRows(){
+      const rowsNow=filteredRows();
+      if(state.selectedRegion!=="전체"&&rowsNow.length){
+        const by=new Map(); for(const row of rowsNow){by.set(row.brand,(by.get(row.brand)||0)+Number(row.totalSearch||0))}
+        return [...by.entries()].map(([brand,transferSearch])=>({brand,transferSearch})).sort((a,b)=>b.transferSearch-a.transferSearch).slice(0,10);
+>>>>>>> Stashed changes
       }
-      const trendDays = event.target.closest("[data-trend-days]")?.dataset.trendDays;
-      if (trendDays) {
-        state.trendDays = Number(trendDays);
-        document.querySelectorAll("[data-trend-days]").forEach((button) => button.classList.toggle("active", Number(button.dataset.trendDays) === state.trendDays));
-        renderTrend();
-      }
-      const filterId = event.target.closest("[data-toggle-filter]")?.dataset.toggleFilter;
-      if (filterId) {
-        const block = $(filterId);
-        block.classList.toggle("expanded");
-        event.target.textContent = block.classList.contains("expanded") ? "입력칸 줄이기" : "입력칸 크게 보기";
-      }
-      const copyIndex = event.target.closest("[data-copy]")?.dataset.copy;
-      if (copyIndex !== undefined) copyText(handoff(relevantRows()[Number(copyIndex)]));
-      const pickIndex = event.target.closest("[data-copy-pick]")?.dataset.copyPick;
-      if (pickIndex !== undefined) copyText(handoff(state.picks[Number(pickIndex)]));
+      return [...(state.data?.dashboard?.brandDemand||[])].sort((a,b)=>Number(b.transferSearch||0)-Number(a.transferSearch||0)).slice(0,10);
+    }
+    function renderBrandTop(){
+      const list=brandRows(); const max=Math.max(1,...list.map(x=>Number(x.transferSearch||0)));
+      $("brandTop10").innerHTML=list.map((row,i)=>{const w=Math.max(4,Math.round(Number(row.transferSearch||0)/max*100));return`<button class="bar-row" data-brand="${escapeHtml(row.brand)}"><span class="bar-name">${i+1}. ${escapeHtml(row.brand)}</span><span class="bar-track"><i class="bar-fill" style="width:${w}%"></i></span><span class="bar-val">${money(row.transferSearch)}</span></button>`}).join("")||`<p class="empty">브랜드 데이터가 없습니다.</p>`;
+    }
+    function flattenContent(){return(state.content?.groups||[]).flatMap(g=>(g.items||[]).map(item=>({...item,query:g.query,decision:g.decision?.label||"관찰"}))).filter(item=>item.ageDays==null||item.ageDays<=30).sort((a,b)=>(a.ageDays??999)-(b.ageDays??999))}
+    function renderContent(){
+      const items=flattenContent();
+      $("recentContentTop10").innerHTML=items.length?items.slice(0,10).map((item,i)=>`<div class="content-row"><a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${i+1}. ${escapeHtml(item.title||"제목 없음")}</a><span>${escapeHtml(item.source)} · ${escapeHtml(item.author||"출처 확인")} · ${escapeHtml(item.postdate||"날짜 확인")} · ${item.ageDays??"?"}일 전</span><span>${escapeHtml(item.intent)} · 조회수 ${escapeHtml(item.viewStatus||"공식 API 미제공")} · ${escapeHtml(item.decision)}</span></div>`).join(""):`<p class="empty">한 달 이내 블로그/카페 광고글 표본이 없습니다.</p>`;
+    }
+    function renderActions(){
+      const top=filteredRows()[0]; const cnt=flattenContent().length;
+      $("actionList").innerHTML=top?`<div class="rank-row"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)} 글감</strong><span>핵심 키워드: ${escapeHtml(top.keyword)}</span><span>최근 광고글 ${cnt}건 기준으로 제목을 정보형으로 차별화하세요.</span></div>`:`<p class="empty">지역을 선택하세요.</p>`;
+    }
+    function renderAll(){renderSummary();renderMap();renderDecision();renderBrandTop();renderContent();renderActions()}
+    function contentTarget(){const top=filteredRows()[0]||rows()[0];return{brand:state.selectedBrand!=="전체"?state.selectedBrand:top?.brand||"",region:state.selectedRegion!=="전체"?state.selectedRegion:top?.region||"",keyword:top?.keyword||""}}
+    async function loadContentIntel(){
+      const t=contentTarget(); $("recentContentTop10").innerHTML=`<p class="empty">최근 글 확인중입니다.</p>`;
+      try{const qs=new URLSearchParams(); if(t.brand)qs.set("brand",t.brand); if(t.region)qs.set("region",t.region); if(t.keyword)qs.set("keyword",t.keyword); const res=await fetch(`/api/content-intel?${qs}`); state.content=await res.json()}catch{state.content={groups:[]}}
+      renderContent(); renderActions(); renderSummary();
+    }
+    async function fetchInsights(refresh=false){
+      $("status").textContent=refresh?"새 데이터 수집중":"저장 데이터 확인중";
+      const s=currentSearch();
+      try{const res=await fetch(`/api/keywords${queryString(refresh)}`); const data=await res.json(); if(data.setupNeeded){$("status").textContent="API 설정 필요";return} state.data=data; state.selectedBrand=s.brand||"전체"; state.selectedRegion=s.region||"전체"; $("dataStamp").textContent=data.cacheStatus==="fresh"?"오늘 새 수집":"저장 데이터"; $("status").textContent="분석 완료"; renderAll(); loadContentIntel()}catch{$("status").textContent="서버 연결 필요"}
+    }
+    document.addEventListener("click",(event)=>{
+      const g=event.target.closest("g[data-region]"); if(g){state.selectedRegion=g.dataset.region;$("regionQuery").value=state.selectedRegion;renderAll();loadContentIntel()}
+      const b=event.target.closest("[data-brand]")?.dataset.brand; if(b){state.selectedBrand=b;$("brandQuery").value=b;renderAll();loadContentIntel()}
     });
+<<<<<<< Updated upstream
 
     $("refresh").addEventListener("click", () => fetchInsights(true, false));
     $("analyze").addEventListener("click", () => fetchInsights(false, true));
@@ -946,6 +999,16 @@ BHC
     refreshFilterPreview();
     loadStatus();
     fetchInsights(false, true);
+=======
+    $("clearRegion").addEventListener("click",()=>{state.selectedRegion="전체";$("regionQuery").value="";renderAll();loadContentIntel()});
+    $("analyze").addEventListener("click",()=>fetchInsights(false));
+    $("load").addEventListener("click",()=>fetchInsights(false));
+    $("refresh").addEventListener("click",()=>fetchInsights(true));
+    $("reloadContentIntel").addEventListener("click",loadContentIntel);
+    $("brandQuery").addEventListener("keydown",(e)=>{if(e.key==="Enter")fetchInsights(false)});
+    $("regionQuery").addEventListener("keydown",(e)=>{if(e.key==="Enter")fetchInsights(false)});
+    fetchInsights(false);
+>>>>>>> Stashed changes
   </script>
 </body>
 </html>

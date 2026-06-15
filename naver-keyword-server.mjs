@@ -305,13 +305,13 @@ function stripHtml(value) {
     .trim();
 }
 
-async function naverSearchItems(query, type, cfg, display = 3) {
+async function naverSearchItems(query, type, cfg, display = 3, sort = "") {
   if (cfg.openApiMissing?.length) return [];
   try {
     const url = new URL(`https://openapi.naver.com/v1/search/${type}.json`);
     url.searchParams.set("query", query);
     url.searchParams.set("display", String(display));
-    url.searchParams.set("sort", type === "news" ? "date" : "sim");
+    url.searchParams.set("sort", sort || (type === "news" ? "date" : "sim"));
     const res = await fetch(url, {
       signal: AbortSignal.timeout(6000),
       headers: {
@@ -330,6 +330,118 @@ async function naverSearchItems(query, type, cfg, display = 3) {
   } catch {
     return [];
   }
+}
+
+function itemPostDate(item) {
+  const raw = String(item.postdate || "").replace(/[^\d]/g, "");
+  if (raw.length !== 8) return "";
+  return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
+}
+
+function daysSince(dateText) {
+  if (!dateText) return null;
+  const date = new Date(`${dateText}T00:00:00+09:00`);
+  if (Number.isNaN(date.getTime())) return null;
+  return Math.max(0, Math.round((Date.now() - date.getTime()) / 86400000));
+}
+
+function contentIntent(title) {
+  const text = String(title || "");
+  if (/양도|양수|인수|매매|매물/.test(text)) return "양도양수형";
+  if (/창업비용|비용|수익|마진|권리금/.test(text)) return "비용비교형";
+  if (/추천|후기|리뷰|순위/.test(text)) return "정보탐색형";
+  if (/상담|문의|급매|정리/.test(text)) return "광고강함";
+  return "일반형";
+}
+
+function normalizeContentItem(item, source, query, index) {
+  const title = stripTags(item.title || "");
+  const date = itemPostDate(item);
+  const ageDays = daysSince(date);
+  const intent = contentIntent(title);
+  return {
+    source,
+    query,
+    rank: index + 1,
+    title,
+    link: item.link || "",
+    description: stripTags(item.description || ""),
+    author: stripTags(item.bloggername || item.cafename || ""),
+    postdate: date,
+    ageDays,
+    intent,
+    viewCount: null,
+    viewStatus: "공식 API 미제공"
+  };
+}
+
+function classifyContentCompetition(items) {
+  const recentItems = items.filter((item) => item.ageDays !== null && item.ageDays <= 14);
+  const adLike = items.filter((item) => /양도양수형|광고강함/.test(item.intent));
+  const cafeCount = items.filter((item) => item.source === "카페").length;
+  if (!items.length) {
+    return { label: "틈새", reason: "최근 블로그·카페 검색 결과가 적어 지역형 글감으로 테스트할 여지가 있습니다." };
+  }
+  if (recentItems.length >= 6 && adLike.length >= 4) {
+    return { label: "피하기", reason: "최근 광고성 제목이 많이 올라와 같은 키워드로 쓰면 묻힐 가능성이 큽니다." };
+  }
+  if (recentItems.length >= 2 && recentItems.length <= 5 && adLike.length <= 3) {
+    return { label: "따라쓰기", reason: "최근 글은 있지만 과밀하지 않아 비슷한 키워드로 정보형 각도를 붙일 수 있습니다." };
+  }
+  if (cafeCount >= 3) {
+    return { label: "관찰", reason: "카페글 반응이 함께 보입니다. 실제 조회수는 확인되지 않으므로 제목 패턴을 더 지켜보세요." };
+  }
+  return { label: "관찰", reason: "공개 검색 결과만으로는 조회수 판단이 부족합니다. 제목 패턴 중심으로 참고하세요." };
+}
+
+async function contentIntel(cfg, url) {
+  const brand = (url.searchParams.get("brand") || "").trim();
+  const region = (url.searchParams.get("region") || "").trim();
+  const keyword = (url.searchParams.get("keyword") || "").trim();
+  const queries = [];
+  if (keyword) queries.push(keyword);
+  if (brand && region) queries.push(`${region} ${brand} 양도양수`);
+  if (brand && region) queries.push(`${region} ${brand} 창업`);
+  if (brand && !region) queries.push(`${brand} 양도양수`);
+  if (region && !brand) queries.push(`${region} 프랜차이즈 양도양수`);
+  if (!queries.length) {
+    const fallbackBrand = cfg.brands?.[0] || "메가커피";
+    const fallbackRegion = cfg.regions?.find((item) => item !== "서울" && item !== "경기") || cfg.regions?.[0] || "서울";
+    queries.push(`${fallbackRegion} ${fallbackBrand} 양도양수`);
+  }
+  const uniqueQueries = [...new Set(queries)].slice(0, 3);
+  const groups = await Promise.all(uniqueQueries.map(async (query) => {
+    const [blogItems, cafeItems] = await Promise.all([
+      naverSearchItems(query, "blog", cfg, 5, "date"),
+      naverSearchItems(query, "cafearticle", cfg, 5, "date")
+    ]);
+    const items = [
+      ...blogItems.map((item, index) => normalizeContentItem(item, "블로그", query, index)),
+      ...cafeItems.map((item, index) => normalizeContentItem(item, "카페", query, index))
+    ].sort((a, b) => {
+      const dateA = a.postdate || "0000-00-00";
+      const dateB = b.postdate || "0000-00-00";
+      if (dateA !== dateB) return dateB.localeCompare(dateA);
+      return a.rank - b.rank;
+    });
+    return {
+      query,
+      decision: classifyContentCompetition(items),
+      counts: {
+        total: items.length,
+        blog: items.filter((item) => item.source === "블로그").length,
+        cafe: items.filter((item) => item.source === "카페").length,
+        recent14d: items.filter((item) => item.ageDays !== null && item.ageDays <= 14).length
+      },
+      items
+    };
+  }));
+  return {
+    checkedAt: new Date().toISOString(),
+    source: "naver-search blog + cafearticle",
+    viewStatus: "네이버 공식 검색 API는 블로그/카페글 조회수를 제공하지 않습니다.",
+    groups
+  };
 }
 
 function currentMonthLabel() {
@@ -1070,6 +1182,17 @@ const server = http.createServer(async (req, res) => {
       }
       const result = await collectKeywords(cfg);
       return json(res, 200, { ...result, cacheStatus: "fresh" });
+    }
+    if (url.pathname === "/api/content-intel") {
+      const cfg = await loadConfig();
+      if (cfg.missing.length || cfg.openApiMissing?.length) {
+        return json(res, 200, {
+          setupNeeded: true,
+          missing: [...(cfg.missing || []), ...(cfg.openApiMissing || [])],
+          groups: []
+        });
+      }
+      return json(res, 200, await contentIntel(cfg, url));
     }
     if (url.pathname === "/api/brand-context") {
       const cfg = await loadConfig();
