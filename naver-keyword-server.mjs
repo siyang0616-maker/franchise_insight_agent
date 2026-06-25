@@ -67,14 +67,9 @@ function parseList(value) {
 }
 
 function normalizeBrands(brands) {
-  const replacements = new Map([
-    ["오브로1", "컴포즈커피"],
-    ["이디야", "투썸플레이스"],
-    ["이디야커피", "투썸플레이스"]
-  ]);
   const clean = [];
   for (const raw of brands || []) {
-    const brand = replacements.get(String(raw).trim()) || String(raw || "").trim();
+    const brand = String(raw || "").trim();
     if (brand && !clean.includes(brand)) clean.push(brand);
   }
   return clean.length ? clean : DEFAULT_BRANDS;
@@ -100,6 +95,21 @@ function parseNumber(value) {
 
 function normalizeKeyword(value) {
   return String(value || "").replace(/\s+/g, "").toLowerCase();
+}
+
+function matchMostSpecific(text, candidates) {
+  const normalizedText = normalizeKeyword(text);
+  const matches = (candidates || []).filter((candidate) => {
+    const normalizedCandidate = normalizeKeyword(candidate);
+    return normalizedCandidate && normalizedText.includes(normalizedCandidate);
+  });
+  if (!matches.length) return { best: "", all: [] };
+  const sorted = [...matches].sort((a, b) => normalizeKeyword(b).length - normalizeKeyword(a).length);
+  return { best: sorted[0], all: matches };
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function ymd(date) {
@@ -325,6 +335,9 @@ async function naverSearchItems(query, type, cfg, display = 3, sort = "") {
       title: stripHtml(item.title),
       description: stripHtml(item.description),
       link: item.originallink || item.link || "",
+      bloggername: stripHtml(item.bloggername || ""),
+      cafename: stripHtml(item.cafename || ""),
+      postdate: item.postdate || "",
       type
     })).filter((item) => item.title || item.description);
   } catch {
@@ -355,7 +368,7 @@ function contentIntent(title) {
 }
 
 function normalizeContentItem(item, source, query, index) {
-  const title = stripTags(item.title || "");
+  const title = stripHtml(item.title || "");
   const date = itemPostDate(item);
   const ageDays = daysSince(date);
   const intent = contentIntent(title);
@@ -365,8 +378,8 @@ function normalizeContentItem(item, source, query, index) {
     rank: index + 1,
     title,
     link: item.link || "",
-    description: stripTags(item.description || ""),
-    author: stripTags(item.bloggername || item.cafename || ""),
+    description: stripHtml(item.description || ""),
+    author: stripHtml(item.bloggername || item.cafename || ""),
     postdate: date,
     ageDays,
     intent,
@@ -588,8 +601,38 @@ function intentWeight(keyword) {
   return 0.8;
 }
 
+function intentBonusFor(keyword) {
+  const intent = keywordIntent(keyword);
+  if (intent === "양도양수") return 2;
+  if (intent === "창업비용") return 1;
+  if (intent === "창업") return 0;
+  return -1;
+}
+
+function trendLiftBonusFor(row) {
+  const lift = trendLift(row);
+  if (lift > 30) return 1.5;
+  if (lift > 0) return 0.5;
+  return 0;
+}
+
+function occupancyBonusFor(label) {
+  if (label === "틈새") return 2;
+  if (label === "따라쓰기") return 0.8;
+  if (label === "관찰") return 0;
+  if (label === "피하기") return -1.5;
+  return 0;
+}
+
+function confidenceMultiplierFor(status) {
+  if (status === "ok") return 1;
+  if (status === "fallback_brand") return 0.85;
+  if (status === "partial") return 0.5;
+  return 0.3;
+}
 
 function rowConfidence(row) {
+  if (row.searchVolumeStatus === "fallback_brand") return "브랜드추정";
   if (row.searchVolumeStatus === "partial") return "부분";
   if (row.searchVolumeStatus === "unknown") return "확인필요";
   if (Number(row.totalSearch || 0) > 0 && (Number(row.blogTotal || 0) > 0 || Number(row.newsTotal || 0) > 0)) return "높음";
@@ -626,12 +669,15 @@ function opportunityScore(row) {
   const totalSearch = Number(row.totalSearch || 0);
   const searchScore = Math.min(10, Math.log(totalSearch + 1) * 1.15);
   const competitionBonus = row.competition === "낮음" ? 1.4 : row.competition === "중간" ? 0.7 : 0;
-  const docOpportunity = row.blogTotal ? Math.min(2, totalSearch / Math.max(row.blogTotal, 1) * 4) : 1;
+  const docOpportunity = row.blogTotal ? Math.min(2, totalSearch / Math.max(row.blogTotal, 1) * 4) : 0;
   const trendBonus = Math.max(-1, Math.min(2, Number(row.trendDelta || 0) / 10));
-  const intentBonus = intentWeight(row.keyword);
+  const trendLiftBonus = trendLiftBonusFor(row);
   const regionBonus = row.region && keywordIntent(row.keyword) === "양도양수" ? 0.6 : 0;
-  const dataPenalty = row.searchVolumeStatus === "partial" ? -1.5 : row.searchVolumeStatus === "unknown" ? -0.6 : 0;
-  return Math.max(0, Math.round((searchScore + competitionBonus + docOpportunity + trendBonus + regionBonus + dataPenalty) * intentBonus * 10) / 10);
+  const intentBonus = intentBonusFor(row.keyword);
+  const occupancyBonus = occupancyBonusFor(row.competitionLabel);
+  const confidenceMultiplier = confidenceMultiplierFor(row.searchVolumeStatus);
+  const baseScore = Math.max(0, searchScore + competitionBonus + docOpportunity + trendBonus + trendLiftBonus + regionBonus + intentBonus + occupancyBonus);
+  return Math.round(baseScore * confidenceMultiplier * 10) / 10;
 }
 
 function scoreRow(row) {
@@ -644,9 +690,12 @@ function explainRow(row) {
   if (intent === "양도양수") parts.push("매물 전환 의도가 있는 양도양수 키워드");
   if (intent === "창업비용") parts.push("비용 비교형 글감으로 클릭 유도 가능");
   if (row.region) parts.push(`${row.region} 지역성을 제목에 바로 반영 가능`);
+  if (row.brandMatchAmbiguous || row.regionMatchAmbiguous) parts.push("브랜드/지역명이 여러 후보와 겹친 자동 분류이니 확인 필요");
   if (row.searchVolumeStatus === "partial") parts.push("검색광고 제한으로 월검색량 재확인 필요");
+  else if (row.searchVolumeStatus === "fallback_brand") parts.push("브랜드 단위 검색량으로 보정한 추정값");
   else if (Number(row.totalSearch || 0) > 0) parts.push(`월 검색량 ${row.totalSearch.toLocaleString("ko-KR")}회`);
   else parts.push("월검색량 확인 필요");
+  if (row.competitionLabel) parts.push(`경쟁 상태: ${row.competitionLabel}`);
   if (row.competition === "낮음" || row.competition === "중간") parts.push(`경쟁도 ${row.competition}`);
   if (Number(row.trendDelta || 0) > 0) parts.push(`전일 관심도 +${row.trendDelta}`);
   return parts.join(" · ") || "검색 의도 확인용 후보";
@@ -810,7 +859,12 @@ function recommendationFromRow(row) {
     trend7d: row.trend7d,
     trend30d: row.trend30d,
     trendLift: trendLift(row),
-    competitionLabel: competitionLabel(row),
+    competitionLabel: row.competitionLabel || competitionLabel(row),
+    competitionReason: row.competitionReason || "",
+    contentSamples: row.contentSamples || [],
+    score: row.score,
+    brandMatchAmbiguous: Boolean(row.brandMatchAmbiguous),
+    regionMatchAmbiguous: Boolean(row.regionMatchAmbiguous),
     blogTitles: row.blogTitles || [],
     blogTitleSignals: row.blogTitleSignals || "",
     searchVolumeStatus: row.searchVolumeStatus || "ok",
@@ -894,7 +948,7 @@ function buildDashboard(rows) {
 
   const writingPicks = topBy(
     writingSourceRows,
-    (row) => Number(row.totalSearch || 0) + (row.region ? 300 : 0) + (row.searchVolumeStatus === "partial" ? -200 : 0),
+    (row) => opportunityScore(row) * 120 + Number(row.totalSearch || 0) + (row.region ? 300 : 0),
     10
   ).map(recommendationFromRow);
 
@@ -934,30 +988,107 @@ function buildDashboard(rows) {
 async function collectKeywords(cfg) {
   const candidates = buildCandidateKeywords(cfg.brands, cfg.regions, cfg.customKeywords);
   const keywordMap = new Map();
+  const fallbackKeywordMap = new Map();
   let searchAdError = "";
-  try {
-    for (let i = 0; i < candidates.length; i += 5) {
-      const hints = candidates.slice(i, i + 5);
+  let searchAd429Count = 0;
+  let fallback429Count = 0;
+  let consecutiveFailures = 0;
+  const startedAt = Date.now();
+  for (let i = 0; i < candidates.length; i += 5) {
+    if (i % 50 === 0) {
+      console.log(`SearchAd 진행: ${i}/${candidates.length}, 성공 매칭 ${keywordMap.size}개, 에러: ${searchAdError || "없음"}`);
+    }
+    const hints = candidates.slice(i, i + 5);
+    try {
       const data = await searchAdKeywordTool(hints, cfg);
       for (const item of data.keywordList || []) {
         const key = normalizeKeyword(item.relKeyword);
         if (!keywordMap.has(key)) keywordMap.set(key, item);
       }
+      consecutiveFailures = 0;
+    } catch (error) {
+      const message = error.message || String(error);
+      searchAdError = message;
+      consecutiveFailures += 1;
+      if (message.includes("429")) {
+        searchAd429Count += 1;
+        await sleep(2000);
+      }
+      if (consecutiveFailures >= 10) {
+        console.error(`SearchAd API 연속 ${consecutiveFailures}회 실패, 나머지 후보는 건너뜁니다.`);
+        break;
+      }
     }
-  } catch (error) {
-    searchAdError = error.message || String(error);
+    await sleep(280);
+  }
+  console.log(`SearchAd 완료: 후보 ${candidates.length}개, 정확 매칭 ${keywordMap.size}개, 429 ${searchAd429Count}회, ${(Date.now() - startedAt) / 1000}초`);
+
+  if (!searchAdError) {
+    const fallbackHints = new Set();
+    for (const keyword of candidates) {
+      if (keywordMap.has(normalizeKeyword(keyword))) continue;
+      const brandMatch = matchMostSpecific(keyword, cfg.brands);
+      if (!brandMatch.best) continue;
+      fallbackHints.add(`${brandMatch.best} ${keywordIntent(keyword)}`);
+    }
+    const fallbackList = [...fallbackHints].filter((hint) => !hint.includes("기타"));
+    if (fallbackList.length) console.log(`[SearchAd fallback] ${fallbackList.length} brand-intent hints`);
+    let fallbackFailures = 0;
+    for (let i = 0; i < fallbackList.length; i += 5) {
+      if (i % 50 === 0) {
+        console.log(`SearchAd fallback 진행: ${i}/${fallbackList.length}, 성공 매칭 ${fallbackKeywordMap.size}개, 에러: ${searchAdError || "없음"}`);
+      }
+      const hints = fallbackList.slice(i, i + 5);
+      try {
+        const data = await searchAdKeywordTool(hints, cfg);
+        for (const hint of hints) {
+          const exact = (data.keywordList || []).find((item) => normalizeKeyword(item.relKeyword) === normalizeKeyword(hint));
+          if (exact && !fallbackKeywordMap.has(normalizeKeyword(hint))) fallbackKeywordMap.set(normalizeKeyword(hint), exact);
+        }
+        fallbackFailures = 0;
+      } catch (error) {
+        const message = error.message || String(error);
+        searchAdError = searchAdError || message;
+        fallbackFailures += 1;
+        if (message.includes("429")) {
+          fallback429Count += 1;
+          await sleep(2000);
+        }
+        if (fallbackFailures >= 10) {
+          console.error(`SearchAd fallback API 연속 ${fallbackFailures}회 실패, 나머지 보정 후보는 건너뜁니다.`);
+          break;
+        }
+      }
+      await sleep(280);
+    }
   }
 
   const rows = candidates.map((keyword) => {
-    const item = keywordMap.get(normalizeKeyword(keyword)) || {};
+    const brandMatch = matchMostSpecific(keyword, cfg.brands);
+    const regionMatch = matchMostSpecific(keyword, cfg.regions);
+    const fallbackKey = brandMatch.best ? normalizeKeyword(`${brandMatch.best} ${keywordIntent(keyword)}`) : "";
+    const exactItem = keywordMap.get(normalizeKeyword(keyword));
+    const fallbackItem = fallbackKey ? fallbackKeywordMap.get(fallbackKey) : null;
+    let item = {};
+    let searchVolumeStatus = "unknown";
+    if (exactItem) {
+      item = exactItem;
+      searchVolumeStatus = "ok";
+    } else if (fallbackItem) {
+      item = fallbackItem;
+      searchVolumeStatus = "fallback_brand";
+    } else if (searchAdError) {
+      searchVolumeStatus = "partial";
+    }
     const hasSearchAdData = Boolean(item.relKeyword);
     const pc = hasSearchAdData ? parseNumber(item.monthlyPcQcCnt) : null;
     const mobile = hasSearchAdData ? parseNumber(item.monthlyMobileQcCnt) : null;
-    const searchVolumeStatus = hasSearchAdData ? "ok" : searchAdError ? "partial" : "unknown";
     return {
       keyword,
-      brand: cfg.brands.find((brand) => keyword.includes(brand)) || "",
-      region: cfg.regions.find((region) => keyword.includes(region)) || "",
+      brand: brandMatch.best,
+      region: regionMatch.best,
+      brandMatchAmbiguous: brandMatch.all.length > 1,
+      regionMatchAmbiguous: regionMatch.all.length > 1,
       pcSearch: pc,
       mobileSearch: mobile,
       totalSearch: hasSearchAdData ? pc + mobile : null,
@@ -1014,13 +1145,49 @@ async function collectKeywords(cfg) {
     row.recommendedTitle = `[${row.region || "전국"}] ${row.brand} 창업 양도양수 / ${row.keyword} 검색수요 기반 분석`;
   }));
 
+  const occupancyRows = [...topRows]
+    .sort((a, b) => scoreRow(b) - scoreRow(a))
+    .slice(0, 30);
+  await Promise.all(occupancyRows.map(async (row) => {
+    const hasSearchSignal = Number(row.totalSearch || 0) >= 10 || ["ok", "fallback_brand"].includes(row.searchVolumeStatus);
+    if (!hasSearchSignal) {
+      row.competitionLabel = "미분석";
+      row.competitionReason = "검색량 기준이 낮아 최근 점유공백 분석에서 제외했습니다.";
+      return;
+    }
+    const [blogItems, cafeItems] = await Promise.all([
+      naverSearchItems(row.keyword, "blog", cfg, 5, "date"),
+      naverSearchItems(row.keyword, "cafearticle", cfg, 5, "date")
+    ]);
+    const items = [
+      ...blogItems.map((item, index) => normalizeContentItem(item, "블로그", row.keyword, index)),
+      ...cafeItems.map((item, index) => normalizeContentItem(item, "카페", row.keyword, index))
+    ];
+    const decision = classifyContentCompetition(items);
+    row.competitionLabel = decision.label;
+    row.competitionReason = decision.reason;
+    row.contentSamples = items.slice(0, 5).map((item) => ({
+      source: item.source,
+      title: item.title,
+      postdate: item.postdate,
+      ageDays: item.ageDays,
+      intent: item.intent
+    }));
+    row.score = scoreRow(row);
+    row.reason = explainRow(row);
+  }));
+  for (const row of topRows) {
+    row.score = scoreRow(row);
+    row.reason = explainRow(row);
+  }
+
   const evidenceRows = topRows
     .filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수")
     .sort((a, b) => opportunityScore(b) - opportunityScore(a))
     .slice(0, 12);
   await Promise.all(evidenceRows.map(async (row) => {
     const items = await naverSearchItems(row.keyword, "blog", cfg, 3);
-    const titles = items.map((item) => stripTags(item.title || "")).filter(Boolean);
+    const titles = items.map((item) => stripHtml(item.title || "")).filter(Boolean);
     row.blogTitles = titles;
     row.blogTitleSignals = titles.length
       ? `${row.region} ${row.brand} 관련 블로그 제목 ${titles.length}건을 참고했습니다.`
@@ -1032,6 +1199,16 @@ async function collectKeywords(cfg) {
     collectedAt: new Date().toISOString(),
     source: "naver-searchad + naver-datalab + naver-search",
     searchAdStatus: searchAdError ? (keywordMap.size ? "partial" : "error") : "ok",
+    searchAdStats: {
+      candidateCount: candidates.length,
+      exactMatchCount: rows.filter((row) => row.searchVolumeStatus === "ok").length,
+      fallbackMatchCount: rows.filter((row) => row.searchVolumeStatus === "fallback_brand").length,
+      partialCount: rows.filter((row) => row.searchVolumeStatus === "partial").length,
+      unknownCount: rows.filter((row) => row.searchVolumeStatus === "unknown").length,
+      searchAd429Count,
+      fallback429Count,
+      elapsedSeconds: Math.round(((Date.now() - startedAt) / 1000) * 10) / 10
+    },
     openApiStatus: cfg.openApiMissing?.length ? "missing" : "ok",
     openApiMissing: cfg.openApiMissing || [],
     searchAdError,

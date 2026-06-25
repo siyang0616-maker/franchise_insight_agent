@@ -3,372 +3,169 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Franchise Insight Dashboard</title>
+  <title>Franchise Insight Agent</title>
   <style>
-    :root{
-      --bg:#edf2f6; --surface:#ffffff; --ink:#101928; --muted:#667085; --line:#d8e0ea;
+    :root {
+      --bg:#eef3f7; --panel:#ffffff; --ink:#101828; --muted:#667085; --line:#d8e2ec;
       --nav:#111827; --teal:#0f9f8f; --blue:#2563eb; --amber:#f59e0b; --rose:#e11d48;
-      --green:#16a34a; --soft:#f8fafc; --shadow:0 18px 42px rgba(15,23,42,.08);
+      --green:#16a34a; --soft:#f8fafc; --shadow:0 14px 34px rgba(15,23,42,.08);
       font-family:"Pretendard","Noto Sans KR","Malgun Gothic",Arial,sans-serif;
     }
     *{box-sizing:border-box}
     body{margin:0;background:var(--bg);color:var(--ink)}
     button,input,textarea{font:inherit}
-<<<<<<< Updated upstream
-    .app{min-height:100vh;display:grid;grid-template-columns:320px 1fr}
-    .sidebar{background:#f7f9fc;border-right:1px solid var(--line);padding:18px 16px;position:sticky;top:0;height:100vh;overflow:auto}
-    .brand{display:flex;align-items:center;gap:9px;margin-bottom:20px;font-weight:900;color:#0d3048}
-    .brand-mark{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
-    .filter-title{font-size:12px;font-weight:900;color:#3b4958;margin:18px 0 8px;text-transform:uppercase}
-    label{display:block;font-size:12px;font-weight:900;margin:12px 0 6px;color:#263443}
-    textarea,input{width:100%;border:1px solid var(--line);border-radius:7px;background:#fff;padding:9px 10px;line-height:1.45;color:var(--ink)}
-    textarea{min-height:92px;resize:vertical}.compact{min-height:62px}
-    .filter-block{border:1px solid var(--line);background:#fff;border-radius:8px;padding:10px;margin-bottom:10px}
-    .filter-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-    .filter-head label{margin:0}
-    .count-pill{border-radius:999px;background:#eef3f7;color:#364557;font-size:11px;font-weight:900;padding:4px 7px;white-space:nowrap}
-    .filter-block textarea{border-color:#e5ecf3;background:#fbfdff;max-height:124px;overflow:auto}
-    .filter-block.expanded textarea{max-height:300px}
-    .chip-preview{display:flex;gap:5px;flex-wrap:wrap;max-height:82px;overflow:auto;margin-top:8px;padding-top:8px;border-top:1px solid #edf2f7}
-    .mini-chip{border:1px solid #dce5ee;background:#f8fafc;color:#314154;border-radius:999px;padding:4px 7px;font-size:11px;font-weight:800}
-    .filter-tools{display:flex;gap:6px;align-items:center;justify-content:space-between;margin-top:8px}
-    .viewer-line{margin:8px 0 0;color:#516170;font-size:12px;line-height:1.45}
-    .search-fields{display:grid;gap:9px}
-    .search-fields input{height:40px}
-    details.advanced{margin-top:10px;border-top:1px solid #edf2f7;padding-top:9px}
-    details.advanced summary{cursor:pointer;color:#3e5163;font-size:12px;font-weight:900}
-    .actions{display:grid;gap:8px;margin-top:12px}
-    button{border:0;border-radius:7px;padding:9px 11px;background:var(--accent);color:#fff;font-weight:900;cursor:pointer}
-    button.secondary{background:#e7edf3;color:#182532}
-    button.ghost{background:#fff;color:var(--accent);border:1px solid var(--line)}
-    button.small{padding:6px 9px;font-size:12px}
-    .chips{display:flex;gap:6px;flex-wrap:wrap}
-    .chip{border:1px solid var(--line);background:#fff;color:#263443;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800}
-    .chip.active{background:var(--nav);color:#fff;border-color:var(--nav)}
-    .period-toggle{display:flex;gap:6px;flex-wrap:wrap}
-    .period-toggle button{background:#edf2f7;color:#2c3948;border:1px solid var(--line)}
-    .period-toggle button.active{background:var(--nav);color:#fff;border-color:var(--nav)}
-    .main{padding:18px 22px 28px;min-width:0}
-    .topbar{height:54px;background:var(--nav);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border-radius:0 0 8px 8px;margin:-18px -22px 18px}
-    .topbar h1{font-size:18px;margin:0;font-weight:900;letter-spacing:0}
-    .topbar .status{font-size:12px;color:#c9d5e2;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 10px}
-    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:12px}
-    .strategy-board{display:grid;grid-template-columns:1.35fr .9fr .9fr .9fr;gap:10px;margin-bottom:12px}
-    .strategy-card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:14px;min-height:126px}
-    .strategy-card.primary{background:#f7fbff;border-color:#c8d9ee}
-    .strategy-card.warning{background:#fffaf0;border-color:#f4d7a0}
-    .strategy-card.good{background:#f3fbf7;border-color:#bfe3d0}
-    .strategy-card span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}
-    .strategy-card strong{display:block;font-size:18px;line-height:1.25;margin-bottom:7px}
-    .strategy-card p{margin:0;color:#334155;font-size:13px;line-height:1.55}
-    .decision-ribbon{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-    .ribbon{border-radius:999px;padding:5px 8px;background:#edf2f7;color:#263443;font-size:11px;font-weight:900}
-    .ribbon.good{background:#dcf5e8;color:#16613d}.ribbon.warn{background:#fff0ca;color:#7a5400}.ribbon.bad{background:#ffe4e8;color:#8c3540}
-    .card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius)}
-    .card{padding:13px 14px;min-height:92px}
-    .card span{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:7px}
-    .card strong{display:block;font-size:22px;line-height:1.15;overflow-wrap:anywhere}
-    .card small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:6px}
-    .dashboard{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
-    .panel{padding:14px;min-width:0}
-    .wide{grid-column:1/-1}
-    .panel-head{display:flex;align-items:start;justify-content:space-between;gap:10px;margin-bottom:10px}
-    .panel-title{margin:0;font-size:15px;font-weight:900}
-    .panel-sub{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
-    .notice{margin:0 0 12px;padding:10px 12px;border-radius:7px;background:#fff7e6;color:#795000;font-size:13px;line-height:1.5;border:1px solid #ffe2a8}
-    .bar-list,.list{display:grid;gap:8px}
-    .bar-row{display:grid;grid-template-columns:112px 1fr 74px;gap:10px;align-items:center;font-size:12px;width:100%;text-align:left}
-    .bar-name{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .bar-track{height:9px;background:#edf2f7;border-radius:999px;overflow:hidden}
-    .bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));border-radius:999px}
-    .bar-value{text-align:right;color:var(--muted);font-weight:800}
-    .zone-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
-    .zone{padding:11px;border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer}
-    .zone.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(8,127,123,.12)}
-    .zone span{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}
-    .zone strong{display:block;font-size:14px;line-height:1.3}
-    .zone small{display:block;color:var(--muted);font-size:11px;line-height:1.4;margin-top:6px}
-    .insight-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .map-layout{display:grid;grid-template-columns:minmax(360px,.95fr) 1fr;gap:12px;align-items:stretch}
-    .metro-map{min-height:360px;border:1px solid var(--line);border-radius:8px;background:#f7fafc;position:relative;overflow:hidden}
-    .metro-map svg{width:100%;height:100%;min-height:360px;display:block}
-    .map-bg-image{opacity:.74}
-    .map-frame{fill:rgba(255,255,255,.2);stroke:#cfd9e5;stroke-width:1.2}
-    .map-cell{stroke:#fff;stroke-width:1.8;cursor:pointer;transition:filter .15s,stroke .15s,transform .15s;filter:drop-shadow(0 2px 5px rgba(15,23,42,.18))}
-    .map-cell.empty{fill:rgba(255,255,255,.72);stroke:rgba(123,139,158,.75)}
-    .map-cell.level-1{fill:rgba(215,236,255,.88)}
-    .map-cell.level-2{fill:rgba(159,208,255,.9)}
-    .map-cell.level-3{fill:rgba(92,166,239,.92)}
-    .map-cell.level-4{fill:rgba(31,120,209,.94)}
-    .map-cell.hot{fill:rgba(240,107,107,.9)}
-    .map-cell.active{stroke:#142033;stroke-width:3;filter:drop-shadow(0 3px 7px rgba(15,23,42,.28))}
-    .map-label{font-size:12px;font-weight:900;fill:#354253}
-    .map-cell-label{font-size:8.5px;font-weight:900;fill:#172433;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
-    .map-cell.level-3 + .map-cell-label,
-    .map-cell.level-4 + .map-cell-label,
-    .map-cell.hot + .map-cell-label{fill:#fff}
-    .map-legend{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:8px;color:var(--muted);font-size:11px}
-    .legend-box{width:22px;height:10px;border-radius:3px;border:1px solid rgba(0,0,0,.08)}
-    .map-list{display:grid;gap:8px;align-content:start;max-height:360px;overflow:auto}
-    .map-note{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
-    .callout{border:1px solid var(--line);background:#fbfdff;border-radius:7px;padding:12px}
-    .callout strong{display:block;font-size:14px;margin-bottom:6px}
-    .callout p{margin:0;color:#354253;font-size:13px;line-height:1.55}
-    .spark{height:134px;border-left:1px solid var(--line);border-bottom:1px solid var(--line);position:relative;margin:12px 4px 4px}
-    .spark svg{position:absolute;inset:0;width:100%;height:100%}
-    .trend-wrap{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:stretch}
-    .y-axis{display:flex;flex-direction:column;justify-content:space-between;color:#7a8796;font-size:11px;padding:8px 0 18px;text-align:right}
-    .spark-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin:0 4px}
-    .filter-reset{display:none;align-items:center;justify-content:space-between;gap:8px;margin:0 0 12px;padding:10px 12px;border:1px solid #c8d9ee;border-radius:8px;background:#f7fbff;color:#263443;font-size:13px}
-    .filter-reset.active{display:flex}
-    .filter-reset strong{font-size:13px}
-    .row{border:1px solid var(--line);border-radius:7px;background:#fff;padding:11px}
-    .row-head{display:flex;justify-content:space-between;gap:10px;align-items:start}
-    .row strong{display:block;font-size:14px;margin-bottom:5px}
-    .row span{display:block;color:var(--muted);font-size:12px;line-height:1.48}
-    .tag{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:#eef6f5;color:var(--accent);font-size:12px;font-weight:900}
-    .tag.warn{background:var(--warn);color:#815400}.tag.bad{background:var(--bad);color:#994050}
-    .handoff{white-space:pre-line;background:#f8fafc;border:1px dashed var(--line);border-radius:7px;padding:10px;color:#2d3742;font-size:12px;line-height:1.55;margin-top:8px}
-    .titles{margin-top:8px;padding-left:16px;color:#455566;font-size:12px;line-height:1.5}
-    .empty{margin:0;color:var(--muted);font-size:13px}
-    @media(max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.dashboard,.insight-grid,.kpis,.strategy-board,.zone-grid,.map-layout{grid-template-columns:1fr}.topbar{margin:0 0 14px;border-radius:8px}.main{padding:14px}}
-    @media(max-width:1100px){.signal-grid{grid-template-columns:1fr}}
-=======
     button{border:0;cursor:pointer}
-    .app{min-height:100vh;display:grid;grid-template-columns:252px 1fr;gap:0}
-    .rail{background:#f7fafc;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:16px}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:950;font-size:17px;color:#0f273a}
-    .brand-mark{width:32px;height:32px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--blue));box-shadow:0 10px 22px rgba(37,99,235,.22)}
-    .nav-note{font-size:12px;line-height:1.55;color:var(--muted);margin:0}
+    .app{min-height:100vh;display:grid;grid-template-columns:286px 1fr}
+    .rail{background:#f7fafc;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:14px}
+    .brand{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:950;color:#0f273a}
+    .brand-mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--teal),var(--blue));box-shadow:0 10px 22px rgba(37,99,235,.22)}
+    .hint{font-size:12px;line-height:1.55;color:var(--muted);margin:0}
     .filter-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px}
-    .label{display:block;font-size:12px;font-weight:900;color:#344054;margin:11px 0 6px}
+    .label{display:block;font-size:12px;font-weight:900;color:#344054;margin:10px 0 6px}
     input,textarea{width:100%;border:1px solid #d7e0ea;border-radius:8px;background:#fff;padding:10px 11px;color:var(--ink);line-height:1.45}
-    textarea{min-height:76px;resize:vertical}
-    .rail-actions{display:grid;gap:8px;margin-top:12px}
+    textarea{min-height:88px;resize:vertical}
+    .actions{display:grid;gap:8px;margin-top:12px}
     .btn{border-radius:8px;padding:10px 12px;font-weight:900;background:var(--teal);color:#fff}
     .btn.secondary{background:#e7edf4;color:#1f2937}
     .btn.ghost{background:#fff;color:#1f2937;border:1px solid var(--line)}
-    .small{padding:7px 9px;border-radius:7px;font-size:12px}
-    .main{padding:18px 20px 24px;min-width:0}
-    .topbar{height:60px;background:var(--nav);border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+    .btn.small{padding:7px 9px;font-size:12px}
+    .main{padding:18px 20px 28px;min-width:0}
+    .topbar{height:62px;background:var(--nav);border-radius:14px;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;margin-bottom:14px;box-shadow:var(--shadow)}
     .topbar h1{font-size:19px;margin:0;font-weight:950;letter-spacing:0}
-    .top-meta{display:flex;align-items:center;gap:8px;color:#cbd5e1;font-size:12px}
+    .top-meta{display:flex;gap:8px;align-items:center;color:#cbd5e1;font-size:12px}
     .status{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:7px 10px}
-    .notice{margin:0 0 14px;padding:10px 12px;border-radius:10px;background:#fff7e6;border:1px solid #ffdea3;color:#7a4f00;font-size:13px;line-height:1.5}
-    .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+    .notice{margin:0 0 14px;padding:11px 13px;border-radius:10px;background:#fff7e6;border:1px solid #ffdea3;color:#7a4f00;font-size:13px;line-height:1.5}
+    .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
     .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 15px;box-shadow:0 8px 24px rgba(15,23,42,.04)}
     .kpi span{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:7px}
     .kpi strong{display:block;font-size:24px;line-height:1.08}
     .kpi small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:7px}
-    .dashboard{display:grid;grid-template-columns:minmax(640px,1.45fr) minmax(360px,.75fr);gap:14px}
+    .grid{display:grid;grid-template-columns:minmax(640px,1.42fr) minmax(360px,.78fr);gap:14px}
     .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:0 10px 28px rgba(15,23,42,.05);min-width:0}
     .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
     .title{margin:0;font-size:16px;font-weight:950}
     .sub{margin:4px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
-    .map-layout{display:grid;grid-template-columns:1fr 280px;gap:14px}
-    .map-stage{position:relative;min-height:570px;border:1px solid #d9e3ef;border-radius:16px;background:
+    .tabs{display:flex;gap:6px;flex-wrap:wrap}
+    .tab{background:#edf2f7;color:#253244;border:1px solid #d6e0eb;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900}
+    .tab.active{background:var(--nav);color:#fff;border-color:var(--nav)}
+    .table-wrap{overflow:auto;border:1px solid #e0e8f0;border-radius:10px}
+    table{width:100%;border-collapse:collapse;font-size:12px;background:#fff}
+    th,td{border-bottom:1px solid #e8eef5;padding:10px 9px;text-align:left;vertical-align:top}
+    th{position:sticky;top:0;background:#f8fafc;color:#667085;font-size:11px;z-index:1}
+    tr:last-child td{border-bottom:0}
+    .keyword{font-weight:950;color:#111827}
+    .muted{color:var(--muted)}
+    .score{font-weight:950;font-size:15px}
+    .badge{display:inline-flex;align-items:center;gap:4px;border-radius:999px;padding:4px 7px;font-size:11px;font-weight:950;background:#edf2f7;color:#344054;white-space:nowrap}
+    .badge.good{background:#dcfce7;color:#166534}.badge.warn{background:#fef3c7;color:#92400e}.badge.bad{background:#ffe4e6;color:#9f1239}.badge.info{background:#dbeafe;color:#1d4ed8}
+    .stack{display:grid;gap:12px}
+    .row-list{display:grid;gap:9px}
+    .row{border:1px solid #dfe7f0;border-radius:10px;background:#fff;padding:11px}
+    .row-head{display:flex;justify-content:space-between;gap:10px;align-items:start}
+    .row strong{display:block;font-size:13px;margin-bottom:5px}.row span{display:block;font-size:12px;color:var(--muted);line-height:1.48}
+    .handoff{white-space:pre-line;background:#f8fafc;border:1px dashed var(--line);border-radius:8px;padding:10px;color:#2d3742;font-size:12px;line-height:1.55;margin-top:8px}
+    .map-panel{display:grid;grid-template-columns:1fr 280px;gap:14px;margin-top:14px}
+    .map-stage{position:relative;min-height:430px;border:1px solid #d9e3ef;border-radius:14px;background:
       radial-gradient(circle at 22% 18%,rgba(37,99,235,.10),transparent 24%),
       radial-gradient(circle at 82% 70%,rgba(15,159,143,.12),transparent 24%),
       linear-gradient(180deg,#f8fbff,#eef4f9);overflow:hidden}
-    .map-svg{width:100%;height:570px;display:block}
-    .zone-shape{stroke:#fff;stroke-width:4;filter:drop-shadow(0 8px 14px rgba(15,23,42,.08));cursor:pointer;transition:.18s ease}
-    .zone-shape:hover{filter:drop-shadow(0 12px 18px rgba(15,23,42,.16));transform:translateY(-1px)}
-    .zone-shape.active{stroke:#102033;stroke-width:5}
+    .map-svg{width:100%;height:430px;display:block}
+    .shape{stroke:#fff;stroke-width:4;filter:drop-shadow(0 8px 14px rgba(15,23,42,.08));cursor:pointer;transition:.16s ease}
+    .shape:hover{filter:drop-shadow(0 12px 18px rgba(15,23,42,.14));transform:translateY(-1px)}
+    .shape.active{stroke:#102033;stroke-width:5}
     .map-label{font-size:13px;font-weight:950;fill:#172033;pointer-events:none}
     .map-value{font-size:11px;font-weight:800;fill:#4b5b6d;pointer-events:none}
-    .map-pin{fill:#102033;stroke:#fff;stroke-width:3}
     .legend{position:absolute;left:14px;bottom:14px;display:flex;gap:8px;flex-wrap:wrap;background:rgba(255,255,255,.86);border:1px solid #dce5ef;border-radius:999px;padding:8px 10px;backdrop-filter:blur(8px)}
-    .legend span{font-size:11px;font-weight:900;color:#475467}
-    .swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
-    .detail-stack{display:grid;gap:10px}
-    .decision{border-radius:12px;border:1px solid #cbdaf0;background:#f7fbff;padding:14px}
-    .decision strong{display:block;font-size:20px;margin-bottom:7px}.decision p{margin:0;color:#344054;font-size:13px;line-height:1.55}
-    .tag{display:inline-block;border-radius:999px;padding:5px 8px;font-size:11px;font-weight:950;margin-top:9px;background:#edf2f7;color:#263443}
-    .tag.good{background:#dcfce7;color:#166534}.tag.warn{background:#fef3c7;color:#92400e}.tag.bad{background:#ffe4e6;color:#9f1239}
-    .rank-list{display:grid;gap:8px}
-    .rank-row{border:1px solid #dfe7f0;border-radius:10px;background:#fff;padding:10px}
-    .rank-row strong{display:block;font-size:13px;margin-bottom:4px}.rank-row span{display:block;font-size:12px;color:var(--muted);line-height:1.45}
-    .side{display:grid;gap:14px;align-content:start}
+    .legend span{font-size:11px;font-weight:900;color:#475467}.swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
     .bar-list{display:grid;gap:9px}
-    .bar-row{display:grid;grid-template-columns:112px 1fr 54px;gap:9px;align-items:center;border:1px solid #dfe7f0;border-radius:10px;background:#fff;color:#111827;text-align:left;padding:10px}
+    .bar-row{display:grid;grid-template-columns:118px 1fr 58px;gap:9px;align-items:center;border:1px solid #dfe7f0;border-radius:10px;background:#fff;color:#111827;text-align:left;padding:10px}
     .bar-name{font-weight:950;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .bar-track{height:8px;border-radius:999px;background:#edf2f7;overflow:hidden}
-    .bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),var(--blue))}
+    .bar-track{height:8px;border-radius:999px;background:#edf2f7;overflow:hidden}.bar-fill{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--teal),var(--blue))}
     .bar-val{text-align:right;font-size:12px;color:#475467;font-weight:900}
     .content-list{display:grid;gap:8px;max-height:430px;overflow:auto;padding-right:4px}
     .content-row{border:1px solid #dfe7f0;border-radius:10px;background:#fff;padding:10px}
     .content-row a{display:block;color:#102033;text-decoration:none;font-size:13px;font-weight:950;line-height:1.4}
     .content-row span{display:block;color:#667085;font-size:11px;line-height:1.45;margin-top:4px}
-    .lower-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-    .table{width:100%;border-collapse:collapse;font-size:12px}
-    .table th,.table td{border-bottom:1px solid #e5edf5;padding:9px 8px;text-align:left}.table th{color:#667085;font-size:11px}
     .empty{margin:0;color:var(--muted);font-size:13px}
-    @media(max-width:1180px){.app{grid-template-columns:1fr}.dashboard,.map-layout,.lower-grid,.kpi-grid{grid-template-columns:1fr}.rail{position:relative}.map-svg{height:500px}.map-stage{min-height:500px}}
->>>>>>> Stashed changes
+    @media(max-width:1180px){.app{grid-template-columns:1fr}.rail{position:relative}.grid,.map-panel,.kpis{grid-template-columns:1fr}.map-svg{height:380px}.map-stage{min-height:380px}}
   </style>
 </head>
 <body>
   <div class="app">
     <aside class="rail">
       <div class="brand"><span class="brand-mark"></span><span>Franchise Insight</span></div>
-      <p class="nav-note">지역을 먼저 보고, 오른쪽에서 브랜드 수요와 최근 광고글을 확인하는 경쟁 인사이트 화면입니다.</p>
+      <p class="hint">브랜드와 지역을 조합해 오늘 글쓰기 에이전트에 넘길 키워드를 고릅니다.</p>
       <section class="filter-card">
-        <label class="label" for="brandQuery">브랜드</label>
+        <label class="label" for="brandQuery">브랜드 검색</label>
         <input id="brandQuery" placeholder="예: 메가커피" />
-        <label class="label" for="regionQuery">지역</label>
+        <label class="label" for="regionQuery">지역 검색</label>
         <input id="regionQuery" placeholder="예: 수원시, 노원구" />
-        <label class="label" for="customKeywords">추가 키워드</label>
-        <textarea id="customKeywords" placeholder="예: 수원 메가커피 양도양수"></textarea>
-        <div class="rail-actions">
-          <button class="btn" id="analyze">분석하기</button>
-          <button class="btn secondary" id="load">저장 데이터 보기</button>
-          <button class="btn ghost" id="refresh">오늘 데이터 새로 수집</button>
+        <label class="label" for="customKeywords">직접 분석할 키워드</label>
+        <textarea id="customKeywords" placeholder="예: 강남 메가커피 창업&#10;수원 컴포즈커피 양도양수"></textarea>
+        <div class="actions">
+          <button class="btn" id="analyze">저장 데이터로 분석</button>
+          <button class="btn secondary" id="refresh">오늘 데이터 새로 수집</button>
+          <button class="btn ghost" id="clearFilter">필터 초기화</button>
         </div>
-<<<<<<< Updated upstream
-        <div class="search-fields">
-          <input id="brandQuery" placeholder="브랜드: 예) 메가커피" />
-          <input id="regionQuery" placeholder="지역: 예) 서울 노원구" />
-        </div>
-        <p class="viewer-line" id="searchViewer">브랜드나 지역을 입력하고 Enter 또는 분석하기를 누르세요. 분석하기는 저장 결과만 확인합니다.</p>
-        <details class="advanced">
-          <summary>시장 전체 기준 브랜드/지역 목록</summary>
-          <label for="brands">브랜드 목록</label>
-          <textarea id="brands">메가커피
-=======
       </section>
       <section class="filter-card">
-        <label class="label" for="brands">브랜드 목록</label>
-        <textarea id="brands">메가커피
->>>>>>> Stashed changes
-컴포즈커피
-투썸플레이스
-파리바게뜨
-롯데리아
-서브웨이
-배스킨라빈스
-샐러디
-이디야커피
-빽다방
-던킨
-파스쿠찌
-공차
-맘스터치
-버거킹
-맥도날드
-교촌치킨
-BBQ
-BHC
-굽네치킨
-본죽
-한솥도시락
-역전할머니맥주
-홍콩반점</textarea>
-        <label class="label" for="regions">지역 목록</label>
-        <textarea id="regions">서울
-경기
-인천
-강남구
-서초구
-송파구
-노원구
-도봉구
-강북구
-마포구
-수원시
-용인시
-부천시
-성남시
-의정부시
-안양시
-천안시</textarea>
-<<<<<<< Updated upstream
-          <p class="viewer-line">비워두고 분석하면 이 목록 기준으로 시장 전체를 봅니다.</p>
-        </details>
-      </div>
-      <label for="customKeywords">추가 키워드</label>
-      <textarea id="customKeywords" class="compact" placeholder="예: 수원 메가커피 양도양수"></textarea>
-      <p class="viewer-line" id="customKeywordStatus">추가 키워드는 새 수집 때 별도 분석 대상에 포함됩니다.</p>
-      <p class="viewer-line" id="apiEstimate">새 수집 예상 사용량을 계산 중입니다.</p>
-      <div class="actions">
-        <button id="analyze">분석하기</button>
-        <button class="secondary" id="refresh">오늘 데이터 새로 수집</button>
-        <button class="ghost" id="reloadStatus">연결 상태 새로고침</button>
-      </div>
-=======
+        <p class="hint" id="apiEstimate">예상 사용량을 계산 중입니다.</p>
       </section>
->>>>>>> Stashed changes
     </aside>
 
     <main class="main">
       <header class="topbar">
-        <h1>지도 기반 지역 경쟁 인사이트</h1>
+        <h1>키워드 경쟁 분석 대시보드</h1>
         <div class="top-meta"><span id="dataStamp">저장 데이터</span><span class="status" id="status">대기중</span></div>
       </header>
-      <p class="notice">실제 클릭률과 개별 글 조회수는 공식 API로 제공되지 않습니다. 이 화면은 지역 검색량, 최근 블로그/카페글, 제목 패턴을 종합해 노출 경쟁도를 판단합니다.</p>
-      <section class="kpi-grid" id="summary"></section>
+      <p class="notice">네이버 공식 API는 개별 블로그·카페 글 조회수를 제공하지 않습니다. 이 화면은 검색량, 블로그 문서 수, 최근 광고성 제목, 카페/블로그 출현 빈도를 묶어 노출 난이도와 글쓰기 우선순위를 추정합니다.</p>
+      <section class="kpis" id="summary"></section>
 
-      <div class="dashboard">
+      <div class="grid">
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="title">수도권 지역 경쟁 지도</p>
-              <p class="sub">색이 진할수록 검색 수요 또는 경쟁 신호가 강합니다. 지역을 클릭하면 우측 패널이 갱신됩니다.</p>
+              <p class="title">오늘 쓸 만한 키워드 추천</p>
+              <p class="sub">점수는 검색량, 지역성, 점유공백, 최근 추세, 데이터 신뢰도를 합산한 값입니다.</p>
             </div>
-            <button class="btn secondary small" id="clearRegion">전체 보기</button>
+            <div class="tabs">
+              <button class="tab active" data-filter="all">전체</button>
+              <button class="tab" data-filter="write">오늘 작성</button>
+              <button class="tab" data-filter="niche">틈새</button>
+            </div>
           </div>
-          <div class="map-layout">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>순위</th><th>키워드</th><th>검색량</th><th>경쟁 상태</th><th>신뢰도</th><th>점수</th><th>복사</th>
+                </tr>
+              </thead>
+              <tbody id="keywordRows"></tbody>
+            </table>
+          </div>
+          <div class="map-panel">
             <div class="map-stage">
-              <svg class="map-svg" viewBox="0 0 720 570" role="img" aria-label="수도권 지역 경쟁 지도" id="mapSvg"></svg>
+              <svg class="map-svg" viewBox="0 0 720 430" role="img" aria-label="수도권 지역 경쟁 지도" id="mapSvg"></svg>
               <div class="legend">
                 <span><i class="swatch" style="background:#0f9f8f"></i>틈새</span>
-                <span><i class="swatch" style="background:#f59e0b"></i>집중</span>
+                <span><i class="swatch" style="background:#f59e0b"></i>따라쓰기</span>
                 <span><i class="swatch" style="background:#2563eb"></i>관찰</span>
-                <span><i class="swatch" style="background:#e11d48"></i>과열</span>
+                <span><i class="swatch" style="background:#e11d48"></i>피하기</span>
               </div>
             </div>
-            <div class="detail-stack">
-              <div class="decision" id="decisionBox"></div>
-              <div class="rank-list" id="regionEvidence"></div>
-            </div>
+            <div class="row-list" id="mapDetails"></div>
           </div>
         </section>
 
-        <aside class="side">
+        <aside class="stack">
           <section class="panel">
             <div class="panel-head">
               <div>
                 <p class="title">많이 검색된 브랜드 TOP 10</p>
-                <p class="sub">선택 지역 기준으로 먼저 보여줍니다.</p>
+                <p class="sub">선택 지역 기준으로 브랜드 수요를 다시 정렬합니다.</p>
               </div>
             </div>
-<<<<<<< Updated upstream
-          </div>
-        </section>
-
-        <section class="panel wide">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">수도권 지도</p>
-              <p class="panel-sub">서울·경기·인천 안에서 분석된 지역과 우선 후보를 지도 위에 표시합니다.</p>
-            </div>
-          </div>
-          <div class="map-layout">
-            <div class="metro-map" id="metroMap"></div>
-            <div>
-              <p class="map-note">색이 진할수록 선택 브랜드/조건에서 먼저 볼 만한 지역입니다. 지역을 누르면 상세 후보로 좁혀 봅니다.</p>
-              <div class="map-legend"><span>낮음</span><span class="legend-box map-cell level-1"></span><span class="legend-box map-cell level-2"></span><span class="legend-box map-cell level-3"></span><span class="legend-box map-cell level-4"></span><span class="legend-box map-cell hot"></span><span>높음/이상</span></div>
-              <div class="map-list" id="mapList"></div>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel wide">
-          <div class="panel-head">
-            <div>
-              <p class="panel-title">권역별 오늘의 방향</p>
-              <p class="panel-sub">입력한 지역을 생활권별로 묶어 보고, 권역을 누르면 아래 후보가 같이 필터링됩니다.</p>
-=======
             <div class="bar-list" id="brandTop10"></div>
           </section>
           <section class="panel">
@@ -378,637 +175,233 @@ BHC
                 <p class="sub">한 달 이내 글을 우선합니다. 조회수는 공식 API 미제공입니다.</p>
               </div>
               <button class="btn secondary small" id="reloadContentIntel">갱신</button>
->>>>>>> Stashed changes
             </div>
             <div class="content-list" id="recentContentTop10"></div>
           </section>
           <section class="panel">
-            <p class="title">글쓰기 액션</p>
-            <div class="rank-list" id="actionList" style="margin-top:10px"></div>
+            <p class="title">글쓰기 앱으로 넘길 내용</p>
+            <div class="row-list" id="handoffList" style="margin-top:10px"></div>
           </section>
         </aside>
       </div>
-
-      <section class="lower-grid">
-        <div class="panel">
-          <p class="title">지역별 근거 테이블</p>
-          <table class="table">
-            <thead><tr><th>지역</th><th>대표 브랜드</th><th>검색량</th><th>판단</th></tr></thead>
-            <tbody id="evidenceTable"></tbody>
-          </table>
-        </div>
-        <div class="panel">
-          <p class="title">선택 지역 브랜드 후보</p>
-          <div class="rank-list" id="selectedBrandList"></div>
-        </div>
-      </section>
     </main>
   </div>
 
   <script>
     const $ = (id) => document.getElementById(id);
-    const splitLines = (value) => String(value || "").split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
     const money = (value) => Number(value || 0).toLocaleString("ko-KR");
-    const metric = (value) => value === null || value === undefined ? "확인 필요" : money(value);
     const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (ch) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[ch]);
-    const state = { data:null, content:null, selectedRegion:"전체", selectedBrand:"전체" };
-    const regionLayout = {
-      인천:{x:84,y:252,w:145,h:122,path:"M80 220 L190 198 L238 250 L214 332 L103 342 L58 286 Z"},
-      서울:{x:296,y:214,w:142,h:124,path:"M292 188 L414 184 L460 252 L412 328 L292 316 L246 244 Z"},
-      경기:{x:298,y:360,w:156,h:118,path:"M250 348 L402 326 L484 390 L438 492 L278 502 L206 430 Z"},
-      강남구:{x:432,y:306,w:106,h:92,path:"M420 292 L526 284 L552 346 L502 396 L422 374 Z"},
-      서초구:{x:350,y:330,w:96,h:86,path:"M344 316 L424 322 L418 388 L348 402 L312 360 Z"},
-      송파구:{x:528,y:286,w:102,h:86,path:"M524 274 L620 266 L656 324 L608 384 L540 354 Z"},
-      노원구:{x:418,y:92,w:94,h:94,path:"M408 66 L494 74 L528 132 L486 186 L410 164 L382 112 Z"},
-      도봉구:{x:328,y:72,w:88,h:90,path:"M318 54 L394 48 L424 100 L392 158 L320 148 L292 94 Z"},
-      강북구:{x:248,y:112,w:88,h:92,path:"M238 92 L314 84 L348 140 L306 200 L234 178 L206 132 Z"},
-      마포구:{x:192,y:194,w:94,h:84,path:"M180 176 L268 168 L302 220 L258 278 L176 258 L146 212 Z"},
-      수원시:{x:372,y:460,w:110,h:88,path:"M362 444 L462 436 L500 492 L458 548 L366 536 L328 486 Z"},
-      용인시:{x:504,y:428,w:118,h:96,path:"M496 408 L606 400 L656 470 L604 548 L506 526 L466 466 Z"},
-      부천시:{x:162,y:332,w:96,h:86,path:"M150 316 L236 304 L276 358 L232 420 L150 404 L116 354 Z"},
-      성남시:{x:506,y:352,w:94,h:82,path:"M498 338 L586 334 L620 386 L580 438 L500 420 L466 376 Z"},
-      의정부시:{x:520,y:128,w:104,h:88,path:"M512 106 L606 102 L648 156 L608 214 L520 198 L486 148 Z"},
-      안양시:{x:278,y:406,w:94,h:78,path:"M270 392 L354 388 L388 438 L348 490 L270 476 L238 430 Z"},
-      천안시:{x:154,y:456,w:108,h:82,path:"M144 438 L244 428 L286 480 L238 542 L150 526 L112 478 Z"}
+    const splitLines = (value) => String(value || "").split(/[\n,]+/).map((item) => item.trim()).filter(Boolean);
+    const metric = (value, status = "ok") => {
+      if (value === null || value === undefined) return "확인 필요";
+      const suffix = status === "fallback_brand" ? " 추정" : "";
+      return `${money(value)}${suffix}`;
     };
-    function regionGroupName(region){
-      const text=String(region||"");
-      if(/강남|서초|송파|강동/.test(text))return"서울 동남권";
-      if(/노원|도봉|강북|성북|중랑|동대문/.test(text))return"서울 동북권";
-      if(/마포|서대문|은평|용산|종로|중구|성동|광진/.test(text))return"서울 도심권";
-      if(/수원|용인|성남|안양|화성|평택|동탄/.test(text))return"경기 남부";
-      if(/부천|김포|광명|시흥|고양|파주/.test(text))return"경기 서부";
-      if(/의정부|양주|포천|구리|남양주/.test(text))return"경기 북부";
-      if(/인천/.test(text))return"인천권";
-      if(/서울/.test(text))return"서울 전체";
-      if(/경기/.test(text))return"경기 전체";
-      return"기타";
-    }
-<<<<<<< Updated upstream
-
-    function refreshFilterPreview() {
-      const brands = splitLines($("brands").value);
-      const regions = splitLines($("regions").value);
-      $("marketCount").textContent = `브랜드 ${brands.length}개 · 지역 ${regions.length}개`;
-      updateSearchViewer();
-      refreshCustomKeywordStatus();
-      updateApiEstimate();
-=======
-    function currentSearch(){return{brand:$("brandQuery").value.trim(),region:$("regionQuery").value.trim()}}
-    function queryString(refresh=false){
-      const s=currentSearch(), qs=new URLSearchParams();
-      const brands=s.brand?[s.brand]:splitLines($("brands").value);
-      const regions=s.region?[s.region]:splitLines($("regions").value);
-      const custom=splitLines($("customKeywords").value);
-      if(refresh)qs.set("refresh","1"); if(brands.length)qs.set("brands",brands.join(",")); if(regions.length)qs.set("regions",regions.join(",")); if(custom.length)qs.set("keywords",custom.join(","));
-      const text=qs.toString(); return text?`?${text}`:"";
->>>>>>> Stashed changes
-    }
-    function rows(){return state.data?.dashboard?.regionalOpportunities||[]}
+    const state = { data:null, content:null, selectedRegion:"전체", selectedBrand:"전체", filter:"all" };
+    const defaultBrands = ["메가커피","컴포즈커피","투썸플레이스","파리바게뜨","롯데리아","서브웨이","배스킨라빈스","샐러디","이디야커피","빽다방","던킨","파스쿠찌","공차","맘스터치","버거킹","맥도날드","교촌치킨","BBQ","BHC","굽네치킨","본죽","한솥도시락","역전할머니맥주","홍콩반점"];
+    const defaultRegions = ["서울","경기","인천","강남구","서초구","송파구","노원구","도봉구","강북구","마포구","수원시","용인시","부천시","성남시","의정부시","안양시","천안시"];
+    const mapRegions = {
+      인천:{x:112,y:210,path:"M64 160 L150 138 L210 190 L184 270 L92 282 L44 226 Z"},
+      서울:{x:304,y:176,path:"M248 130 L366 126 L420 184 L374 254 L270 244 L222 182 Z"},
+      경기:{x:356,y:306,path:"M212 274 L420 246 L534 314 L486 402 L276 406 L182 340 Z"},
+      강남구:{x:412,y:232,path:"M388 214 L468 210 L496 254 L450 290 L390 274 Z"},
+      서초구:{x:344,y:246,path:"M324 224 L392 228 L384 286 L328 300 L292 260 Z"},
+      송파구:{x:506,y:220,path:"M486 202 L568 196 L606 242 L562 294 L506 266 Z"},
+      노원구:{x:418,y:74,path:"M390 42 L470 50 L500 100 L460 144 L394 126 L368 80 Z"},
+      도봉구:{x:332,y:66,path:"M306 36 L374 32 L404 78 L374 124 L312 114 L288 70 Z"},
+      강북구:{x:260,y:98,path:"M236 76 L304 68 L334 116 L296 166 L236 148 L210 106 Z"},
+      마포구:{x:200,y:168,path:"M170 144 L244 138 L278 182 L240 232 L168 216 L142 174 Z"},
+      수원시:{x:396,y:360,path:"M362 324 L448 318 L484 366 L448 416 L364 402 L328 360 Z"},
+      용인시:{x:526,y:342,path:"M488 306 L588 300 L638 360 L590 418 L500 396 L462 346 Z"},
+      부천시:{x:150,y:264,path:"M120 236 L198 226 L236 274 L198 324 L124 310 L94 268 Z"},
+      성남시:{x:514,y:276,path:"M482 252 L556 248 L586 292 L548 334 L484 318 L452 280 Z"},
+      의정부시:{x:540,y:112,path:"M506 78 L590 74 L628 122 L590 172 L512 156 L480 118 Z"},
+      안양시:{x:284,y:326,path:"M252 300 L326 294 L358 336 L322 382 L254 370 L226 332 Z"},
+      천안시:{x:178,y:362,path:"M136 330 L224 322 L264 366 L222 418 L144 404 L108 360 Z"}
+    };
+    function rows(){return state.data?.dashboard?.regionalOpportunities || state.data?.rows || []}
     function filteredRows(){
       return rows().filter((row)=>{
-        const r=state.selectedRegion==="전체"||row.region===state.selectedRegion||row.group===regionGroupName(state.selectedRegion);
-        const b=state.selectedBrand==="전체"||row.brand===state.selectedBrand;
-        return r&&b;
-      }).sort((a,b)=>Number(b.totalSearch||0)-Number(a.totalSearch||0));
+        const brandOk=state.selectedBrand==="전체"||row.brand===state.selectedBrand;
+        const regionOk=state.selectedRegion==="전체"||row.region===state.selectedRegion||row.group===state.selectedRegion;
+        if(!brandOk||!regionOk)return false;
+        if(state.filter==="write")return (row.priorityLabel||"").includes("오늘")||Number(row.score||0)>=10;
+        if(state.filter==="niche")return row.competitionLabel==="틈새";
+        return true;
+      }).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||Number(b.totalSearch||0)-Number(a.totalSearch||0));
     }
-<<<<<<< Updated upstream
-
-    function updateSearchViewer() {
-      const search = currentSearch();
-      if (search.brand && search.region) {
-        $("searchViewer").textContent = `${search.region} ${search.brand} 조합의 저장 결과를 확인합니다. 새 데이터가 필요하면 새로 수집을 누르세요.`;
-      } else if (search.brand) {
-        $("searchViewer").textContent = `${search.brand}가 지역별로 어디서 많이 검색됐는지 저장 결과를 봅니다.`;
-      } else if (search.region) {
-        $("searchViewer").textContent = `${search.region} 안에서 브랜드별 저장 결과를 봅니다.`;
-      } else {
-        $("searchViewer").textContent = "브랜드나 지역을 입력하지 않으면 시장 전체 기준 저장 결과를 봅니다.";
-=======
-    function regionStats(){
-      const map=new Map();
-      for(const row of rows()){
-        if(!row.region||row.region==="전국")continue;
-        const cur=map.get(row.region)||{region:row.region,total:0,brands:new Map(),rows:[]};
-        cur.total+=Number(row.totalSearch||0); cur.rows.push(row);
-        cur.brands.set(row.brand,(cur.brands.get(row.brand)||0)+Number(row.totalSearch||0));
-        map.set(row.region,cur);
->>>>>>> Stashed changes
-      }
-      return [...map.values()].sort((a,b)=>b.total-a.total);
+    function badgeClass(label){
+      if(label==="틈새")return"good";
+      if(label==="따라쓰기")return"warn";
+      if(label==="피하기")return"bad";
+      if(label==="관찰")return"info";
+      if(String(label||"").includes("재확인"))return"warn";
+      return"";
     }
-    function colorFor(stat){
-      if(!stat||stat.total<=0)return"#dbe6f1";
-      if(stat.total>=90)return"#f59e0b";
-      if(stat.total>=30)return"#0f9f8f";
-      if(stat.total>=10)return"#2563eb";
-      return"#94a3b8";
+    function confidenceText(status){
+      if(status==="ok")return"정확";
+      if(status==="fallback_brand")return"브랜드추정";
+      if(status==="partial")return"부분";
+      return"확인필요";
     }
-<<<<<<< Updated upstream
-
-    function currentQueryLists() {
-      const search = currentSearch();
-      return {
-        brands: search.brand ? [search.brand] : splitLines($("brands").value),
-        regions: search.region ? [search.region] : splitLines($("regions").value),
-        custom: splitLines($("customKeywords").value)
-      };
+    function handoff(row){
+      const region=row.region||"전국", brand=row.brand||"";
+      return [`브랜드: ${brand}`,`지역: ${region}`,`핵심 키워드: ${row.keyword}`,`경쟁 상태: ${row.competitionLabel||"확인 필요"}`,`글 방향: ${row.writingBrief||row.reason||"지역명과 브랜드명을 앞세운 상담 유입형 글"}`,`제목 후보: ${row.suggestedTitle||`${region} ${brand} 양도양수 체크포인트`}`].join("\n");
     }
-
-    function estimateUsage() {
-      const lists = currentQueryLists();
-      const baseKeywords = lists.custom.length + (lists.brands.length * 3) + (lists.brands.length * lists.regions.length * 2);
-      const topRows = Math.min(baseKeywords, 140);
-      return {
-        keywordCandidates: baseKeywords,
-        searchAdCalls: Math.ceil(baseKeywords / 5),
-        openApiCalls: topRows * 3
-      };
+    function queryString(refresh=false){
+      const qs=new URLSearchParams();
+      const brand=$("brandQuery").value.trim();
+      const region=$("regionQuery").value.trim();
+      const custom=splitLines($("customKeywords").value);
+      if(refresh)qs.set("refresh","1");
+      if(brand)qs.set("brands",brand); else qs.set("brands",defaultBrands.join(","));
+      if(region)qs.set("regions",region); else qs.set("regions",defaultRegions.join(","));
+      if(custom.length)qs.set("keywords",custom.join(","));
+      return `?${qs.toString()}`;
     }
-
-    function updateApiEstimate() {
-      const usage = estimateUsage();
-      $("apiEstimate").textContent = `분석하기는 저장 결과만 확인합니다. 새 수집 예상: 키워드 ${usage.keywordCandidates}개 · SearchAd 약 ${usage.searchAdCalls}회 · Open API 최대 ${usage.openApiCalls}회`;
-    }
-
-    function queryString(refresh = false, cacheOnly = false) {
-      const qs = new URLSearchParams();
-      const { brands, regions, custom } = currentQueryLists();
-      if (refresh) qs.set("refresh", "1");
-      if (cacheOnly) qs.set("cacheOnly", "1");
-      if (brands.length) qs.set("brands", brands.join(","));
-      if (regions.length) qs.set("regions", regions.join(","));
-      if (custom.length) qs.set("keywords", custom.join(","));
-      const text = qs.toString();
-      return text ? `?${text}` : "";
-=======
-    function verdict(stat){
-      if(!stat||stat.total<=0)return{label:"관찰",cls:""};
-      if(stat.total>=90)return{label:"검색 집중",cls:"warn"};
-      if(stat.total>=30)return{label:"틈새 가능",cls:"good"};
-      return{label:"관찰",cls:""};
->>>>>>> Stashed changes
-    }
-    function topRegion(){return filteredRows()[0]||rows()[0]}
     function renderSummary(){
-      const top=topRegion(); const contents=flattenContent();
+      const all=rows();
+      const visible=filteredRows();
+      const top=visible[0]||all[0];
+      const counts=visible.reduce((acc,row)=>{acc[row.competitionLabel||"확인"]=(acc[row.competitionLabel||"확인"]||0)+1;return acc;},{});
       $("summary").innerHTML=[
-        kpi("선택 지역",state.selectedRegion,state.selectedRegion==="전체"?"전체 지도 기준":"클릭 지역 기준"),
-        kpi("대표 조합",top?`${top.region} ${top.brand}`:"-",top?.keyword||"지역을 선택하세요"),
-        kpi("지역 검색량",top?metric(top.totalSearch):"확인 필요","지역+브랜드 양도양수"),
-        kpi("최근 광고글",`${contents.length}건`,"블로그/카페 한 달 이내")
+        kpi("오늘 1순위",top?`${top.region||"전국"} ${top.brand||""}`:"-",top?.keyword||"분석 데이터 없음"),
+        kpi("추천 후보",`${visible.length}개`,`틈새 ${counts["틈새"]||0} · 피하기 ${counts["피하기"]||0}`),
+        kpi("월검색",top?metric(top.totalSearch,top.searchVolumeStatus):"확인 필요","브랜드추정은 지역값이 아닌 보정값"),
+        kpi("경쟁 상태",top?.competitionLabel||"확인 필요",top?.competitionReason||"최근 글 제목 표본 기준")
       ].join("");
     }
-<<<<<<< Updated upstream
-
-    function tagClass(row) {
-      if ((row.competitionLabel || "").includes("높음")) return "bad";
-      if ((row.priorityLabel || "").includes("재확인")) return "warn";
-      return "";
-    }
-
-    function copyText(text) {
-      if (!text) return;
-      navigator.clipboard?.writeText(text).then(() => {
-        $("status").textContent = "복사 완료";
-      }).catch(() => {
-        $("status").textContent = "복사 실패";
-      });
-    }
-
-    function brief(row) {
-      const region = row?.region || "전국";
-      const brand = row?.brand || "프랜차이즈";
-      if (row?.region && row?.brand) {
-        return `${region}에서 ${brand} 양도양수 검색수요가 확인됩니다. 제목과 첫 문단에 지역명과 브랜드명을 앞세워 상담 유입형 글로 넘기세요.`;
-      }
-      if (row?.brand) return `${brand} 양도양수 검색수요를 브랜드형 글감으로 검토하세요.`;
-      return "지역과 브랜드를 선택하면 글쓰기 에이전트에 넘길 방향이 표시됩니다.";
-    }
-
-    function handoff(row) {
-      if (!row) return "";
-      const region = row.region || "전국";
-      const brand = row.brand || "";
-      const title = row.suggestedTitle || `[${region}] ${brand} 양도양수, 지금 봐야 할 체크포인트`;
-      return [
-        `브랜드: ${brand}`,
-        `지역: ${region}`,
-        `핵심 키워드: ${row.keyword || `${region} ${brand} 양도양수`}`,
-        `글 방향: ${brief(row)}`,
-        `제목 후보: ${title}`
-      ].join("\n");
-    }
-
-    function setRegion(region, group = "전체") {
-      state.selectedRegion = region || "전체";
-      state.selectedGroup = group || "전체";
-      state.focusedBySignal = false;
-      render(state.data);
-    }
-
-    function clearFilters() {
-      state.selectedBrand = "전체";
-      state.selectedRegion = "전체";
-      state.selectedGroup = "전체";
-      state.focusedBySignal = false;
-      $("brandQuery").value = "";
-      $("regionQuery").value = "";
-      render(state.data);
-    }
-
-    function relevantRows() {
-      const rows = allOpportunityRows();
-      return rows.filter((row) => {
-        const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
-        const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
-        return brandMatch && regionMatch;
-      }).sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0));
-    }
-
-    const MAP_REGIONS = [
-      ["파주", 116, 84], ["김포", 86, 150], ["고양", 130, 134], ["의정부", 246, 116], ["남양주", 314, 150], ["구리", 294, 178],
-      ["인천", 76, 198], ["부천", 120, 202], ["광명", 144, 228], ["시흥", 128, 252], ["안산", 146, 288],
-      ["안양", 176, 262], ["군포", 190, 288], ["의왕", 212, 278], ["과천", 208, 244],
-      ["성남", 260, 256], ["하남", 318, 224], ["수원", 192, 326], ["화성", 146, 354], ["용인", 266, 324], ["평택", 238, 382],
-      ["은평구", 166, 152], ["도봉구", 234, 118], ["노원구", 272, 126], ["강북구", 220, 142], ["성북구", 236, 160],
-      ["중랑구", 276, 164], ["종로구", 204, 172], ["서대문구", 184, 178], ["동대문구", 246, 180], ["중구", 214, 192],
-      ["마포구", 168, 196], ["용산구", 206, 212], ["성동구", 240, 204], ["광진구", 270, 204], ["강서구", 134, 216],
-      ["양천구", 150, 240], ["구로구", 160, 264], ["영등포구", 184, 236], ["동작구", 202, 252], ["관악구", 204, 278],
-      ["금천구", 176, 290], ["서초구", 234, 264], ["강남구", 264, 254], ["송파구", 304, 250], ["강동구", 326, 218]
-    ];
-
-    function mapButtonLabel(name) {
-      return String(name || "").replace(/구$/, "");
-    }
-
-    function regionMatchesMap(rowRegion, mapRegion) {
-      const row = String(rowRegion || "");
-      const map = String(mapRegion || "");
-      if (!row || !map) return false;
-      if (row.includes(map) || map.includes(row)) return true;
-      const aliases = {
-        "수원": "수원시", "용인": "용인시", "성남": "성남시", "부천": "부천시", "의정부": "의정부시", "안양": "안양시",
-        "인천": "인천", "서울": "서울"
-      };
-      return row.includes(aliases[map] || map);
-    }
-
-    function mapRows() {
-      const rows = relevantRows().filter((row) => row.region && row.region !== "전국");
-      return MAP_REGIONS.map(([name, cx, cy]) => {
-        const candidates = rows.filter((row) => regionMatchesMap(row.region, name));
-        const best = candidates.sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0))[0];
-        return { name, cx, cy, row: best || null };
-      });
-    }
-
-    function mapLevel(item, max) {
-      const row = item.row;
-      if (!row) return "empty";
-      const search = Number(row.totalSearch || 0);
-      const lift = Number(row.trendLift || 0);
-      if (lift >= 25) return "hot";
-      const ratio = search / Math.max(max, 1);
-      if (ratio >= .75) return "level-4";
-      if (ratio >= .45) return "level-3";
-      if (ratio >= .18) return "level-2";
-      return "level-1";
-    }
-
-    function renderMetroMap() {
-      const items = mapRows();
-      const rows = items.map((item) => item.row).filter(Boolean);
-      const max = Math.max(1, ...rows.map((row) => Number(row.totalSearch || 0)));
-      const cells = items.map((item) => {
-        const active = state.selectedRegion !== "전체" && regionMatchesMap(state.selectedRegion, item.name);
-        const level = mapLevel(item, max);
-        const row = item.row;
-        const region = row?.region || item.name;
-        const group = row?.group || regionGroupName(region);
-        const value = row ? `월검색 ${metric(row.totalSearch, row.searchVolumeStatus)}` : "저장 결과 없음";
-        const label = mapButtonLabel(item.name);
-        const buttonWidth = Math.max(28, Math.min(50, label.length * 9 + 16));
-        const buttonHeight = 19;
-        return `<g data-map-region="${escapeHtml(region)}" data-map-group="${escapeHtml(group)}">
-          <rect class="map-cell ${level} ${active ? "active" : ""}" x="${item.cx - buttonWidth / 2}" y="${item.cy - buttonHeight / 2}" width="${buttonWidth}" height="${buttonHeight}" rx="9.5">
-            <title>${escapeHtml(item.name)} ${value}</title>
-          </rect>
-          <text class="map-cell-label" x="${item.cx}" y="${item.cy + .5}">${escapeHtml(label)}</text>
-        </g>`;
-      }).join("");
-      $("metroMap").innerHTML = `
-        <svg viewBox="0 0 430 420" role="img" aria-label="수도권 분석 지도">
-          <image class="map-bg-image" href="assets/capital-region-map-bg.png" x="16" y="8" width="398" height="398" preserveAspectRatio="xMidYMid meet"></image>
-          <rect class="map-frame" x="22" y="16" width="386" height="392" rx="18"></rect>
-          <text class="map-label" x="24" y="30">수도권</text>
-          ${cells}
-        </svg>`;
-      $("mapList").innerHTML = rows.length ? rows.slice(0, 8).map((row, index) => `
-        <div class="row">
-          <div class="row-head">
-            <div>
-              <strong>${index + 1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand || "")}</strong>
-              <span>${escapeHtml(row.keyword || "")} · 월검색 ${metric(row.totalSearch, row.searchVolumeStatus)}</span>
-              <span>${escapeHtml(row.reason || brief(row))}</span>
-            </div>
-            <button class="small secondary" data-map-region="${escapeHtml(row.region)}" data-map-group="${escapeHtml(row.group || regionGroupName(row.region))}">보기</button>
-          </div>
-        </div>`).join("") : `<p class="empty">수도권 지도에 표시할 저장 결과가 없습니다. 새 조건은 오늘 데이터 새로 수집을 먼저 눌러주세요.</p>`;
-    }
-
-    function renderSummary(data) {
-      const totals = data.dashboard?.totals || {};
-      const rows = relevantRows();
-      const top = rows[0] || data.dashboard?.writingPicks?.[0];
-      $("summary").innerHTML = [
-        card("선택 지역", state.selectedRegion, state.selectedRegion === "전체" ? "전체 후보를 보는 중" : `${state.selectedRegion} 중심으로 필터링`),
-        card("선택 브랜드", state.selectedBrand, state.selectedBrand === "전체" ? "브랜드를 입력하면 지역별 흐름이 좁혀집니다." : `${state.selectedBrand} 지역별 후보를 보는 중`),
-        card("양도양수 월검색", metric(top?.totalSearch ?? totals.transferSearch, top?.searchVolumeStatus), "선택 후보 기준 검색수요"),
-        card("블로그 경쟁", top?.competitionLabel || "확인 필요", top?.blogTotal ? `블로그 문서 ${money(top.blogTotal)}건` : "Open API 표본 필요")
-      ].join("");
-    }
-
-    function renderBrandBars(data) {
-      const brands = data.dashboard?.brandDemand || [];
-      const marketCount = splitLines($("brands").value).length;
-      $("brandRankTitle").textContent = `브랜드 수요 순위 (${marketCount}개 중 상위 ${brands.length}개)`;
-      const max = Math.max(1, ...brands.map((row) => Number(row.transferSearch || 0)));
-      $("brandBars").innerHTML = brands.length ? brands.map((row) => {
-        const width = Math.max(4, Math.round((Number(row.transferSearch || 0) / max) * 100));
-        return `<button class="bar-row ghost" data-brand-chip="${escapeHtml(row.brand)}"><div class="bar-name">${escapeHtml(row.brand)}</div><div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div><div class="bar-value">${money(row.transferSearch)}</div></button>`;
-      }).join("") : `<p class="empty">브랜드 수요가 없습니다.</p>`;
-    }
-
-    function filterSignals(rows) {
-      return (rows || []).filter((row) => {
-        const hasRegion = row.region && row.region !== "전국";
-        const brandMatch = state.selectedBrand === "전체" || row.brand === state.selectedBrand;
-        const regionMatch = state.selectedRegion === "전체" || row.region === state.selectedRegion || row.group === state.selectedGroup;
-        return hasRegion && brandMatch && regionMatch;
-      });
-    }
-
-    function signalReasonText(row) {
-      const reason = row.signalReason || brief(row);
-      if (String(reason).includes("월검색")) return reason;
-      return `월검색 ${metric(row.totalSearch, row.searchVolumeStatus)} · ${reason}`;
-    }
-
-    function signalRow(row, index, type) {
-      const label = type === "anomaly" ? "이상 신호" : "검색량 상위";
-      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)}</span><span>${escapeHtml(signalReasonText(row))}</span><span class="tag ${type === "anomaly" ? "warn" : ""}">${label}</span></div><button class="small secondary" data-focus-signal="${index}" data-signal-type="${type}">이 조합 보기</button></div></div>`;
-    }
-
-    function renderSignals(data) {
-      const volumeSource = filterSignals(data.dashboard?.volumeLeaders).length
-        ? data.dashboard?.volumeLeaders
-        : allOpportunityRows();
-      const volumes = filterSignals(volumeSource).sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0));
-      const anomalies = filterSignals(data.dashboard?.anomalySignals).sort((a, b) => Number(b.totalSearch || 0) - Number(a.totalSearch || 0));
-      $("volumeSignals").innerHTML = volumes.length ? volumes.slice(0, 4).map((row, index) => signalRow(row, index, "volume")).join("") : `<p class="empty">검색량 상위 후보가 없습니다.</p>`;
-      $("anomalySignals").innerHTML = anomalies.length ? anomalies.slice(0, 4).map((row, index) => signalRow(row, index, "anomaly")).join("") : `<p class="empty">최근 흐름에서 뚜렷한 이상 신호가 없습니다.</p>`;
-    }
-
-    function renderZones(data) {
-      const zones = data.dashboard?.regionalGroups || [];
-      const scopedZones = zones.map((zone) => {
-        const rows = state.selectedBrand === "전체" ? zone.rows || [] : (zone.rows || []).filter((row) => row.brand === state.selectedBrand);
-        const top = rows[0];
-        return { ...zone, rows, topBrand: top?.brand || zone.topBrand, topRegion: top?.region || zone.topRegion };
-      });
-      $("zoneGrid").innerHTML = scopedZones.length ? scopedZones.map((zone) => {
-        const active = state.selectedGroup === zone.group;
-        const top = zone.rows?.[0];
-        return `<button class="zone ${active ? "active" : ""}" data-zone="${escapeHtml(zone.group)}" data-zone-region="${escapeHtml(zone.topRegion || "전체")}">
-          <span>${escapeHtml(zone.group)}</span>
-          <strong>${escapeHtml(zone.topRegion || "-")} · ${escapeHtml(zone.topBrand || "-")}</strong>
-          <small>${escapeHtml(top ? brief(top) : "아직 이 권역에서 확인된 지역+브랜드 양도양수 후보가 없습니다.")}</small>
-        </button>`;
-      }).join("") : `<p class="empty">권역별 후보가 없습니다.</p>`;
-    }
-
-    function renderTrend() {
-      const rows = relevantRows().slice(0, 6);
-      const top = rows[0];
-      if (!top) {
-        $("regionTrend").innerHTML = `<p class="empty">선택 지역의 추이 데이터가 없습니다.</p>`;
-        return;
-      }
-      const trend = state.trendDays === 30 ? (top.trend30d || top.trend7d) : top.trend7d;
-      const points = (trend?.points || []).length ? trend.points : [28, 32, 37, 35, 41, 43, 40];
-      const delta = Number(trend?.delta || top.trendDelta || 0);
-      const avg = Number(trend?.average || top.trendYesterday || 0);
-      const maxPoint = Math.max(10, ...points);
-      const axisMax = Math.ceil(maxPoint / 10) * 10;
-      const axis = [0, Math.round(axisMax * 0.25), Math.round(axisMax * 0.5), Math.round(axisMax * 0.75), axisMax];
-      const scaleY = (v) => 100 - (Math.max(0, Math.min(axisMax, v)) / axisMax) * 100;
-      const path = points.map((v, i) => `${i === 0 ? "M" : "L"}${(i / (points.length - 1)) * 100},${scaleY(v)}`).join(" ");
-      $("regionTrend").innerHTML = `
-        <div class="callout"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>${escapeHtml(top.reason || brief(top))}<br>${state.trendDays}일 평균 관심도 ${metric(avg)} · 기간 변화 ${Number(delta || 0) >= 0 ? "+" : ""}${delta}입니다.</p></div>
-        <div class="trend-wrap">
-          <div class="y-axis">${axis.slice().reverse().map((value) => `<span>${value}</span>`).join("")}</div>
-          <div>
-            <div class="spark"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,75 L100,75 M0,50 L100,50 M0,25 L100,25" stroke="#e5edf5" stroke-width="1" vector-effect="non-scaling-stroke"/><path d="${path}" fill="none" stroke="#2f6fed" stroke-width="3" vector-effect="non-scaling-stroke"/><path d="${path} L100,100 L0,100 Z" fill="rgba(47,111,237,.13)"/></svg></div>
-            <div class="spark-labels"><span>${state.trendDays}일 전</span><span>중간</span><span>최근</span></div>
-          </div>
-        </div>`;
-    }
-
-    function regionalRow(row, index) {
-      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>키워드 ${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch, row.searchVolumeStatus)}</span><span>${escapeHtml(brief(row))}</span><span class="tag ${tagClass(row)}">${escapeHtml(row.priorityLabel || "후보")}</span></div><button class="small secondary" data-copy="${index}">복사</button></div></div>`;
-    }
-
-    function competitionRow(row) {
-      const titles = (row.blogTitles || []).slice(0, 3);
-      return `<div class="row"><strong>${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.competitionLabel || "블로그 경쟁 확인 필요")} · 블로그 ${metric(row.blogTotal)}건 · 뉴스 ${metric(row.newsTotal)}건</span><span>${escapeHtml(row.blogTitleSignals || "제목 표본이 부족하면 검색량 중심으로 판단하세요.")}</span>${titles.length ? `<ul class="titles">${titles.map((title) => `<li>${escapeHtml(title)}</li>`).join("")}</ul>` : ""}</div>`;
-    }
-
-    function pickRow(row, index) {
-      return `<div class="row"><div class="row-head"><div><strong>${index + 1}. ${escapeHtml(row.suggestedTitle || row.keyword)}</strong><span>${escapeHtml(row.group || "전국")} · ${escapeHtml(row.brand || "-")} · ${escapeHtml(row.region || "-")}</span><span>${escapeHtml(brief(row))}</span><div class="handoff">${escapeHtml(handoff(row))}</div><span class="tag ${tagClass(row)}">${escapeHtml(row.priorityLabel || "추천")}</span></div><button class="small secondary" data-copy-pick="${index}">복사</button></div></div>`;
-    }
-
-    function renderDecision(rows) {
-      const top = rows[0];
-      const alt = rows.find((row) => row.region !== top?.region && !(row.competitionLabel || "").includes("높음"));
-      if (!top) {
-        $("decisionBox").innerHTML = `<strong>오늘의 판단</strong><p>선택 지역의 후보가 없습니다. 지역 또는 브랜드를 추가해서 다시 수집하세요.</p>`;
-        return;
-      }
-      const caution = (top.competitionLabel || "").includes("높음")
-        ? `다만 블로그 문서량이 많아 광고가 몰린 편입니다. ${alt ? `${alt.region} ${alt.brand}` : "다른 인접 지역"}도 함께 검토하세요.`
-        : "블로그 경쟁이 과도하게 높지는 않으므로 제목에 지역명과 브랜드명을 앞세워도 좋습니다.";
-      $("decisionBox").innerHTML = `<strong>오늘의 판단</strong><p>${top.region} 기준으로는 ${top.brand} 양도양수 글감이 가장 먼저 보입니다. ${caution}</p>`;
-    }
-
-    function render(data) {
-      if (!data) return;
-      state.data = data;
-      refreshFilterPreview();
-      renderStrategyBoard();
-      renderMetroMap();
-      renderSignals(data);
-      renderSummary(data);
-      renderZones(data);
-      renderBrandBars(data);
-      renderTrend();
-      const rows = relevantRows();
-      const filterActive = state.selectedBrand !== "전체" || state.selectedRegion !== "전체";
-      $("activeFilter").classList.toggle("active", filterActive);
-      $("activeFilterText").textContent = filterActive
-        ? `${state.selectedRegion !== "전체" ? state.selectedRegion : "전체 지역"} · ${state.selectedBrand !== "전체" ? state.selectedBrand : "전체 브랜드"}만 보는 중`
-        : "전체 후보를 보는 중";
-      state.picks = rows.length ? rows : data.dashboard?.writingPicks || [];
-      $("regionList").innerHTML = rows.length ? rows.slice(0, 8).map(regionalRow).join("") : `<p class="empty">선택 지역 후보가 없습니다.</p>`;
-      $("competitionList").innerHTML = rows.length ? rows.slice(0, 5).map(competitionRow).join("") : `<p class="empty">블로그 경쟁 데이터가 없습니다.</p>`;
-      $("pickList").innerHTML = state.picks.slice(0, 5).map(pickRow).join("");
-      renderDecision(state.picks);
-      $("notice").textContent = data.searchAdStatus === "ok"
-        ? "월검색량 기준으로 브랜드와 지역 조합을 정리했습니다. 복사해서 글쓰기 에이전트에 넘기세요."
-        : "일부 데이터는 저장 데이터 또는 부분 데이터 기준입니다. API 제한이 풀리면 오늘 데이터 새로 수집을 다시 눌러주세요.";
-    }
-
-    async function loadStatus() {
-      try {
-        const res = await fetch("/api/status");
-        const data = await res.json();
-        $("systemStatus").innerHTML = [
-          card("서버", `:${data.server?.port || "-"}`, data.server?.url || "실행 주소 확인 필요"),
-          card("Git", data.git?.isGitRepo ? data.git.branch || "연결" : "미연결", data.git?.origin || "저장소 루트 확인"),
-          card("API 설정", data.config?.ok ? "완료" : "확인 필요", data.config?.source || "config 없음"),
-          card("캐시", `${data.data?.cacheCount || 0}개`, `보관 ${data.data?.cacheHours || "-"}시간`)
-        ].join("");
-      } catch {
-        $("systemStatus").innerHTML = card("서버", "연결 필요", "naver-keyword-server.mjs를 실행하세요.");
-      }
-    }
-
-    async function fetchInsights(refresh = false, cacheOnly = true) {
-      $("status").textContent = refresh ? "새 데이터 수집중" : "저장 결과 확인중";
-      try {
-        updateSearchViewer();
-        const search = currentSearch();
-        const res = await fetch(`/api/keywords${queryString(refresh, cacheOnly && !refresh)}`);
-        const data = await res.json();
-        if (data.setupNeeded) {
-          $("status").textContent = "API 설정 필요";
-          return;
-        }
-        state.selectedRegion = search.region || "전체";
-        state.selectedGroup = search.region ? regionGroupName(search.region) : "전체";
-        state.selectedBrand = search.brand || "전체";
-        render(data);
-        if (data.cacheOnlyMiss) {
-          $("status").textContent = "저장 결과 없음";
-          $("notice").textContent = "이 조건의 저장 결과가 아직 없습니다. API를 사용해 새로 확인하려면 오늘 데이터 새로 수집을 누르세요.";
-        } else {
-          $("status").textContent = refresh ? "새 수집 완료" : "분석 완료";
-        }
-        loadStatus();
-      } catch {
-        $("status").textContent = "서버 연결 필요";
-      }
-    }
-
-    document.addEventListener("click", (event) => {
-      const mapTarget = event.target.closest("[data-map-region]");
-      if (mapTarget) setRegion(mapTarget.dataset.mapRegion, mapTarget.dataset.mapGroup || regionGroupName(mapTarget.dataset.mapRegion));
-      const brand = event.target.closest("[data-brand-chip]")?.dataset.brandChip;
-      if (brand) {
-        state.selectedBrand = brand;
-        $("brandQuery").value = brand === "전체" ? "" : brand;
-        state.selectedRegion = "전체";
-        state.selectedGroup = "전체";
-        render(state.data);
-=======
     function kpi(label,value,help){return`<div class="kpi"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`}
+    function renderKeywordRows(){
+      const visible=filteredRows().slice(0,30);
+      $("keywordRows").innerHTML=visible.map((row,index)=>`
+        <tr>
+          <td>${index+1}</td>
+          <td><div class="keyword">${escapeHtml(row.keyword)}</div><div class="muted">${escapeHtml(row.region||"전국")} · ${escapeHtml(row.brand||"-")} · ${escapeHtml(row.reason||"")}</div></td>
+          <td>${metric(row.totalSearch,row.searchVolumeStatus)}</td>
+          <td><span class="badge ${badgeClass(row.competitionLabel)}">${escapeHtml(row.competitionLabel||"확인")}</span><div class="muted">${escapeHtml(row.competitionReason||"")}</div></td>
+          <td><span class="badge ${badgeClass(row.searchVolumeStatus==="fallback_brand"?"따라쓰기":"")}">${confidenceText(row.searchVolumeStatus)}</span></td>
+          <td><span class="score">${Number(row.score||0).toFixed(1)}</span></td>
+          <td><button class="btn secondary small" data-copy-index="${index}">복사</button></td>
+        </tr>`).join("")||`<tr><td colspan="7"><p class="empty">표시할 후보가 없습니다.</p></td></tr>`;
+    }
+    function renderBrands(){
+      const source=filteredRows();
+      const by=new Map();
+      if(source.length){
+        for(const row of source)if(row.brand)by.set(row.brand,(by.get(row.brand)||0)+Number(row.totalSearch||0));
+      }else{
+        for(const row of state.data?.dashboard?.brandDemand||[])by.set(row.brand,Number(row.transferSearch||0));
+      }
+      const list=[...by.entries()].map(([brand,value])=>({brand,value})).sort((a,b)=>b.value-a.value).slice(0,10);
+      const max=Math.max(1,...list.map((row)=>row.value));
+      $("brandTop10").innerHTML=list.map((row,index)=>`<button class="bar-row" data-brand="${escapeHtml(row.brand)}"><span class="bar-name">${index+1}. ${escapeHtml(row.brand)}</span><span class="bar-track"><i class="bar-fill" style="width:${Math.max(4,Math.round(row.value/max*100))}%"></i></span><span class="bar-val">${money(row.value)}</span></button>`).join("")||`<p class="empty">브랜드 데이터가 없습니다.</p>`;
+    }
+    function regionStat(region){
+      const candidates=rows().filter((row)=>row.region===region);
+      const total=candidates.reduce((sum,row)=>sum+Number(row.totalSearch||0),0);
+      const top=[...candidates].sort((a,b)=>Number(b.score||0)-Number(a.score||0))[0];
+      return {region,total,top};
+    }
+    function colorFor(label,total){
+      if(label==="피하기")return"#e11d48";
+      if(label==="따라쓰기")return"#f59e0b";
+      if(label==="틈새")return"#0f9f8f";
+      if(total>0)return"#2563eb";
+      return"#dbe6f1";
+    }
     function renderMap(){
-      const stats=new Map(regionStats().map(s=>[s.region,s]));
       const svg=$("mapSvg");
-      svg.innerHTML=`<defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#dfe7f0" stroke-width="1"/></pattern></defs><rect x="0" y="0" width="720" height="570" fill="url(#grid)" opacity=".35"/>`;
-      for(const [region,layout] of Object.entries(regionLayout)){
-        const stat=stats.get(region)||{region,total:0,brands:new Map(),rows:[]};
+      svg.innerHTML=`<defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#dfe7f0" stroke-width="1"/></pattern></defs><rect x="0" y="0" width="720" height="430" fill="url(#grid)" opacity=".35"/>`;
+      const details=[];
+      for(const [region,layout] of Object.entries(mapRegions)){
+        const stat=regionStat(region);
         const active=state.selectedRegion===region;
+        const fill=colorFor(stat.top?.competitionLabel,stat.total);
         const group=document.createElementNS("http://www.w3.org/2000/svg","g");
-        group.dataset.region=region; group.style.cursor="pointer";
-        group.innerHTML=`<path class="zone-shape ${active?"active":""}" d="${layout.path}" fill="${colorFor(stat)}" opacity="${stat.total?'.9':'.52'}"></path>
-          <circle class="map-pin" cx="${layout.x}" cy="${layout.y-20}" r="${Math.max(5,Math.min(15,Math.sqrt(stat.total||1)*1.2))}"></circle>
-          <text class="map-label" x="${layout.x}" y="${layout.y+4}" text-anchor="middle">${region}</text>
-          <text class="map-value" x="${layout.x}" y="${layout.y+22}" text-anchor="middle">검색 ${money(stat.total||0)}</text>`;
+        group.dataset.region=region;
+        group.style.cursor="pointer";
+        group.innerHTML=`<path class="shape ${active?"active":""}" d="${layout.path}" fill="${fill}" opacity="${stat.total?'.88':'.5'}"></path>
+          <text class="map-label" x="${layout.x}" y="${layout.y}" text-anchor="middle">${region.replace("시","").replace("구","")}</text>
+          <text class="map-value" x="${layout.x}" y="${layout.y+18}" text-anchor="middle">${stat.total?money(stat.total):"-"}</text>`;
         svg.appendChild(group);
+        if(stat.top)details.push(stat.top);
       }
+      $("mapDetails").innerHTML=details.sort((a,b)=>Number(b.score||0)-Number(a.score||0)).slice(0,5).map((row,index)=>`<div class="row"><strong>${index+1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · ${metric(row.totalSearch,row.searchVolumeStatus)}</span><span><span class="badge ${badgeClass(row.competitionLabel)}">${escapeHtml(row.competitionLabel||"확인")}</span></span></div>`).join("")||`<p class="empty">지도에 표시할 지역 후보가 없습니다.</p>`;
     }
-    function renderDecision(){
-      const rowsNow=filteredRows(); const top=rowsNow[0]; const stat=regionStats().find(s=>s.region===(state.selectedRegion==="전체"?top?.region:state.selectedRegion)); const v=verdict(stat);
-      $("decisionBox").innerHTML=top?`<strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)}</strong><p>검색량 ${metric(top.totalSearch)} 기준 대표 조합입니다. 오른쪽 최근 광고글과 함께 따라쓸지 피할지 판단하세요.</p><span class="tag ${v.cls}">${escapeHtml(v.label)}</span>`:`<strong>지역 선택</strong><p>지도에서 지역을 클릭하면 상세 인사이트가 나타납니다.</p>`;
-      $("regionEvidence").innerHTML=rowsNow.slice(0,5).map((row,i)=>`<div class="rank-row"><strong>${i+1}. ${escapeHtml(row.region)} ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch)}</span></div>`).join("")||`<p class="empty">후보가 없습니다.</p>`;
-      $("evidenceTable").innerHTML=regionStats().slice(0,10).map((s)=>{const topRow=s.rows.sort((a,b)=>Number(b.totalSearch||0)-Number(a.totalSearch||0))[0];const v=verdict(s);return`<tr><td>${escapeHtml(s.region)}</td><td>${escapeHtml(topRow?.brand||"-")}</td><td>${money(s.total)}</td><td>${escapeHtml(v.label)}</td></tr>`}).join("");
-      $("selectedBrandList").innerHTML=rowsNow.slice(0,8).map((row,i)=>`<div class="rank-row"><strong>${i+1}. ${escapeHtml(row.brand)}</strong><span>${escapeHtml(row.keyword)} · 월검색 ${metric(row.totalSearch)}</span></div>`).join("")||`<p class="empty">선택 지역 후보가 없습니다.</p>`;
+    function flattenContent(){
+      return (state.content?.groups||[]).flatMap((group)=>(group.items||[]).map((item)=>({...item,query:group.query,decision:group.decision?.label||"관찰"}))).filter((item)=>item.ageDays==null||item.ageDays<=30).sort((a,b)=>(a.ageDays??999)-(b.ageDays??999));
     }
-    function brandRows(){
-      const rowsNow=filteredRows();
-      if(state.selectedRegion!=="전체"&&rowsNow.length){
-        const by=new Map(); for(const row of rowsNow){by.set(row.brand,(by.get(row.brand)||0)+Number(row.totalSearch||0))}
-        return [...by.entries()].map(([brand,transferSearch])=>({brand,transferSearch})).sort((a,b)=>b.transferSearch-a.transferSearch).slice(0,10);
->>>>>>> Stashed changes
-      }
-      return [...(state.data?.dashboard?.brandDemand||[])].sort((a,b)=>Number(b.transferSearch||0)-Number(a.transferSearch||0)).slice(0,10);
-    }
-    function renderBrandTop(){
-      const list=brandRows(); const max=Math.max(1,...list.map(x=>Number(x.transferSearch||0)));
-      $("brandTop10").innerHTML=list.map((row,i)=>{const w=Math.max(4,Math.round(Number(row.transferSearch||0)/max*100));return`<button class="bar-row" data-brand="${escapeHtml(row.brand)}"><span class="bar-name">${i+1}. ${escapeHtml(row.brand)}</span><span class="bar-track"><i class="bar-fill" style="width:${w}%"></i></span><span class="bar-val">${money(row.transferSearch)}</span></button>`}).join("")||`<p class="empty">브랜드 데이터가 없습니다.</p>`;
-    }
-    function flattenContent(){return(state.content?.groups||[]).flatMap(g=>(g.items||[]).map(item=>({...item,query:g.query,decision:g.decision?.label||"관찰"}))).filter(item=>item.ageDays==null||item.ageDays<=30).sort((a,b)=>(a.ageDays??999)-(b.ageDays??999))}
     function renderContent(){
-      const items=flattenContent();
-      $("recentContentTop10").innerHTML=items.length?items.slice(0,10).map((item,i)=>`<div class="content-row"><a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${i+1}. ${escapeHtml(item.title||"제목 없음")}</a><span>${escapeHtml(item.source)} · ${escapeHtml(item.author||"출처 확인")} · ${escapeHtml(item.postdate||"날짜 확인")} · ${item.ageDays??"?"}일 전</span><span>${escapeHtml(item.intent)} · 조회수 ${escapeHtml(item.viewStatus||"공식 API 미제공")} · ${escapeHtml(item.decision)}</span></div>`).join(""):`<p class="empty">한 달 이내 블로그/카페 광고글 표본이 없습니다.</p>`;
+      const items=flattenContent().slice(0,10);
+      $("recentContentTop10").innerHTML=items.map((item,index)=>`<div class="content-row"><a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${index+1}. ${escapeHtml(item.title||"제목 없음")}</a><span>${escapeHtml(item.source)} · ${escapeHtml(item.author||"출처 확인")} · ${escapeHtml(item.postdate||"날짜 확인")} · ${item.ageDays??"?"}일 전</span><span>${escapeHtml(item.intent)} · 조회수 ${escapeHtml(item.viewStatus||"공식 API 미제공")} · ${escapeHtml(item.decision)}</span></div>`).join("")||`<p class="empty">최근 블로그·카페 글 표본이 없습니다.</p>`;
     }
-    function renderActions(){
-      const top=filteredRows()[0]; const cnt=flattenContent().length;
-      $("actionList").innerHTML=top?`<div class="rank-row"><strong>${escapeHtml(top.region)} ${escapeHtml(top.brand)} 글감</strong><span>핵심 키워드: ${escapeHtml(top.keyword)}</span><span>최근 광고글 ${cnt}건 기준으로 제목을 정보형으로 차별화하세요.</span></div>`:`<p class="empty">지역을 선택하세요.</p>`;
+    function renderHandoff(){
+      const picks=filteredRows().slice(0,3);
+      $("handoffList").innerHTML=picks.map((row,index)=>`<div class="row"><div class="row-head"><div><strong>${index+1}. ${escapeHtml(row.region||"전국")} ${escapeHtml(row.brand||"")}</strong><span>${escapeHtml(row.keyword)}</span><div class="handoff">${escapeHtml(handoff(row))}</div></div><button class="btn secondary small" data-handoff-index="${index}">복사</button></div></div>`).join("")||`<p class="empty">넘길 후보가 없습니다.</p>`;
     }
-    function renderAll(){renderSummary();renderMap();renderDecision();renderBrandTop();renderContent();renderActions()}
-    function contentTarget(){const top=filteredRows()[0]||rows()[0];return{brand:state.selectedBrand!=="전체"?state.selectedBrand:top?.brand||"",region:state.selectedRegion!=="전체"?state.selectedRegion:top?.region||"",keyword:top?.keyword||""}}
+    function renderAll(){
+      renderSummary(); renderKeywordRows(); renderBrands(); renderMap(); renderContent(); renderHandoff();
+    }
+    function contentTarget(){
+      const top=filteredRows()[0]||rows()[0]||{};
+      return {brand:state.selectedBrand!=="전체"?state.selectedBrand:top.brand||"",region:state.selectedRegion!=="전체"?state.selectedRegion:top.region||"",keyword:top.keyword||""};
+    }
     async function loadContentIntel(){
-      const t=contentTarget(); $("recentContentTop10").innerHTML=`<p class="empty">최근 글 확인중입니다.</p>`;
-      try{const qs=new URLSearchParams(); if(t.brand)qs.set("brand",t.brand); if(t.region)qs.set("region",t.region); if(t.keyword)qs.set("keyword",t.keyword); const res=await fetch(`/api/content-intel?${qs}`); state.content=await res.json()}catch{state.content={groups:[]}}
-      renderContent(); renderActions(); renderSummary();
+      const target=contentTarget();
+      $("recentContentTop10").innerHTML=`<p class="empty">최근 글을 확인 중입니다.</p>`;
+      try{
+        const qs=new URLSearchParams();
+        if(target.brand)qs.set("brand",target.brand);
+        if(target.region)qs.set("region",target.region);
+        if(target.keyword)qs.set("keyword",target.keyword);
+        const res=await fetch(`/api/content-intel?${qs}`);
+        state.content=await res.json();
+      }catch{state.content={groups:[]}}
+      renderContent(); renderHandoff();
     }
     async function fetchInsights(refresh=false){
       $("status").textContent=refresh?"새 데이터 수집중":"저장 데이터 확인중";
-      const s=currentSearch();
-      try{const res=await fetch(`/api/keywords${queryString(refresh)}`); const data=await res.json(); if(data.setupNeeded){$("status").textContent="API 설정 필요";return} state.data=data; state.selectedBrand=s.brand||"전체"; state.selectedRegion=s.region||"전체"; $("dataStamp").textContent=data.cacheStatus==="fresh"?"오늘 새 수집":"저장 데이터"; $("status").textContent="분석 완료"; renderAll(); loadContentIntel()}catch{$("status").textContent="서버 연결 필요"}
+      if(refresh)$("apiEstimate").textContent="SearchAd 속도 제한을 지키며 수집 중입니다. 후보가 많으면 1분 정도 걸릴 수 있습니다.";
+      try{
+        const res=await fetch(`/api/keywords${queryString(refresh)}`);
+        const data=await res.json();
+        if(data.setupNeeded){$("status").textContent="API 설정 필요";return}
+        state.data=data;
+        state.selectedBrand=$("brandQuery").value.trim()||"전체";
+        state.selectedRegion=$("regionQuery").value.trim()||"전체";
+        $("dataStamp").textContent=data.cacheStatus==="fresh"?"오늘 수집":"저장 데이터";
+        $("status").textContent=data.searchAdStatus==="error"?"검색광고 제한":"분석 완료";
+        const usage=data.apiUsageEstimate||{};
+        $("apiEstimate").textContent=`후보 ${usage.keywordCandidates||0}개 · SearchAd 약 ${usage.searchAdCalls||0}회 · Open API 최대 ${usage.openApiCalls||0}회`;
+        renderAll();
+        loadContentIntel();
+      }catch(error){
+        $("status").textContent="서버 연결 필요";
+      }
+    }
+    function copyText(text){
+      navigator.clipboard?.writeText(text).then(()=>$("status").textContent="복사 완료").catch(()=>$("status").textContent="복사 실패");
     }
     document.addEventListener("click",(event)=>{
-      const g=event.target.closest("g[data-region]"); if(g){state.selectedRegion=g.dataset.region;$("regionQuery").value=state.selectedRegion;renderAll();loadContentIntel()}
-      const b=event.target.closest("[data-brand]")?.dataset.brand; if(b){state.selectedBrand=b;$("brandQuery").value=b;renderAll();loadContentIntel()}
+      const tab=event.target.closest("[data-filter]");
+      if(tab){state.filter=tab.dataset.filter;document.querySelectorAll(".tab").forEach((node)=>node.classList.toggle("active",node===tab));renderAll();return}
+      const brand=event.target.closest("[data-brand]")?.dataset.brand;
+      if(brand){state.selectedBrand=brand;$("brandQuery").value=brand;renderAll();loadContentIntel();return}
+      const mapRegion=event.target.closest("g[data-region]")?.dataset.region;
+      if(mapRegion){state.selectedRegion=mapRegion;$("regionQuery").value=mapRegion;renderAll();loadContentIntel();return}
+      const copyIndex=event.target.closest("[data-copy-index]")?.dataset.copyIndex;
+      if(copyIndex!==undefined){copyText(handoff(filteredRows()[Number(copyIndex)]));return}
+      const handoffIndex=event.target.closest("[data-handoff-index]")?.dataset.handoffIndex;
+      if(handoffIndex!==undefined){copyText(handoff(filteredRows()[Number(handoffIndex)]));return}
     });
-<<<<<<< Updated upstream
-
-    $("refresh").addEventListener("click", () => fetchInsights(true, false));
-    $("analyze").addEventListener("click", () => fetchInsights(false, true));
-    $("reloadStatus").addEventListener("click", loadStatus);
-    $("clearFilter").addEventListener("click", clearFilters);
-    $("brandQuery").addEventListener("input", () => { updateSearchViewer(); updateApiEstimate(); });
-    $("regionQuery").addEventListener("input", () => { updateSearchViewer(); updateApiEstimate(); });
-    $("brandQuery").addEventListener("keydown", (event) => { if (event.key === "Enter") fetchInsights(false, true); });
-    $("regionQuery").addEventListener("keydown", (event) => { if (event.key === "Enter") fetchInsights(false, true); });
-    $("brands").addEventListener("input", refreshFilterPreview);
-    $("regions").addEventListener("input", refreshFilterPreview);
-    $("customKeywords").addEventListener("input", () => { refreshCustomKeywordStatus(); updateApiEstimate(); });
-    refreshFilterPreview();
-    loadStatus();
-    fetchInsights(false, true);
-=======
-    $("clearRegion").addEventListener("click",()=>{state.selectedRegion="전체";$("regionQuery").value="";renderAll();loadContentIntel()});
     $("analyze").addEventListener("click",()=>fetchInsights(false));
-    $("load").addEventListener("click",()=>fetchInsights(false));
     $("refresh").addEventListener("click",()=>fetchInsights(true));
     $("reloadContentIntel").addEventListener("click",loadContentIntel);
-    $("brandQuery").addEventListener("keydown",(e)=>{if(e.key==="Enter")fetchInsights(false)});
-    $("regionQuery").addEventListener("keydown",(e)=>{if(e.key==="Enter")fetchInsights(false)});
+    $("clearFilter").addEventListener("click",()=>{$("brandQuery").value="";$("regionQuery").value="";$("customKeywords").value="";state.selectedBrand="전체";state.selectedRegion="전체";fetchInsights(false)});
+    $("brandQuery").addEventListener("keydown",(event)=>{if(event.key==="Enter")fetchInsights(false)});
+    $("regionQuery").addEventListener("keydown",(event)=>{if(event.key==="Enter")fetchInsights(false)});
     fetchInsights(false);
->>>>>>> Stashed changes
   </script>
 </body>
 </html>
