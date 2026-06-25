@@ -820,7 +820,7 @@ function handoffText(row) {
   ].join("\n");
 }
 
-function competitionLabel(row) {
+function legacyBlogVolumeLabel(row) {
   const total = Number(row.blogTotal || 0);
   if (!total) return "블로그 경쟁 확인 필요";
   if (total >= 10000) return "블로그 경쟁 높음";
@@ -841,7 +841,7 @@ function anomalyReason(row) {
   if (lift > 0) parts.push(`최근 7일 평균이 30일 평균보다 ${lift}% 높습니다`);
   else if (lift < 0) parts.push(`최근 7일 평균이 30일 평균보다 ${Math.abs(lift)}% 낮습니다`);
   if (Number(row.totalSearch || 0) > 0) parts.push(`월검색 ${Number(row.totalSearch || 0).toLocaleString("ko-KR")}회`);
-  parts.push(competitionLabel(row));
+  parts.push(legacyBlogVolumeLabel(row));
   return parts.join(" · ");
 }
 
@@ -859,7 +859,7 @@ function recommendationFromRow(row) {
     trend7d: row.trend7d,
     trend30d: row.trend30d,
     trendLift: trendLift(row),
-    competitionLabel: row.competitionLabel || competitionLabel(row),
+    competitionLabel: row.competitionLabel || legacyBlogVolumeLabel(row),
     competitionReason: row.competitionReason || "",
     contentSamples: row.contentSamples || [],
     score: row.score,
@@ -966,7 +966,7 @@ function buildDashboard(rows) {
 
   const anomalySignals = topBy(
     safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수"),
-    (row) => Math.max(0, trendLift(row)) * 12 + opportunityScore(row) * 30 + (competitionLabel(row).includes("낮음") ? 120 : 0),
+    (row) => Math.max(0, trendLift(row)) * 12 + opportunityScore(row) * 30 + (legacyBlogVolumeLabel(row).includes("낮음") ? 120 : 0),
     8
   ).map((row) => ({ ...recommendationFromRow(row), signalReason: anomalyReason(row) }));
 
