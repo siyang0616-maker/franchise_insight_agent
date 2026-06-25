@@ -10,6 +10,7 @@ const DEFAULT_PORT = Number(process.env.PORT || 8766);
 const PROJECT_CONFIG_PATH = path.join(__dirname, "naver-api-config.json");
 const USER_CONFIG_PATH = path.join(os.homedir(), ".naver-blog-agent", "naver-api-config.json");
 let nextPort = DEFAULT_PORT;
+let openApiRequestChain = Promise.resolve();
 
 const DEFAULT_BRANDS = [
   "메가커피",
@@ -110,6 +111,17 @@ function matchMostSpecific(text, candidates) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function waitForOpenApiSlot() {
+  const previous = openApiRequestChain;
+  let release;
+  openApiRequestChain = new Promise((resolve) => {
+    release = resolve;
+  });
+  await previous;
+  await sleep(180);
+  release();
 }
 
 function ymd(date) {
@@ -289,6 +301,7 @@ async function naverSearchTotal(query, type, cfg) {
     const url = new URL(`https://openapi.naver.com/v1/search/${type}.json`);
     url.searchParams.set("query", query);
     url.searchParams.set("display", "1");
+    await waitForOpenApiSlot();
     const res = await fetch(url, {
       signal: AbortSignal.timeout(6000),
       headers: {
@@ -296,10 +309,15 @@ async function naverSearchTotal(query, type, cfg) {
         "X-Naver-Client-Secret": cfg.naverClientSecret
       }
     });
-    if (!res.ok) return 0;
+    if (!res.ok) {
+      const errorBody = await res.text().catch(() => "");
+      console.error(`[naverSearchTotal] 실패 query="${query}" type="${type}" status=${res.status} ${errorBody}`);
+      return 0;
+    }
     const data = await res.json();
     return Number(data.total || 0);
-  } catch {
+  } catch (error) {
+    console.error(`[naverSearchTotal] 예외 query="${query}" type="${type}" error=${error.message || error}`);
     return 0;
   }
 }
@@ -322,6 +340,7 @@ async function naverSearchItems(query, type, cfg, display = 3, sort = "") {
     url.searchParams.set("query", query);
     url.searchParams.set("display", String(display));
     url.searchParams.set("sort", sort || (type === "news" ? "date" : "sim"));
+    await waitForOpenApiSlot();
     const res = await fetch(url, {
       signal: AbortSignal.timeout(6000),
       headers: {
@@ -329,7 +348,11 @@ async function naverSearchItems(query, type, cfg, display = 3, sort = "") {
         "X-Naver-Client-Secret": cfg.naverClientSecret
       }
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      const errorBody = await res.text().catch(() => "");
+      console.error(`[naverSearchItems] 실패 query="${query}" type="${type}" status=${res.status} ${errorBody}`);
+      return [];
+    }
     const data = await res.json();
     return (data.items || []).map((item) => ({
       title: stripHtml(item.title),
@@ -340,7 +363,8 @@ async function naverSearchItems(query, type, cfg, display = 3, sort = "") {
       postdate: item.postdate || "",
       type
     })).filter((item) => item.title || item.description);
-  } catch {
+  } catch (error) {
+    console.error(`[naverSearchItems] 예외 query="${query}" type="${type}" error=${error.message || error}`);
     return [];
   }
 }

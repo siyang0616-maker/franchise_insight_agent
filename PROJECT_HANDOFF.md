@@ -305,3 +305,11 @@ Refine keyword search workflow and insight signals
 - 429 발생 시 2초 추가 대기 후 다음 묶음을 시도.
 - 연속 10회 실패하면 남은 후보는 건너뛰고, 그 시점까지 수집한 검색량 데이터는 유지.
 - 응답 JSON에 `searchAdStats`를 추가해 후보 수, 정확 매칭 수, 보정 매칭 수, 429 횟수, 소요 시간을 확인할 수 있게 함.
+
+## 2026-06-25 추가 메모 (네이버 검색 Open API 키 설정 문제 해결)
+
+naver-api-config.json의 Open API 키 자체는 유효했으나, 네이버 개발자센터에서 해당 애플리케이션에 "검색" API 사용 설정이 빠져 있어 401 Authentication failed(errorCode 024)가 발생했던 것으로 확인됨. 개발자센터에서 "검색" API를 추가 등록한 뒤 정상화됨.
+
+이로 인해 그동안 점유공백 분석(naverSearchItems)이 항상 빈 배열을 반환해 모든 키워드가 기계적으로 "틈새"로 잘못 표시되던 문제도 함께 해결됨.
+
+최종 검증 중 Open API 호출도 동시에 많이 몰리면 429가 발생하는 것을 확인해 `naverSearchTotal`, `naverSearchItems`에 전역 요청 간격 제한을 추가함. 2026-06-25 기준 전체 새 수집 결과: 후보 216개, SearchAd 정확 매칭 216개, SearchAd 429 0회, 상위 30개 경쟁 라벨은 관찰 25개 / 따라쓰기 5개, 최근 블로그·카페 글 표본 20건 확인.
