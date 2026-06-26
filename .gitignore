@@ -2,6 +2,9 @@
 keyword-cache.json
 keyword-cache-*.json
 server.log
+server-error.log
 server.*.log
+draft-history.json
+backups/draft-history-*.json
 .DS_Store
 

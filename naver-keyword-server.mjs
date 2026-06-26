@@ -4,11 +4,18 @@ import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  backupDraftHistory,
+  isAuthorizedRequest,
+  normalizeDraftHistoryItem
+} from "./scripts/server-ops.mjs";
+import { buildGenerateDraftResponse } from "./scripts/generate-draft-api.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PORT = Number(process.env.PORT || 8766);
 const PROJECT_CONFIG_PATH = path.join(__dirname, "naver-api-config.json");
 const USER_CONFIG_PATH = path.join(os.homedir(), ".naver-blog-agent", "naver-api-config.json");
+const DRAFT_HISTORY_PATH = path.join(__dirname, "draft-history.json");
 let nextPort = DEFAULT_PORT;
 let openApiRequestChain = Promise.resolve();
 
@@ -81,8 +88,8 @@ function json(res, status, payload) {
     "content-type": "application/json; charset=utf-8",
     "cache-control": "no-store",
     "access-control-allow-origin": "*",
-    "access-control-allow-methods": "GET, OPTIONS",
-    "access-control-allow-headers": "content-type"
+    "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
+    "access-control-allow-headers": "content-type, x-blog-agent-token, x-blog-agent-author, authorization"
   });
   res.end(JSON.stringify(payload));
 }
@@ -490,7 +497,7 @@ function brandSearchAliases(brand) {
   const aliases = {
     "투썸플레이스": ["투썸플레이스", "투썸"],
     "배스킨라빈스": ["배스킨라빈스", "배라"],
-    "써브웨이": ["써브웨이", "서브웨이"]
+    "서브웨이": ["서브웨이", "써브웨이"]
   };
   return aliases[brand] || [brand];
 }
@@ -608,6 +615,30 @@ function cachePathFor(cfg) {
   });
   const hash = crypto.createHash("sha1").update(key).digest("hex").slice(0, 12);
   return path.join(__dirname, `keyword-cache-${hash}.json`);
+}
+
+async function readDraftHistory() {
+  const items = await readJsonIfExists(DRAFT_HISTORY_PATH);
+  return Array.isArray(items) ? items : [];
+}
+
+async function writeDraftHistory(items) {
+  const safeItems = Array.isArray(items) ? items.slice(0, 200) : [];
+  await fs.writeFile(DRAFT_HISTORY_PATH, JSON.stringify(safeItems, null, 2), "utf8");
+  await backupDraftHistory(DRAFT_HISTORY_PATH, safeItems);
+  return safeItems;
+}
+
+async function readRequestJson(req) {
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const raw = Buffer.concat(chunks).toString("utf8").trim();
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
 }
 
 function keywordIntent(keyword) {
@@ -1312,7 +1343,14 @@ async function serveFile(req, res, port) {
   try {
     const content = await fs.readFile(filePath);
     const ext = path.extname(filePath).toLowerCase();
-    const type = ext === ".html" ? "text/html; charset=utf-8" : ext === ".js" ? "text/javascript; charset=utf-8" : "application/octet-stream";
+    const type =
+      ext === ".html"
+        ? "text/html; charset=utf-8"
+        : ext === ".js"
+          ? "text/javascript; charset=utf-8"
+          : ext === ".json"
+            ? "application/json; charset=utf-8"
+            : "application/octet-stream";
     res.writeHead(200, { "content-type": type });
     res.end(content);
   } catch {
@@ -1327,8 +1365,8 @@ const server = http.createServer(async (req, res) => {
     if (req.method === "OPTIONS") {
       res.writeHead(204, {
         "access-control-allow-origin": "*",
-        "access-control-allow-methods": "GET, OPTIONS",
-        "access-control-allow-headers": "content-type"
+        "access-control-allow-methods": "GET, POST, DELETE, OPTIONS",
+        "access-control-allow-headers": "content-type, x-blog-agent-token, x-blog-agent-author, authorization"
       });
       return res.end();
     }
@@ -1360,7 +1398,52 @@ const server = http.createServer(async (req, res) => {
     if (url.pathname === "/api/status") {
       return json(res, 200, await buildStatus(port));
     }
+    if (url.pathname === "/api/draft-history") {
+      if (!isAuthorizedRequest(req, url)) {
+        return json(res, 401, { ok: false, error: "Unauthorized" });
+      }
+      if (req.method === "GET") {
+        return json(res, 200, { ok: true, items: await readDraftHistory() });
+      }
+      if (req.method === "POST") {
+        const payload = await readRequestJson(req);
+        const item = normalizeDraftHistoryItem(payload.item || payload, req.headers["x-blog-agent-author"]);
+        const current = await readDraftHistory();
+        const next = [item, ...current.filter((saved) => String(saved.id) !== String(item.id))];
+        return json(res, 200, { ok: true, items: await writeDraftHistory(next) });
+      }
+      if (req.method === "DELETE") {
+        return json(res, 200, { ok: true, items: await writeDraftHistory([]) });
+      }
+      return json(res, 405, { ok: false, error: "Method not allowed" });
+    }
+    if (url.pathname === "/api/generate-draft") {
+      if (!isAuthorizedRequest(req, url)) {
+        return json(res, 401, { ok: false, error: "Unauthorized" });
+      }
+      if (req.method !== "POST") {
+        return json(res, 405, { ok: false, error: "Method not allowed" });
+      }
+      const payload = await readRequestJson(req);
+      const generated = await buildGenerateDraftResponse(payload, req.headers["x-blog-agent-author"]);
+      if (!generated.ok && generated.error) {
+        return json(res, 400, generated);
+      }
+      if (payload.sourceScore !== undefined || payload.sourceKeyword) {
+        generated.draft.sourceKeyword = String(payload.sourceKeyword || "");
+        generated.draft.sourceScore = payload.sourceScore !== undefined ? Number(payload.sourceScore) : null;
+        generated.draft.sourceCompetitionLabel = String(payload.sourceCompetitionLabel || "");
+        generated.draft.recommendedAt = String(payload.recommendedAt || "");
+      }
+      const current = await readDraftHistory();
+      const next = [generated.draft, ...current.filter((saved) => String(saved.id) !== String(generated.draft.id))];
+      await writeDraftHistory(next);
+      return json(res, 200, generated);
+    }
     if (url.pathname === "/api/keywords") {
+      if (!isAuthorizedRequest(req, url)) {
+        return json(res, 401, { ok: false, error: "Unauthorized" });
+      }
       const cfg = applyKeywordOverrides(await loadConfig(), url);
       if (cfg.missing.length) {
         return json(res, 200, {
@@ -1385,6 +1468,9 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, { ...result, cacheStatus: "fresh" });
     }
     if (url.pathname === "/api/content-intel") {
+      if (!isAuthorizedRequest(req, url)) {
+        return json(res, 401, { ok: false, error: "Unauthorized" });
+      }
       const cfg = await loadConfig();
       if (cfg.missing.length || cfg.openApiMissing?.length) {
         return json(res, 200, {
@@ -1396,6 +1482,9 @@ const server = http.createServer(async (req, res) => {
       return json(res, 200, await contentIntel(cfg, url));
     }
     if (url.pathname === "/api/brand-context") {
+      if (!isAuthorizedRequest(req, url)) {
+        return json(res, 401, { ok: false, error: "Unauthorized" });
+      }
       const cfg = await loadConfig();
       const brand = url.searchParams.get("brand") || "";
       const result = await brandContext(brand, cfg);
@@ -1420,6 +1509,40 @@ server.on("error", (error) => {
   console.error(error.message || String(error));
   process.exitCode = 1;
 });
+
+let lastAutoCollectDate = null;
+
+function localDateKey(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function checkAndRunScheduledCollect(cfg) {
+  const now = new Date();
+  const todayKey = localDateKey(now);
+  if (now.getHours() !== cfg.dailyRefreshHour || lastAutoCollectDate === todayKey) return;
+
+  lastAutoCollectDate = todayKey;
+  console.log(`[자동수집] ${now.toISOString()} 예약된 데이터 수집을 시작합니다.`);
+  collectKeywords(cfg)
+    .then((result) => {
+      console.log(`[자동수집] 완료. 후보 ${result.searchAdStats?.candidateCount ?? "?"}개 처리.`);
+    })
+    .catch((error) => {
+      console.error(`[자동수집] 실패: ${error.message || error}`);
+    });
+}
+
+setInterval(async () => {
+  try {
+    const cfg = await loadConfig();
+    if (cfg.missing.length === 0) checkAndRunScheduledCollect(cfg);
+  } catch (error) {
+    console.error(`[자동수집] 설정 확인 중 오류: ${error.message || error}`);
+  }
+}, 10 * 60 * 1000);
 
 server.listen(nextPort, "127.0.0.1", () => {
   const port = server.address()?.port || DEFAULT_PORT;
