@@ -10,6 +10,12 @@ import {
   normalizeDraftHistoryItem
 } from "./scripts/server-ops.mjs";
 import { buildGenerateDraftResponse } from "./scripts/generate-draft-api.mjs";
+import {
+  buildTrend7d,
+  classifyContentCompetition,
+  normalizeDataLabPoints,
+  occupancyBonusFor
+} from "./scripts/keyword-insight-metrics.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_PORT = Number(process.env.PORT || 8766);
@@ -419,25 +425,6 @@ function normalizeContentItem(item, source, query, index) {
   };
 }
 
-function classifyContentCompetition(items) {
-  const recentItems = items.filter((item) => item.ageDays !== null && item.ageDays <= 14);
-  const adLike = items.filter((item) => /양도양수형|광고강함/.test(item.intent));
-  const cafeCount = items.filter((item) => item.source === "카페").length;
-  if (!items.length) {
-    return { label: "틈새", reason: "최근 블로그·카페 검색 결과가 적어 지역형 글감으로 테스트할 여지가 있습니다." };
-  }
-  if (recentItems.length >= 6 && adLike.length >= 4) {
-    return { label: "피하기", reason: "최근 광고성 제목이 많이 올라와 같은 키워드로 쓰면 묻힐 가능성이 큽니다." };
-  }
-  if (recentItems.length >= 2 && recentItems.length <= 5 && adLike.length <= 3) {
-    return { label: "따라쓰기", reason: "최근 글은 있지만 과밀하지 않아 비슷한 키워드로 정보형 각도를 붙일 수 있습니다." };
-  }
-  if (cafeCount >= 3) {
-    return { label: "관찰", reason: "카페글 반응이 함께 보입니다. 실제 조회수는 확인되지 않으므로 제목 패턴을 더 지켜보세요." };
-  }
-  return { label: "관찰", reason: "공개 검색 결과만으로는 조회수 판단이 부족합니다. 제목 패턴 중심으로 참고하세요." };
-}
-
 async function contentIntel(cfg, url) {
   const brand = (url.searchParams.get("brand") || "").trim();
   const region = (url.searchParams.get("region") || "").trim();
@@ -455,9 +442,11 @@ async function contentIntel(cfg, url) {
   }
   const uniqueQueries = [...new Set(queries)].slice(0, 3);
   const groups = await Promise.all(uniqueQueries.map(async (query) => {
-    const [blogItems, cafeItems] = await Promise.all([
+    const [blogItems, cafeItems, blogTotal, newsTotal] = await Promise.all([
       naverSearchItems(query, "blog", cfg, 5, "date"),
-      naverSearchItems(query, "cafearticle", cfg, 5, "date")
+      naverSearchItems(query, "cafearticle", cfg, 5, "date"),
+      naverSearchTotal(query, "blog", cfg),
+      naverSearchTotal(query, "news", cfg)
     ]);
     const items = [
       ...blogItems.map((item, index) => normalizeContentItem(item, "블로그", query, index)),
@@ -468,14 +457,19 @@ async function contentIntel(cfg, url) {
       if (dateA !== dateB) return dateB.localeCompare(dateA);
       return a.rank - b.rank;
     });
+    const decision = classifyContentCompetition(0, blogTotal, newsTotal, items);
     return {
       query,
-      decision: classifyContentCompetition(items),
+      decision,
       counts: {
         total: items.length,
         blog: items.filter((item) => item.source === "블로그").length,
         cafe: items.filter((item) => item.source === "카페").length,
-        recent14d: items.filter((item) => item.ageDays !== null && item.ageDays <= 14).length
+        recent14d: items.filter((item) => item.ageDays !== null && item.ageDays <= 14).length,
+        blogTotal,
+        newsTotal,
+        supplyRatio: decision.supplyRatio,
+        demandLevel: decision.demandLevel
       },
       items
     };
@@ -542,7 +536,7 @@ async function brandContext(brand, cfg) {
 }
 
 async function dataLabTrend(query, cfg, days = 30) {
-  if (cfg.openApiMissing?.length) return { yesterday: 0, delta: 0 };
+  if (cfg.openApiMissing?.length) return { yesterday: 0, delta: 0, points: [] };
   try {
     const end = new Date();
     end.setDate(end.getDate() - 1);
@@ -563,10 +557,11 @@ async function dataLabTrend(query, cfg, days = 30) {
         keywordGroups: [{ groupName: query, keywords: [query] }]
       })
     });
-    if (!res.ok) return { yesterday: 0, delta: 0 };
+    if (!res.ok) return { yesterday: 0, delta: 0, points: [] };
     const data = await res.json();
-    const points = data.results?.[0]?.data || [];
-    const values = points.map((point) => Number(point.ratio || 0));
+    const rawPoints = data.results?.[0]?.data || [];
+    const points = normalizeDataLabPoints(rawPoints);
+    const values = points.map((point) => point.value);
     const last = Number(values.at(-1) || 0);
     const prev = Number(values.at(-2) || 0);
     const first = Number(values[0] || 0);
@@ -576,10 +571,10 @@ async function dataLabTrend(query, cfg, days = 30) {
       delta: Math.round((last - prev) * 10) / 10,
       periodDelta: Math.round((last - first) * 10) / 10,
       average: Math.round(average * 10) / 10,
-      points: values.map((value) => Math.round(value * 10) / 10)
+      points
     };
   } catch {
-    return { yesterday: 0, delta: 0 };
+    return { yesterday: 0, delta: 0, points: [] };
   }
 }
 
@@ -671,14 +666,6 @@ function trendLiftBonusFor(row) {
   return 0;
 }
 
-function occupancyBonusFor(label) {
-  if (label === "틈새") return 2;
-  if (label === "따라쓰기") return 0.8;
-  if (label === "관찰") return 0;
-  if (label === "피하기") return -1.5;
-  return 0;
-}
-
 function confidenceMultiplierFor(status) {
   if (status === "ok") return 1;
   if (status === "fallback_brand") return 0.85;
@@ -729,7 +716,7 @@ function opportunityScore(row) {
   const trendLiftBonus = trendLiftBonusFor(row);
   const regionBonus = row.region && keywordIntent(row.keyword) === "양도양수" ? 0.6 : 0;
   const intentBonus = intentBonusFor(row.keyword);
-  const occupancyBonus = occupancyBonusFor(row.competitionLabel);
+  const occupancyBonus = occupancyBonusFor(row);
   const confidenceMultiplier = confidenceMultiplierFor(row.searchVolumeStatus);
   const baseScore = Math.max(0, searchScore + competitionBonus + docOpportunity + trendBonus + trendLiftBonus + regionBonus + intentBonus + occupancyBonus);
   return Math.round(baseScore * confidenceMultiplier * 10) / 10;
@@ -914,8 +901,10 @@ function recommendationFromRow(row) {
     trend7d: row.trend7d,
     trend30d: row.trend30d,
     trendLift: trendLift(row),
-    competitionLabel: row.competitionLabel || legacyBlogVolumeLabel(row),
+    competitionLabel: row.competitionLabel || "확인 필요",
     competitionReason: row.competitionReason || "",
+    supplyRatio: row.supplyRatio ?? null,
+    demandLevel: row.demandLevel || "",
     contentSamples: row.contentSamples || [],
     score: row.score,
     brandMatchAmbiguous: Boolean(row.brandMatchAmbiguous),
@@ -996,10 +985,9 @@ function buildDashboard(rows) {
     })
     .sort((a, b) => b.totalSearch - a.totalSearch);
 
-  const regionalTransferRows = safeRows.filter((row) => row.brand && row.region && keywordIntent(row.keyword) === "양도양수");
-  const writingSourceRows = regionalTransferRows.length
-    ? regionalTransferRows
-    : safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수");
+  const transferRows = safeRows.filter((row) => row.brand && keywordIntent(row.keyword) === "양도양수");
+  const regionalTransferRows = transferRows.filter((row) => row.region);
+  const writingSourceRows = transferRows.length ? transferRows : safeRows.filter((row) => row.brand);
 
   const writingPicks = topBy(
     writingSourceRows,
@@ -1008,7 +996,7 @@ function buildDashboard(rows) {
   ).map(recommendationFromRow);
 
   const regionalOpportunities = topBy(
-    regionalTransferRows,
+    writingSourceRows,
     (row) => Number(row.totalSearch || 0) + opportunityScore(row) * 100,
     120
   ).map(recommendationFromRow);
@@ -1178,13 +1166,7 @@ async function collectKeywords(cfg) {
       naverSearchTotal(row.keyword, "news", cfg),
       dataLabTrend(row.keyword, cfg, 30)
     ]);
-    const trend7Points = (trend30d.points || []).slice(-7);
-    const trend7Average = trend7Points.length ? trend7Points.reduce((sum, value) => sum + value, 0) / trend7Points.length : 0;
-    const trend7d = {
-      points: trend7Points,
-      average: Math.round(trend7Average * 10) / 10,
-      delta: Math.round(((trend7Points.at(-1) || 0) - (trend7Points[0] || 0)) * 10) / 10
-    };
+    const trend7d = buildTrend7d(trend30d);
     row.blogTotal = blogTotal;
     row.newsTotal = newsTotal;
     row.trendYesterday = trend30d.yesterday;
@@ -1195,6 +1177,11 @@ async function collectKeywords(cfg) {
       average: trend30d.average || 0,
       delta: trend30d.periodDelta || 0
     };
+    const baselineDecision = classifyContentCompetition(row.totalSearch, row.blogTotal, row.newsTotal, []);
+    row.competitionLabel = baselineDecision.label;
+    row.competitionReason = baselineDecision.reason;
+    row.supplyRatio = baselineDecision.supplyRatio;
+    row.demandLevel = baselineDecision.demandLevel;
     row.score = scoreRow(row);
     row.reason = explainRow(row);
     row.recommendedTitle = `[${row.region || "전국"}] ${row.brand} 창업 양도양수 / ${row.keyword} 검색수요 기반 분석`;
@@ -1218,9 +1205,11 @@ async function collectKeywords(cfg) {
       ...blogItems.map((item, index) => normalizeContentItem(item, "블로그", row.keyword, index)),
       ...cafeItems.map((item, index) => normalizeContentItem(item, "카페", row.keyword, index))
     ];
-    const decision = classifyContentCompetition(items);
+    const decision = classifyContentCompetition(row.totalSearch, row.blogTotal, row.newsTotal, items);
     row.competitionLabel = decision.label;
     row.competitionReason = decision.reason;
+    row.supplyRatio = decision.supplyRatio;
+    row.demandLevel = decision.demandLevel;
     row.contentSamples = items.slice(0, 5).map((item) => ({
       source: item.source,
       title: item.title,
@@ -1416,6 +1405,20 @@ const server = http.createServer(async (req, res) => {
         return json(res, 200, { ok: true, items: await writeDraftHistory([]) });
       }
       return json(res, 405, { ok: false, error: "Method not allowed" });
+    }
+    if (url.pathname === "/api/draft-history/update") {
+      if (!isAuthorizedRequest(req, url)) return json(res, 401, { ok: false, error: "Unauthorized" });
+      if (req.method !== "POST") return json(res, 405, { ok: false, error: "Method not allowed" });
+      const payload = await readRequestJson(req);
+      const targetId = String(payload.id || "");
+      if (!targetId) return json(res, 400, { ok: false, error: "id가 필요합니다." });
+      const current = await readDraftHistory();
+      const index = current.findIndex((item) => String(item.id) === targetId);
+      if (index === -1) return json(res, 404, { ok: false, error: "해당 항목을 찾을 수 없습니다." });
+      const updated = normalizeDraftHistoryItem({ ...current[index], ...payload }, current[index].author);
+      current[index] = updated;
+      await writeDraftHistory(current);
+      return json(res, 200, { ok: true, item: updated });
     }
     if (url.pathname === "/api/generate-draft") {
       if (!isAuthorizedRequest(req, url)) {

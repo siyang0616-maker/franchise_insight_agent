@@ -4,6 +4,8 @@ keyword-cache-*.json
 server.log
 server-error.log
 server.*.log
+server-*.log
+*.log
 draft-history.json
 backups/draft-history-*.json
 .DS_Store

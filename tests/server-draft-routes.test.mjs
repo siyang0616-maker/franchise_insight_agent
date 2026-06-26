@@ -68,6 +68,26 @@ try {
   assert.equal(history.data.items.length, 1);
   assert.equal(history.data.items[0].sourceKeyword, "인천 BBQ 양도양수");
 
+  const updated = await request("/api/draft-history/update", {
+    method: "POST",
+    headers: { "content-type": "application/json", "x-blog-agent-author": "route-test" },
+    body: JSON.stringify({
+      id: history.data.items[0].id,
+      publishedAt: "2026-06-26",
+      publishedUrl: "https://example.com/bbq",
+      performanceCheckedAt: "2026-06-27",
+      performanceRank: 4,
+      inquiryCount: 2,
+      performanceNote: "문의 2건"
+    })
+  });
+  assert.equal(updated.res.status, 200);
+  assert.equal(updated.data.ok, true);
+  assert.equal(updated.data.item.publishedAt, "2026-06-26");
+  assert.equal(updated.data.item.publishedUrl, "https://example.com/bbq");
+  assert.equal(updated.data.item.performanceRank, 4);
+  assert.equal(updated.data.item.inquiryCount, 2);
+
   const cleared = await request("/api/draft-history", { method: "DELETE" });
   assert.equal(cleared.res.status, 200);
   assert.deepEqual(cleared.data.items, []);
