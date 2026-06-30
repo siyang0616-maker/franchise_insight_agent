@@ -790,6 +790,10 @@ function opportunityScore(row) {
   const occupancyBonus = occupancyBonusFor(row);
   const confidenceMultiplier = confidenceMultiplierFor(row.searchVolumeStatus);
   const baseScore = Math.max(0, searchScore + competitionBonus + docOpportunity + trendBonus + trendLiftBonus + regionBonus + intentBonus + occupancyBonus);
+  row.searchScore = Math.round(searchScore * 10) / 10;
+  row.competitionBonus = Math.round(competitionBonus * 10) / 10;
+  row.trendBonus = Math.round(trendBonus * 10) / 10;
+  row.intentBonus = Math.round(intentBonus * 10) / 10;
   return Math.round(baseScore * confidenceMultiplier * 10) / 10;
 }
 
@@ -978,6 +982,10 @@ function recommendationFromRow(row) {
     demandLevel: row.demandLevel || "",
     contentSamples: row.contentSamples || [],
     score: row.score,
+    searchScore: row.searchScore,
+    competitionBonus: row.competitionBonus,
+    trendBonus: row.trendBonus,
+    intentBonus: row.intentBonus,
     brandMatchAmbiguous: Boolean(row.brandMatchAmbiguous),
     regionMatchAmbiguous: Boolean(row.regionMatchAmbiguous),
     blogTitles: row.blogTitles || [],
@@ -1653,6 +1661,4 @@ server.listen(nextPort, "127.0.0.1", () => {
   const port = server.address()?.port || DEFAULT_PORT;
   console.log(`Naver Blog Agent running at http://127.0.0.1:${port}/naver-blog-agent.html`);
 });
-
-
 

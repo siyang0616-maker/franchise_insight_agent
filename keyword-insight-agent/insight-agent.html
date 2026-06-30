@@ -239,7 +239,7 @@
           <div class="panel-head">
             <div>
               <p class="title">오늘 쓸 만한 키워드 추천</p>
-              <p class="sub">점수는 검색량, 지역성, 점유공백, 최근 추세, 데이터 신뢰도를 합산한 값입니다.</p>
+              <p class="sub">점수 = 검색량(최대10) + 경쟁보너스(최대1.4) + 추세보너스(최대2) + 의도보너스(최대2) × 신뢰도 배율. 행 클릭 시 항목별 점수 확인 가능.</p>
             </div>
             <div class="tabs">
               <button class="tab active" data-filter="all">전체</button>
@@ -251,7 +251,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>순위</th><th>키워드</th><th>검색량</th><th>경쟁 상태</th><th>신뢰도</th><th>점수</th><th>복사</th>
+                  <th>순위</th><th>키워드</th><th>검색량</th><th>경쟁 상태</th><th>신뢰도</th><th>점수 <span style="font-weight:400;font-size:10px;color:var(--muted);">(검색량+경쟁+추세+의도)</span></th><th>복사</th>
                 </tr>
               </thead>
               <tbody id="keywordRows"></tbody>
@@ -275,22 +275,8 @@
             <p class="detail-insight" id="detailInsight"></p>
             <div class="detail-actions">
               <button class="btn secondary small" id="detailCopyHandoff">글쓰기용 문구 복사</button>
-              <button class="btn primary small" id="toggleInlineDraftForm">이 키워드로 글쓰기</button>
             </div>
-            <div id="inlineDraftForm" class="inline-draft-form" hidden>
-              <p class="form-hint">아래 조건은 직접 판단해서 입력하세요. 실제 매물 조건을 반영해야 글의 신뢰도가 올라갑니다.</p>
-              <div class="form-grid">
-                <label>월매출 (필수, 만원) <input type="number" id="inlineSales" placeholder="예: 1200" /></label>
-                <label>창업비용/권리금 (선택, 만원) <input type="number" id="inlinePremium" placeholder="예: 5000" /></label>
-                <label>강점 (선택) <input type="text" id="inlineStrengths" placeholder="예: 역세권, 단골 多" /></label>
-              </div>
-              <label>매물 메모 (선택) <textarea id="inlineListingMemo" placeholder="추가로 강조하고 싶은 내용"></textarea></label>
-              <div class="form-actions">
-                <button class="btn secondary small" id="cancelInlineDraft">취소</button>
-                <button class="btn primary small" id="submitInlineDraft">초안 생성</button>
-              </div>
-              <div id="inlineDraftResult" hidden></div>
-            </div>
+            <div id="inlineDraftForm" class="inline-draft-form" hidden></div>
           </section>
           <div class="map-panel">
             <div class="map-stage">
@@ -330,50 +316,16 @@
             <summary><span class="summary-line"><span class="summary-title">발행 이력 추적</span><span>펼치기</span></span><span class="summary-note" id="historySummary"></span></summary>
             <div class="side-content"><div class="row-list" id="historyList"></div></div>
           </details>
+          <div style="font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px;margin-top:auto;line-height:1.6;">
+            <strong style="display:block;margin-bottom:4px;">다음 업그레이드 예정</strong>
+            · 전일/주간 대비 변화 표시 (스냅샷 2일치 이상 누적 후)<br>
+            · 글 엔진 포맷 A/B 선택 기능<br>
+            · 경쟁 블로그 반복 노출 추적<br>
+            <span style="margin-top:6px;display:block;">상세 내용: ROADMAP.md 참고</span>
+          </div>
         </aside>
       </div>
     </main>
-  </div>
-
-  <div class="modal-backdrop" id="draftModal" hidden>
-    <div class="modal-card">
-      <div id="draftFormStep">
-        <h3>바로 초안 만들기</h3>
-        <div class="draft-meta">
-          <strong id="draftModalBrand"></strong>
-          <span id="draftModalRegion"></span>
-          <span id="draftModalKeyword"></span>
-        </div>
-        <label class="label" for="draftSales">월매출</label>
-        <input id="draftSales" type="number" placeholder="예: 1200" />
-        <label class="label" for="draftPremium">권리금</label>
-        <input id="draftPremium" type="number" placeholder="예: 5000" />
-        <label class="label" for="draftStrengths">강점</label>
-        <input id="draftStrengths" placeholder="예: 역세권, 단골 고객" />
-        <label class="label" for="draftListingMemo">매물 메모</label>
-        <textarea id="draftListingMemo" placeholder="예: 배달 주문이 꾸준한 주거 배후 매장"></textarea>
-        <div class="modal-actions">
-          <button class="btn ghost" id="closeDraftModal" type="button">취소</button>
-          <button class="btn" id="submitDraftModal" type="button">초안 생성</button>
-        </div>
-      </div>
-      <div class="draft-result" id="draftResultStep" hidden>
-        <div class="row-head">
-          <div>
-            <p class="title">생성된 초안</p>
-            <p class="sub" id="draftResultMeta"></p>
-          </div>
-          <button class="btn secondary small" data-copy-draft="full">전체 복사</button>
-        </div>
-        <ul class="draft-title-list" id="draftTitles"></ul>
-        <div class="draft-body" id="draftBody"></div>
-        <div class="draft-tags" id="draftTags"></div>
-        <div class="modal-actions">
-          <button class="btn secondary" id="backToDraftForm" type="button">다시 입력하기</button>
-          <button class="btn" id="closeDraftModalAfterResult" type="button">닫기</button>
-        </div>
-      </div>
-    </div>
   </div>
 
   <div class="modal-backdrop" id="historyModal" hidden>
@@ -410,11 +362,8 @@
       return status === "fallback_brand" ? `${text} (추정)` : text;
     }
     const state = { data:null, content:null, mapData:null, selectedRegion:"전체", selectedBrand:"전체", filter:"all" };
-    let draftModalRow = null;
     let detailRow = null;
-    let inlineDraftRow = null;
     let historyItems = [];
-    let latestDraftText = "";
     const defaultBrands = ["메가커피","컴포즈커피","투썸플레이스","파리바게뜨","롯데리아","서브웨이","배스킨라빈스","샐러디","이디야커피","빽다방","던킨","파스쿠찌","공차","맘스터치","버거킹","맥도날드","교촌치킨","BBQ","BHC","굽네치킨","본죽","한솥도시락","역전할머니맥주","홍콩반점"];
     const defaultRegions = ["서울","경기","인천","강남구","서초구","송파구","노원구","도봉구","강북구","마포구","수원시","용인시","부천시","성남시","의정부시","안양시","천안시"];
     function rows(){return state.data?.dashboard?.regionalOpportunities || state.data?.rows || []}
@@ -696,7 +645,7 @@
     }
     function renderHandoff(){
       const picks=filteredRows().slice(0,3);
-      $("handoffList").innerHTML=picks.map((row,index)=>`<div class="row handoff-card"><div class="row-head"><div><strong>${index+1}. ${escapeHtml(row.region||"전국")} ${escapeHtml(row.brand||"")}</strong><span>${escapeHtml(row.keyword)}</span><div class="handoff">${escapeHtml(handoff(row))}</div></div><div class="row-actions"><button class="btn secondary small" data-handoff-index="${index}">복사</button><button class="btn small" data-draft-index="${index}">바로 초안 만들기</button></div></div></div>`).join("")||`<p class="empty">넘길 후보가 없습니다.</p>`;
+      $("handoffList").innerHTML=picks.map((row,index)=>`<div class="row handoff-card"><div class="row-head"><div><strong>${index+1}. ${escapeHtml(row.region||"전국")} ${escapeHtml(row.brand||"")}</strong><span>${escapeHtml(row.keyword)}</span><div class="handoff">${escapeHtml(handoff(row))}</div></div><div class="row-actions"><button class="btn secondary small" data-handoff-index="${index}">복사</button></div></div></div>`).join("")||`<p class="empty">넘길 후보가 없습니다.</p>`;
     }
     function top5ShareText(){
       const date=new Date().toISOString().slice(0,10);
@@ -709,7 +658,6 @@
     function openKeywordDetail(row) {
       if (!row) return;
       detailRow = row;
-      inlineDraftRow = row;
       $("detailKeyword").textContent = row.keyword || "";
       $("detailMeta").textContent = `${row.region || "전국"} · ${row.brand || "-"}`;
       $("detailVolume").textContent = metric(row.totalSearch, row.searchVolumeStatus);
@@ -719,8 +667,6 @@
       $("detailInsight").textContent = buildDetailInsight(row);
       renderTrendChart(row);
       $("inlineDraftForm").hidden = true;
-      $("inlineDraftResult").hidden = true;
-      $("inlineDraftResult").innerHTML = "";
       $("keywordDetail").hidden = false;
       $("keywordDetail").scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
@@ -867,65 +813,6 @@
         <div class="chart-legend"><span><i class="swatch" style="background:var(--accent-soft)"></i>최근 7일 구간</span><span><i class="swatch-line"></i>30일 평균선</span></div>
       `;
     }
-    function resetInlineDraftForm() {
-      $("inlineSales").value = "";
-      $("inlinePremium").value = "";
-      $("inlineStrengths").value = "";
-      $("inlineListingMemo").value = "";
-      $("inlineDraftResult").hidden = true;
-      $("inlineDraftResult").innerHTML = "";
-    }
-    function toggleInlineDraftForm(row = detailRow) {
-      inlineDraftRow = row;
-      const form = $("inlineDraftForm");
-      form.hidden = !form.hidden;
-      if (!form.hidden) resetInlineDraftForm();
-    }
-    async function submitInlineDraft() {
-      if (!inlineDraftRow) return;
-      const sales = $("inlineSales").value.trim();
-      if (!sales) { alert("월매출은 필수 입력입니다."); return; }
-      const payload = {
-        brand: inlineDraftRow.brand || "",
-        region: inlineDraftRow.region || "전국",
-        sales,
-        premium: $("inlinePremium").value.trim(),
-        strengths: $("inlineStrengths").value.trim(),
-        listingMemo: $("inlineListingMemo").value.trim(),
-        sourceKeyword: inlineDraftRow.keyword || "",
-        sourceScore: inlineDraftRow.score ?? null,
-        sourceCompetitionLabel: inlineDraftRow.competitionLabel || "",
-        recommendedAt: new Date().toISOString(),
-        useLlm:false
-      };
-      const submitBtn = $("submitInlineDraft");
-      submitBtn.disabled = true;
-      submitBtn.textContent = "생성 중...";
-      try {
-        const res = await fetch("/api/generate-draft", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        if (!res.ok || (!data.ok&&!data.draft)) { alert(data.error || "초안 생성에 실패했습니다."); return; }
-        const draft = data.draft;
-        $("inlineDraftResult").hidden = false;
-        $("inlineDraftResult").innerHTML = `
-          <div class="row-head"><p class="title">생성된 초안</p><button class="btn secondary small" id="copyInlineDraft">전체 복사</button></div>
-          <ul class="draft-title-list">${(draft.titles || []).map((title) => `<li>${escapeHtml(title)}</li>`).join("")}</ul>
-          <div class="draft-body">${escapeHtml(draft.body || "")}</div>
-        `;
-        $("copyInlineDraft").addEventListener("click", () => writeClipboard(`${(draft.titles || [])[0] || ""}\n\n${draft.body || ""}`));
-        if (!data.ok) $("status").textContent = "초안 생성 완료 · 품질 검토 필요";
-        await renderHistory();
-      } catch (error) {
-        alert("초안 생성 중 오류가 발생했습니다: " + error.message);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "초안 생성";
-      }
-    }
     async function loadDraftHistory() {
       try {
         const res = await fetch("/api/draft-history");
@@ -986,85 +873,6 @@
       closeHistoryModal();
       await renderHistory();
       $("status").textContent = "발행 이력 저장 완료";
-    }
-    function resetDraftModal(){
-      $("draftFormStep").hidden=false;
-      $("draftResultStep").hidden=true;
-      $("draftSales").value="";
-      $("draftPremium").value="";
-      $("draftStrengths").value="";
-      $("draftListingMemo").value="";
-      $("draftResultMeta").textContent="";
-      $("draftTitles").innerHTML="";
-      $("draftBody").textContent="";
-      $("draftTags").textContent="";
-      latestDraftText="";
-    }
-    function openDraftModal(row){
-      draftModalRow=row;
-      resetDraftModal();
-      $("draftModalBrand").textContent=row.brand||"";
-      $("draftModalRegion").textContent=row.region||"전국";
-      $("draftModalKeyword").textContent=row.keyword||"";
-      $("draftModal").hidden=false;
-      $("draftSales").focus();
-    }
-    function closeDraftModal(){
-      $("draftModal").hidden=true;
-      resetDraftModal();
-      draftModalRow=null;
-    }
-    function draftText(draft){
-      const titles=Array.isArray(draft?.titles)?draft.titles:[];
-      return [`제목 후보`,...titles.map((title,index)=>`${index+1}. ${title}`),"",draft?.body||"","",draft?.tags||""].join("\n");
-    }
-    function showDraftResult(draft){
-      latestDraftText=draftText(draft);
-      $("draftFormStep").hidden=true;
-      $("draftResultStep").hidden=false;
-      $("draftResultMeta").textContent=`${draft.brand||""} · ${draft.region||"전국"} · ${draft.sourceKeyword||"추천 키워드"}`;
-      $("draftTitles").innerHTML=(draft.titles||[]).map((title,index)=>`<li>${index+1}. ${escapeHtml(title)}</li>`).join("");
-      $("draftBody").textContent=draft.body||"";
-      $("draftTags").textContent=draft.tags||"";
-      renderHistory();
-    }
-    function backToDraftForm(){
-      resetDraftModal();
-      $("draftSales").focus();
-    }
-    async function submitDraftModal(){
-      if(!draftModalRow)return;
-      const sales=$("draftSales").value.trim();
-      if(!sales){$("status").textContent="월매출 입력 필요";$("draftSales").focus();return}
-      const payload={
-        brand:draftModalRow.brand||"",
-        region:draftModalRow.region||"전국",
-        sales,
-        premium:$("draftPremium").value.trim(),
-        strengths:$("draftStrengths").value.trim(),
-        listingMemo:$("draftListingMemo").value.trim(),
-        sourceKeyword:draftModalRow.keyword||"",
-        sourceScore:draftModalRow.score??null,
-        sourceCompetitionLabel:draftModalRow.competitionLabel||"",
-        recommendedAt:new Date().toISOString(),
-        useLlm:false
-      };
-      const submitBtn=$("submitDraftModal");
-      submitBtn.disabled=true;
-      submitBtn.textContent="생성 중...";
-      $("status").textContent="초안 생성중";
-      try{
-        const res=await fetch("/api/generate-draft",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(payload)});
-        const data=await res.json();
-        if(!res.ok||(!data.ok&&!data.draft)){$("status").textContent=data.error||"초안 생성 실패";return}
-        showDraftResult(data.draft);
-        $("status").textContent=data.ok?"초안 생성 완료":"초안 생성 완료 · 품질 검토 필요";
-      }catch(error){
-        $("status").textContent=`초안 생성 오류: ${error.message}`;
-      }finally{
-        submitBtn.disabled=false;
-        submitBtn.textContent="초안 생성";
-      }
     }
     // ── 전일 대비 ──────────────────────────────────────────
     async function loadCompare() {
@@ -1280,25 +1088,14 @@
       if(copyIndex!==undefined){copyText(handoff(filteredRows()[Number(copyIndex)]),event.target.closest("button"));return}
       const handoffIndex=event.target.closest("[data-handoff-index]")?.dataset.handoffIndex;
       if(handoffIndex!==undefined){copyText(handoff(filteredRows()[Number(handoffIndex)]),event.target.closest("button"));return}
-      const draftIndex=event.target.closest("[data-draft-index]")?.dataset.draftIndex;
-      if(draftIndex!==undefined){openDraftModal(filteredRows()[Number(draftIndex)]);return}
       const historyId=event.target.closest("[data-update-history]")?.dataset.updateHistory;
       if(historyId!==undefined){openHistoryModal(historyItems.find((item)=>String(item.id)===String(historyId)));return}
-      if(event.target.closest("[data-copy-draft]")){copyText(latestDraftText,event.target.closest("button"));return}
       const rowIndex=event.target.closest("[data-row-index]")?.dataset.rowIndex;
       if(rowIndex!==undefined){openKeywordDetail(filteredRows().slice(0,30)[Number(rowIndex)]);return}
     });
     $("copyTop5").addEventListener("click",(event)=>copyText(top5ShareText(),event.currentTarget));
     $("closeKeywordDetail").addEventListener("click",()=>{$("keywordDetail").hidden=true});
     $("detailCopyHandoff").addEventListener("click",(event)=>{if(detailRow)copyText(handoff(detailRow),event.currentTarget)});
-    $("toggleInlineDraftForm").addEventListener("click",()=>toggleInlineDraftForm(detailRow));
-    $("cancelInlineDraft").addEventListener("click",()=>{$("inlineDraftForm").hidden=true});
-    $("submitInlineDraft").addEventListener("click",submitInlineDraft);
-    $("closeDraftModal").addEventListener("click",closeDraftModal);
-    $("submitDraftModal").addEventListener("click",submitDraftModal);
-    $("backToDraftForm").addEventListener("click",backToDraftForm);
-    $("closeDraftModalAfterResult").addEventListener("click",closeDraftModal);
-    $("draftModal").addEventListener("click",(event)=>{if(event.target===$("draftModal"))closeDraftModal()});
     $("closeHistoryModal").addEventListener("click",closeHistoryModal);
     $("saveHistoryUpdate").addEventListener("click",saveHistoryUpdate);
     $("historyModal").addEventListener("click",(event)=>{if(event.target===$("historyModal"))closeHistoryModal()});

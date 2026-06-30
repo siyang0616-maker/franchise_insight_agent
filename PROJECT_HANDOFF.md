@@ -363,3 +363,8 @@ naver-api-config.json의 Open API 키 자체는 유효했으나, 네이버 개�
 - renderMap now colors regions by totalSearch heat intensity and labels each polygon with the top searched brand.
 - Map tooltips now show region, top brand, and total regional search volume.
 - renderKeywordRows now shows score breakdown only when server-provided score fields exist.
+
+## 2026-06-30 feedback cleanup
+- opportunityScore now writes searchScore, competitionBonus, trendBonus, and intentBonus into each row for transparent table breakdowns.
+- Dashboard draft-generation UI was removed from the detail panel, modal layer, and handoff cards; handoff copy remains available.
+- Added score-composition guidance and a ROADMAP.md upgrade note panel, with urgent roadmap items marked complete.
