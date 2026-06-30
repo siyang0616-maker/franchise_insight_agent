@@ -51,8 +51,9 @@
     .hero-label{display:block;color:var(--muted);font-size:12px;font-weight:900;margin-bottom:10px}
     .hero-title{font-size:25px;line-height:1.18;font-weight:950;margin:0 0 10px;overflow-wrap:anywhere}
     .hero-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;color:var(--muted);font-size:12px}
-    .mini-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .kpi{background:#fff;border:1px solid var(--line);border-radius:var(--radius-card);padding:10px 12px;box-shadow:var(--shadow-card)}
+    .mini-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .summary-card-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;box-shadow:var(--shadow-card)}
     .kpi span{display:block;color:var(--muted);font-size:12px;font-weight:850;margin-bottom:6px}
     .kpi strong{display:block;font-size:20px;line-height:1.1}
     .kpi small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:6px}
@@ -75,6 +76,7 @@
     .keyword{font-weight:900;color:#111827}
     .muted{color:var(--muted)}
     .score{font-weight:900;font-size:15px}
+    .score-breakdown{font-size:10px;color:var(--muted,#908e85);margin-top:2px;white-space:nowrap}
     .badge{display:inline-flex;align-items:center;gap:4px;border-radius:var(--radius-pill);padding:4px 8px;font-size:11px;font-weight:900;background:#F4F4F5;color:#3F3F46;white-space:nowrap}
     .badge.good{background:#E7F6F1;color:#0F9D7C}.badge.warn{background:#FFF3DF;color:#A56200}.badge.bad{background:#FDECEC;color:#E5484D}.badge.info{background:#EAF2FF;color:#2563EB}
     .stack{display:grid;gap:12px;align-content:start}
@@ -94,6 +96,25 @@
     .handoff-card{padding:8px}
     .handoff-card strong{font-size:13px}
     .handoff-card .handoff{padding:8px;font-size:12px;line-height:1.45;margin-top:6px}
+    .alert-board{margin:0 0 12px;gap:0}
+    .alert-item{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start;padding:11px 0;border-bottom:1px solid var(--line)}
+    .alert-item:last-child{border-bottom:0}
+    .alert-icon{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:#0B57D0;font-size:12px;font-weight:950}
+    .alert-title{margin:0;font-size:13px;font-weight:950;color:#18181B;line-height:1.45}
+    .alert-desc{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:1.45}
+    .insights-strip{display:grid;grid-template-columns:minmax(340px,1fr) minmax(340px,1fr);gap:12px;margin-bottom:12px}
+    .compare-panel,.scatter-panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-card);padding:14px;box-shadow:var(--shadow-card)}
+    .ins-title{margin:0 0 8px;font-size:14px;font-weight:900}
+    .ins-sub{margin:0 0 10px;font-size:12px;color:var(--muted);line-height:1.45}
+    .compare-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px}
+    .cc{border:1px solid var(--line);border-radius:12px;padding:9px 11px;background:#fff}
+    .cc .kw{font-size:12px;font-weight:900;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .cc .delta{font-size:17px;font-weight:900}.cc .meta{font-size:11px;color:var(--muted)}
+    .delta-up{color:#0F9D7C}.delta-down{color:#E5484D}.delta-flat{color:var(--muted)}
+    .scatter-svg{width:100%;overflow:visible}
+    .sc-quadrant{font-size:10px;fill:#b0bac6;font-weight:800}
+    .sc-axis{font-size:10px;fill:#b0bac6}
+    .sc-tooltip{position:absolute;background:rgba(17,24,39,.92);color:#fff;padding:6px 9px;border-radius:8px;font-size:11px;pointer-events:none;white-space:nowrap;z-index:99;display:none}
     .map-panel{display:grid;grid-template-columns:minmax(420px,.95fr) minmax(260px,.7fr);gap:12px;margin:0 0 12px;order:2}
     .map-stage{position:relative;min-height:330px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#fff,#F7FAFF);overflow:hidden}
     .map-svg{width:100%;height:330px;display:block}
@@ -106,6 +127,12 @@
     .legend span{font-size:11px;font-weight:850;color:#52525B}.swatch{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px}
     .far-card{border:1px solid var(--line);border-radius:14px;padding:11px;background:#FAFAFA;margin-top:10px}
     .bar-list{display:grid;gap:9px}
+    .brand-treemap{display:flex;height:80px;border-radius:6px;overflow:hidden;margin-bottom:12px;background:#efeee8;border:1px solid var(--line)}
+    .brand-treemap-cell{min-width:54px;padding:10px 8px;display:flex;flex-direction:column;justify-content:space-between;gap:6px;color:#fff;border-right:1px solid rgba(255,255,255,.4);overflow:hidden}
+    .brand-treemap-cell:last-child{border-right:0}
+    .brand-treemap-cell.dark-text{color:#24332e}
+    .brand-treemap-name{font-size:12px;font-weight:950;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .brand-treemap-value{font-size:11px;font-weight:850;line-height:1.2;opacity:.92}
     .bar-row{display:grid;grid-template-columns:118px 1fr 58px;gap:9px;align-items:center;border:1px solid var(--line);border-radius:12px;background:#fff;color:#111827;text-align:left;padding:10px}
     .bar-name{font-weight:900;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .bar-track{height:8px;border-radius:var(--radius-pill);background:#F4F4F5;overflow:hidden}.bar-fill{display:block;height:100%;border-radius:var(--radius-pill);background:linear-gradient(180deg,var(--accent),#0B57D0)}
@@ -144,7 +171,7 @@
     .history-row{gap:8px}
     .history-form{display:grid;gap:10px}
     .empty{margin:0;color:var(--muted);font-size:13px}
-    @media(max-width:1180px){.app{grid-template-columns:1fr}.rail{position:relative}.grid,.hero-grid,.mini-kpis,.map-panel,.detail-grid,.form-grid{grid-template-columns:1fr}.map-svg{height:300px}.map-stage{min-height:300px}}
+    @media(max-width:1180px){.app{grid-template-columns:1fr}.rail{position:relative}.grid,.hero-grid,.map-panel,.detail-grid,.form-grid{grid-template-columns:1fr}.mini-kpis,.summary-card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.map-svg{height:300px}.map-stage{min-height:300px}}
   </style>
 </head>
 <body>
@@ -188,6 +215,24 @@
         <div class="hero" id="heroPick"></div>
         <div class="mini-kpis" id="summary"></div>
       </section>
+
+      <section class="panel alert-board" id="alertBoard" hidden>
+        <p class="title">주목할 내용</p>
+        <div id="alertList"></div>
+      </section>
+
+      <div class="insights-strip">
+        <div class="compare-panel">
+          <p class="ins-title">📈 전일 대비 검색량 변화</p>
+          <div id="compareArea"><p class="sub" style="margin:0">데이터를 불러오는 중...</p></div>
+        </div>
+        <div class="scatter-panel" style="position:relative">
+          <p class="ins-title">검색량 × 경쟁 밀도 산점도</p>
+          <p class="ins-sub">오른쪽 위 = 수요 많고 경쟁 약함(틈새). 점 위에 마우스를 올리면 키워드를 확인합니다.</p>
+          <svg class="scatter-svg" id="scatterSvg" viewBox="0 0 540 220"></svg>
+          <div class="sc-tooltip" id="scTooltip"></div>
+        </div>
+      </div>
 
       <div class="grid">
         <section class="panel">
@@ -268,7 +313,7 @@
         <aside class="stack">
           <details class="side-panel">
             <summary><span class="summary-line"><span class="summary-title">많이 검색된 브랜드 TOP 10</span><span>펼치기</span></span><span class="summary-note" id="brandSummary">브랜드 수요 요약</span></summary>
-            <div class="side-content"><div class="bar-list" id="brandTop10"></div></div>
+            <div class="side-content"><div class="brand-treemap" id="brandTreemap"></div><div class="bar-list" id="brandTop10"></div></div>
           </details>
           <details class="side-panel">
             <summary><span class="summary-line"><span class="summary-title">최근 블로그·카페 광고글 TOP 10</span><span>펼치기</span></span><span class="summary-note" id="contentSummary">최근 글 표본 요약</span></summary>
@@ -413,6 +458,34 @@
       const mix = (channel) => Math.round(channel * intensity + 255 * (1 - intensity));
       return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
     }
+    function hexToRgb(hex) {
+      const clean = String(hex || "").replace("#", "");
+      return [0, 2, 4].map((start) => parseInt(clean.slice(start, start + 2), 16));
+    }
+    function interpolateHex(from, to, ratio) {
+      const a = hexToRgb(from);
+      const b = hexToRgb(to);
+      const t = Math.max(0, Math.min(1, Number(ratio || 0)));
+      const mixed = a.map((channel, index) => Math.round(channel + (b[index] - channel) * t));
+      return `rgb(${mixed[0]},${mixed[1]},${mixed[2]})`;
+    }
+    function scoreHeatColor(score) {
+      if (score === undefined || score === null || Number.isNaN(Number(score))) return "#d8d4c8";
+      const value = Number(score);
+      if (value >= 8) return "#0f6e56";
+      if (value < 5) return "#efeee8";
+      return interpolateHex("#9fe1cb", "#5dcaa5", (value - 5) / 3);
+    }
+    function firstSentence(text) {
+      const value = String(text || "").trim();
+      const match = value.match(/^.*?[.!?。]|^.*?[.。]|^.*?다\./);
+      return truncateText((match ? match[0] : value), 72);
+    }
+    function mapTooltipText(region, stat) {
+      if (!stat?.top) return `${region} · 데이터 없음`;
+      const score = Number(stat.top.score || 0).toFixed(1);
+      return `${region} · 최고점수 ${score} · ${stat.top.keyword || "키워드 확인"} · ${firstSentence(buildDetailInsight(stat.top))}`;
+    }
     function confidenceText(status){
       if(status==="ok")return"정확";
       if(status==="fallback_brand")return"브랜드추정";
@@ -434,7 +507,17 @@
       if(custom.length)qs.set("keywords",custom.join(","));
       return `?${qs.toString()}`;
     }
-    function kpi(label,value,help){return`<div class="kpi"><span>${escapeHtml(label)}</span><strong class="metric-number">${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`}
+    function kpi(label,value,help){return`<div class="kpi summary-card"><span>${escapeHtml(label)}</span><strong class="metric-number">${escapeHtml(value)}</strong><small>${escapeHtml(help)}</small></div>`}
+    function truncateText(text, limit = 60) {
+      const value = String(text || "");
+      return value.length > limit ? `${value.slice(0, limit)}…` : value;
+    }
+    function trendChangeText(row) {
+      const seven = Number(row?.trend7d?.average || 0);
+      const thirty = Number(row?.trend30d?.average || 0);
+      if (!seven || !thirty) return "수집 중";
+      return `${(((seven - thirty) / thirty) * 100).toFixed(0)}%`;
+    }
     function renderHero(){
       const top=filteredRows()[0]||rows()[0];
       if(!top){$("heroPick").innerHTML=`<span class="hero-label">오늘 1순위</span><h2 class="hero-title">분석 데이터가 없습니다</h2><div class="hero-meta">새 수집을 실행해 주세요.</div>`;return}
@@ -444,24 +527,44 @@
       const visible=filteredRows();
       const counts=visible.reduce((acc,row)=>{acc[row.competitionLabel||"확인"]=(acc[row.competitionLabel||"확인"]||0)+1;return acc;},{});
       const top=visible[0]||rows()[0];
+      const highestSearch=[...visible].sort((a,b)=>Number(b.totalSearch||0)-Number(a.totalSearch||0))[0]||top;
+      const distribution=`틈새/관찰/따라쓰기/피하기 ${counts["틈새"]||0}/${counts["관찰"]||0}/${counts["따라쓰기"]||0}/${counts["피하기"]||0}`;
+      $("summary").classList.add("summary-card-grid");
       $("summary").innerHTML=[
-        kpi("추천 후보",`${visible.length}개`,`틈새 ${counts["틈새"]||0} · 관찰 ${counts["관찰"]||0}`),
-        kpi("최고 검색량",top?metric(top.totalSearch,top.searchVolumeStatus):"확인 필요","브랜드추정은 보정값"),
-        kpi("경쟁 요약",top?.competitionLabel||"확인 필요",top?.competitionReason||"최근 글 제목 표본 기준")
+        kpi("총 후보 수",`${visible.length}개`,`틈새 ${counts["틈새"]||0}개`),
+        kpi("최고 검색량",highestSearch?metric(highestSearch.totalSearch,highestSearch.searchVolumeStatus):"확인 필요",highestSearch?.brand||"브랜드 확인 필요"),
+        kpi("7일 vs 30일 추세",trendChangeText(top),top?.keyword||"상위 후보 기준"),
+        kpi("경쟁상태 분포",distribution,"틈새/관찰/따라쓰기/피하기")
       ].join("");
     }
     function renderKeywordRows(){
       const visible=filteredRows().slice(0,30);
-      $("keywordRows").innerHTML=visible.map((row,index)=>`
+      $("keywordRows").innerHTML=visible.map((row,index)=>{
+        const insight=truncateText(buildDetailInsight(row),60);
+        const hasBreakdown = ["searchScore","competitionBonus","trendBonus","intentBonus"].some((key) => row[key] !== undefined && row[key] !== null);
+        const scorePart = (value) => value === undefined || value === null ? "-" : escapeHtml(Number.isFinite(Number(value)) ? Number(value).toFixed(1) : value);
+        const breakdown = hasBreakdown ? `<div class="score-breakdown">검색량 ${scorePart(row.searchScore)} · 경쟁 ${scorePart(row.competitionBonus)} · 추세 ${scorePart(row.trendBonus)} · 의도 ${scorePart(row.intentBonus)}</div>` : "";
+        return `
         <tr data-row-index="${index}" class="clickable-row">
           <td class="metric-number">${index+1}</td>
-          <td><div class="keyword">${escapeHtml(row.keyword)}</div><div class="muted">${escapeHtml(row.region||"전국")} · ${escapeHtml(row.brand||"-")} · ${escapeHtml(row.reason||"")}</div></td>
+          <td><div class="keyword">${escapeHtml(row.keyword)}</div><div class="muted">${escapeHtml(row.region||"전국")} · ${escapeHtml(row.brand||"-")} · ${escapeHtml(insight)}</div></td>
           <td class="metric-number">${metric(row.totalSearch,row.searchVolumeStatus)}</td>
           <td><span class="badge ${badgeClass(row.competitionLabel)}">${escapeHtml(row.competitionLabel||"확인")}</span><div class="muted">${escapeHtml(row.competitionReason||"")}</div></td>
           <td><span class="badge">${confidenceText(row.searchVolumeStatus)}</span></td>
-          <td><span class="score metric-number">${Number(row.score||0).toFixed(1)}</span></td>
+          <td><span class="score metric-number">${Number(row.score||0).toFixed(1)}</span>${breakdown}</td>
           <td><button class="btn secondary small" data-copy-index="${index}">복사</button></td>
-        </tr>`).join("")||`<tr><td colspan="7"><p class="empty">표시할 후보가 없습니다.</p></td></tr>`;
+        </tr>`;
+      }).join("")||`<tr><td colspan="7"><p class="empty">표시할 후보가 없습니다.</p></td></tr>`;
+    }
+    function brandTreemapColor(index) {
+      const palette = [
+        { bg: "#0f6e56", dark: false },
+        { bg: "#1d9e75", dark: false },
+        { bg: "#5dcaa5", dark: false },
+        { bg: "#9fe1cb", dark: true },
+        { bg: "#efeee8", dark: true }
+      ];
+      return palette[Math.min(index, palette.length - 1)];
     }
     function renderBrands(){
       const source=filteredRows();
@@ -474,6 +577,10 @@
       const list=[...by.entries()].map(([brand,value])=>({brand,value})).sort((a,b)=>b.value-a.value).slice(0,10);
       const max=Math.max(1,...list.map((row)=>row.value));
       $("brandSummary").textContent=list.length?`${list[0].brand} 외 ${Math.max(0,list.length-1)}개 브랜드`:"브랜드 데이터 없음";
+      $("brandTreemap").innerHTML=list.slice(0,6).map((row,index)=>{
+        const color=brandTreemapColor(index);
+        return `<button class="brand-treemap-cell ${color.dark?"dark-text":""}" data-brand="${escapeHtml(row.brand)}" style="flex-grow:${Math.max(1,Number(row.value||0))};background:${color.bg}" title="${escapeHtml(row.brand)} ${metric(row.value)}"><span class="brand-treemap-name">${escapeHtml(row.brand)}</span><span class="brand-treemap-value metric-number">${money(row.value)}</span></button>`;
+      }).join("");
       $("brandTop10").innerHTML=list.map((row,index)=>`<button class="bar-row" data-brand="${escapeHtml(row.brand)}"><span class="bar-name">${index+1}. ${escapeHtml(row.brand)}</span><span class="bar-track"><i class="bar-fill" style="width:${Math.max(4,Math.round(row.value/max*100))}%"></i></span><span class="bar-val metric-number">${money(row.value)}</span></button>`).join("")||`<p class="empty">브랜드 데이터가 없습니다.</p>`;
     }
     function regionStat(region){
@@ -529,13 +636,41 @@
       const viewW=720, viewH=330;
       const features=[...(data.metro?.features||[]),...(data.province?.features||[])];
       const bounds=features.length?boundsFor(features):[[126.7,37.0],[127.5,37.9]];
+      const mapRows = rows();
+      const metroFeatures = data.metro?.features || [];
+      const hexToRgbLocal = (hex) => {
+        const clean = String(hex).replace("#","");
+        return [0,2,4].map((start)=>parseInt(clean.slice(start,start+2),16));
+      };
+      const mixHex = (from, to, ratio) => {
+        const a = hexToRgbLocal(from), b = hexToRgbLocal(to);
+        const t = Math.max(0, Math.min(1, Number(ratio || 0)));
+        const mixed = a.map((channel,index)=>Math.round(channel+(b[index]-channel)*t));
+        return `rgb(${mixed[0]},${mixed[1]},${mixed[2]})`;
+      };
+      const heatColor = (ratio) => {
+        const value = Math.max(0, Math.min(1, Number(ratio || 0)));
+        if(value <= 0.2)return mixHex("#e8e6df","#9fe1cb",value/0.2);
+        if(value <= 0.5)return mixHex("#9fe1cb","#5dcaa5",(value-0.2)/0.3);
+        return mixHex("#5dcaa5","#0f6e56",(value-0.5)/0.5);
+      };
+      const regionStats = new Map(metroFeatures.map((feature)=>{
+        const name = feature.properties?.name || "";
+        const candidates = mapRows.filter((row)=>row.region===name||row.group===name);
+        const total = candidates.reduce((sum,row)=>sum+Number(row.totalSearch||0),0);
+        const topBrandRow = [...candidates].sort((a,b)=>Number(b.totalSearch||0)-Number(a.totalSearch||0))[0];
+        return [name,{region:name,total,topBrand:topBrandRow?.brand||"",topKeyword:topBrandRow?.keyword||""}];
+      }));
+      const maxRegionTotal = Math.max(1,...[...regionStats.values()].map((stat)=>stat.total));
       const province=(data.province?.features||[]).map((feature)=>`<path class="province-shape" d="${geometryToSvgPath(feature.geometry,bounds,viewW,viewH)}"></path>`).join("");
-      const metro=(data.metro?.features||[]).map((feature)=>{
+      const metro=metroFeatures.map((feature)=>{
         const name=feature.properties?.name||"";
-        const stat=regionStat(name);
+        const stat=regionStats.get(name)||{total:0,topBrand:"",topKeyword:""};
+        const ratio=stat.total/maxRegionTotal;
         const active=state.selectedRegion===name;
         const [cx,cy]=centroidFor(feature.geometry,bounds,viewW,viewH);
-        return `<g data-region="${escapeHtml(name)}"><path class="shape ${active?"active":""}" d="${geometryToSvgPath(feature.geometry,bounds,viewW,viewH)}" fill="${labelColor(stat.top?.competitionLabel,stat.top?.totalSearch)}" opacity="${stat.total?'.86':'.48'}"><title>${escapeHtml(name)} · ${stat.total?metric(stat.total):"후보 없음"}</title></path><text class="map-label" x="${cx.toFixed(1)}" y="${cy.toFixed(1)}">${escapeHtml(name.replace("시","").replace("구",""))}</text></g>`;
+        const label=stat.topBrand?`<text class="map-label" x="${cx.toFixed(1)}" y="${cy.toFixed(1)}" style="font-size:9px;fill:${ratio>=0.3?"#fff":"#1f1e1a"}">${escapeHtml(stat.topBrand)}</text>`:"";
+        return `<g data-region="${escapeHtml(name)}"><path class="shape ${active?"active":""}" d="${geometryToSvgPath(feature.geometry,bounds,viewW,viewH)}" fill="${heatColor(ratio)}" opacity="${stat.total?'.9':'.58'}"><title>${escapeHtml(`${name} · ${stat.topBrand||"데이터 없음"} · 총검색량 ${money(stat.total)}회`)}</title></path>${label}</g>`;
       }).join("");
       $("mapSvg").innerHTML=province+metro;
       const details=(data.metro?.features||[]).map((feature)=>regionStat(feature.properties?.name)).filter((item)=>item.top).sort((a,b)=>Number(b.top.score||0)-Number(a.top.score||0)).slice(0,5);
@@ -605,6 +740,88 @@
       }
       if (row.competitionReason) parts.push(row.competitionReason);
       return parts.join(" ") || "추가 데이터를 모으는 중입니다.";
+    }
+    function generateAlerts(rows) {
+      const source = Array.isArray(rows) ? rows : [];
+      const alerts = [];
+      const rising = source
+        .map((row) => {
+          const seven = Number(row.trend7d?.average || 0);
+          const thirty = Number(row.trend30d?.average || 0);
+          const pct = thirty ? Math.round(((seven - thirty) / thirty) * 100) : 0;
+          return { row, pct };
+        })
+        .filter((item) => item.pct >= 15)
+        .sort((a, b) => Number(b.row.score || 0) - Number(a.row.score || 0))[0];
+      if (rising) {
+        alerts.push({
+          icon: "▲",
+          title: `▲ ${rising.row.keyword}, 30일 평균 대비 ${rising.pct}% 상승 중`,
+          desc: `${rising.row.brand || "브랜드 확인"} · ${rising.row.region || "전국"}`
+        });
+      }
+
+      const brandRegions = new Map();
+      for (const row of source) {
+        const brand = row.brand || "";
+        const region = row.region || "";
+        if (!brand || !region) continue;
+        if (!brandRegions.has(brand)) brandRegions.set(brand, new Map());
+        const current = brandRegions.get(brand).get(region);
+        if (!current || Number(row.score || 0) > Number(current.score || 0)) brandRegions.get(brand).set(region, row);
+      }
+      const fallingBrand = [...brandRegions.entries()]
+        .map(([brand, regionMap]) => {
+          const regionRows = [...regionMap.values()].filter((row) => Number(row.trend30d?.average || 0) > 0);
+          const fallingRows = regionRows.filter((row) => Number(row.trend7d?.average || 0) < Number(row.trend30d?.average || 0));
+          return { brand, count: regionRows.length, fallingCount: fallingRows.length };
+        })
+        .filter((item) => item.count >= 3 && item.fallingCount === item.count)
+        .sort((a, b) => b.count - a.count)[0];
+      if (fallingBrand) {
+        alerts.push({
+          icon: "⚠",
+          title: `⚠ ${fallingBrand.brand}, ${fallingBrand.count}개 지역에서 동시에 관심도 하락`,
+          desc: "브랜드 재검토 시점"
+        });
+      }
+
+      const nicheGap = source
+        .filter((row) => Number(row.supplyRatio) < 0.5 && Number(row.totalSearch || 0) > 500)
+        .sort((a, b) => Number(b.score || 0) - Number(a.score || 0))[0];
+      if (nicheGap) {
+        alerts.push({
+          icon: "◎",
+          title: `◎ ${nicheGap.keyword}, 검색량 대비 콘텐츠가 거의 없어 공략 가치 높음`,
+          desc: `공급비 ${nicheGap.supplyRatio} · 검색량 ${metric(nicheGap.totalSearch, nicheGap.searchVolumeStatus)}`
+        });
+      }
+
+      const estimatedCount = source.filter((row) => row.searchVolumeStatus === "fallback_brand" || row.searchVolumeStatus === "추정").length;
+      const estimatedPct = source.length ? Math.round((estimatedCount / source.length) * 100) : 0;
+      if (estimatedPct > 30) {
+        alerts.push({
+          icon: "i",
+          title: `i 오늘 수집의 ${estimatedPct}%가 추정값`,
+          desc: "API 제한 또는 설정 확인 필요"
+        });
+      }
+      return alerts;
+    }
+    function renderAlerts() {
+      const alerts = generateAlerts(rows());
+      const board = $("alertBoard");
+      if (!alerts.length) {
+        board.hidden = true;
+        $("alertList").innerHTML = "";
+        return;
+      }
+      board.hidden = false;
+      $("alertList").innerHTML = alerts.map((alert) => `
+        <div class="alert-item">
+          <span class="alert-icon">${escapeHtml(alert.icon)}</span>
+          <div><p class="alert-title">${escapeHtml(alert.title)}</p><p class="alert-desc">${escapeHtml(alert.desc)}</p></div>
+        </div>`).join("");
     }
     function renderTrendChart(row) {
       const container = $("detailTrendChart");
@@ -849,8 +1066,130 @@
         submitBtn.textContent="초안 생성";
       }
     }
+    // ── 전일 대비 ──────────────────────────────────────────
+    async function loadCompare() {
+      const area = $("compareArea");
+      try {
+        const qs = queryString(false);
+        const snapsRes = await fetch("/api/snapshots" + qs);
+        if (!snapsRes.ok) throw new Error();
+        const { dates = [] } = await snapsRes.json();
+        if (dates.length < 2) {
+          area.innerHTML = `<p class="sub" style="margin:0">📅 아직 비교 데이터 없음. 오늘 수집 후 내일부터 보입니다. (현재 ${dates.length}일치 저장됨)</p>`;
+          return;
+        }
+        const cmpRes = await fetch("/api/snapshots/compare" + qs);
+        const cmp = await cmpRes.json();
+        if (!cmp.available) {
+          area.innerHTML = `<p class="sub" style="margin:0">${escapeHtml(cmp.reason || "비교 불가")}</p>`;
+          return;
+        }
+        const diffs = (cmp.diffs || [])
+          .filter((d) => d.searchChange !== null && Math.abs(d.searchChange || 0) > 0)
+          .sort((a, b) => Math.abs(b.searchChange || 0) - Math.abs(a.searchChange || 0))
+          .slice(0, 10);
+        if (!diffs.length) {
+          area.innerHTML = `<p class="sub" style="margin:0">전일(${escapeHtml(cmp.baseDate)}) 대비 큰 변화가 없습니다.</p>`;
+          return;
+        }
+        area.innerHTML = `
+          <p class="sub" style="margin:0 0 8px">기준: ${escapeHtml(cmp.baseDate)} 대비 (상위 10개)</p>
+          <div class="compare-cards">
+            ${diffs.map((d) => {
+              const sign = d.searchChange > 0 ? "+" : "";
+              const pct = d.searchChangePct != null ? ` ${sign}${d.searchChangePct}%` : "";
+              const cls = d.searchChange > 0 ? "delta-up" : d.searchChange < 0 ? "delta-down" : "delta-flat";
+              return `<div class="cc">
+                <div class="kw" title="${escapeHtml(d.keyword)}">${escapeHtml(d.keyword)}</div>
+                <div class="delta ${cls}">${sign}${Number(d.searchChange).toLocaleString("ko-KR")}<span style="font-size:11px">${pct}</span></div>
+                <div class="meta">오늘 ${Number(d.totalSearch||0).toLocaleString("ko-KR")} · 전일 ${Number(d.previousSearch||0).toLocaleString("ko-KR")}</div>
+              </div>`;
+            }).join("")}
+          </div>`;
+      } catch {
+        area.innerHTML = `<p class="sub" style="margin:0">서버에서 비교 데이터를 불러오지 못했습니다.</p>`;
+      }
+    }
+
+    // ── 산점도 ─────────────────────────────────────────────
+    function renderScatter(rowList) {
+      const svg = $("scatterSvg");
+      const tooltip = $("scTooltip");
+      const W = 540, H = 220;
+      const PAD = { top: 16, right: 16, bottom: 30, left: 44 };
+      const iW = W - PAD.left - PAD.right;
+      const iH = H - PAD.top - PAD.bottom;
+
+      const valid = rowList.filter((r) => {
+        const s = Number(r.totalSearch || 0);
+        return s > 0 && r.supplyRatio != null;
+      });
+      if (!valid.length) {
+        svg.innerHTML = `<text x="270" y="110" text-anchor="middle" fill="#b0bac6" font-size="13">데이터 수집 후 나타납니다</text>`;
+        return;
+      }
+
+      const maxS = Math.max(...valid.map((r) => Number(r.totalSearch || 0)));
+      const maxR = Math.min(2000, Math.max(...valid.map((r) => Number(r.supplyRatio || 0)), 10));
+
+      const xLog = (v) => PAD.left + (Math.log(Number(v) + 1) / Math.log(maxS + 1)) * iW;
+      const yLin = (v) => PAD.top + (Math.min(Number(v), maxR) / maxR) * iH;
+
+      const midS = Math.exp(Math.log(maxS + 1) * 0.45) - 1;
+      const nicheY = yLin(50);
+      const midX = xLog(midS);
+
+      let html = "";
+      // 배경 사분면
+      html += `<rect x="${PAD.left}" y="${PAD.top}" width="${midX-PAD.left}" height="${nicheY-PAD.top}" fill="#F9FAFB"/>`;
+      html += `<rect x="${midX}" y="${PAD.top}" width="${W-PAD.right-midX}" height="${nicheY-PAD.top}" fill="#E8F7F3" opacity=".55"/>`;
+      html += `<rect x="${PAD.left}" y="${nicheY}" width="${midX-PAD.left}" height="${H-PAD.bottom-nicheY}" fill="#F9FAFB"/>`;
+      html += `<rect x="${midX}" y="${nicheY}" width="${W-PAD.right-midX}" height="${H-PAD.bottom-nicheY}" fill="#FEF9F0" opacity=".55"/>`;
+      // 기준선
+      html += `<line x1="${PAD.left}" y1="${nicheY.toFixed(1)}" x2="${W-PAD.right}" y2="${nicheY.toFixed(1)}" stroke="#E2E2E6" stroke-dasharray="3,3"/>`;
+      html += `<line x1="${midX.toFixed(1)}" y1="${PAD.top}" x2="${midX.toFixed(1)}" y2="${H-PAD.bottom}" stroke="#E2E2E6" stroke-dasharray="3,3"/>`;
+      // 사분면 라벨
+      html += `<text class="sc-quadrant" x="${midX+5}" y="${PAD.top+12}">✅ 틈새 공략</text>`;
+      html += `<text class="sc-quadrant" x="${PAD.left+4}" y="${PAD.top+12}">관찰</text>`;
+      html += `<text class="sc-quadrant" x="${midX+5}" y="${H-PAD.bottom-5}">⚠ 경쟁 치열</text>`;
+      html += `<text class="sc-quadrant" x="${PAD.left+4}" y="${H-PAD.bottom-5}">피하기</text>`;
+      // 축
+      html += `<line x1="${PAD.left}" y1="${H-PAD.bottom}" x2="${W-PAD.right}" y2="${H-PAD.bottom}" stroke="#ECECEF"/>`;
+      html += `<line x1="${PAD.left}" y1="${PAD.top}" x2="${PAD.left}" y2="${H-PAD.bottom}" stroke="#ECECEF"/>`;
+      html += `<text class="sc-axis" x="${W/2}" y="${H-2}" text-anchor="middle">← 검색량(로그스케일) →</text>`;
+      html += `<text class="sc-axis" transform="rotate(-90 12 ${H/2})" x="12" y="${H/2}" text-anchor="middle">↑ 낮음  경쟁밀도  높음 ↓</text>`;
+
+      const points = [];
+      valid.forEach((r, i) => {
+        const x = xLog(r.totalSearch);
+        const y = yLin(r.supplyRatio);
+        const label = r.competitionLabel || "";
+        const fill = label === "틈새" ? "#0F9D7C" : label === "피하기" ? "#E5484D" : label === "따라쓰기" ? "#E8A33D" : "#3B82F6";
+        const rr = Math.max(4, Math.min(9, 3 + Math.log(Number(r.totalSearch || 1) + 1) * 0.7));
+        html += `<circle data-pi="${i}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${rr.toFixed(1)}" fill="${fill}" opacity=".78" style="cursor:pointer"/>`;
+        points.push({ x, y, r });
+      });
+
+      svg.innerHTML = html;
+
+      const svgRect = () => svg.getBoundingClientRect();
+      svg.querySelectorAll("circle[data-pi]").forEach((c, i) => {
+        const p = points[i];
+        c.addEventListener("mouseenter", () => {
+          const br = svgRect();
+          const scaleX = br.width / W;
+          tooltip.innerHTML = `<strong>${escapeHtml(p.r.keyword)}</strong><br>검색량 ${money(p.r.totalSearch)} · 경쟁밀도 ${p.r.supplyRatio}`;
+          tooltip.style.display = "block";
+          tooltip.style.left = (p.x * scaleX + 8) + "px";
+          tooltip.style.top = (p.y * (br.height / H) - 32) + "px";
+        });
+        c.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+      });
+    }
+
     async function renderAll(){
-      renderHero(); renderSummary(); renderKeywordRows(); renderBrands(); await renderMap(); renderContent(); renderHandoff();
+      renderHero(); renderSummary(); renderAlerts(); renderKeywordRows(); renderBrands(); await renderMap(); renderContent(); renderHandoff();
+      renderScatter(state.data?.rows || []);
     }
     function contentTarget(){
       const top=filteredRows()[0]||rows()[0]||{};
@@ -885,6 +1224,7 @@
         $("apiEstimate").textContent=`후보 ${usage.keywordCandidates||0}개 · SearchAd 약 ${usage.searchAdCalls||0}회 · Open API 최대 ${usage.openApiCalls||0}회`;
         await renderAll();
         loadContentIntel();
+        loadCompare();
       }catch(error){
         $("status").textContent="서버 연결 필요";
       }

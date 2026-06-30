@@ -612,6 +612,77 @@ function cachePathFor(cfg) {
   return path.join(__dirname, `keyword-cache-${hash}.json`);
 }
 
+function dailySnapshotPathFor(cfg, dateStr) {
+  const key = JSON.stringify({
+    brands: cfg.brands,
+    regions: cfg.regions,
+    customKeywords: cfg.customKeywords || []
+  });
+  const hash = crypto.createHash("sha1").update(key).digest("hex").slice(0, 12);
+  const date = dateStr || new Date().toISOString().slice(0, 10);
+  return path.join(__dirname, "snapshots", `${date}-${hash}.json`);
+}
+
+async function ensureSnapshotDir() {
+  const dir = path.join(__dirname, "snapshots");
+  try { await fs.mkdir(dir, { recursive: true }); } catch {}
+  return dir;
+}
+
+async function writeDailySnapshot(cfg, result) {
+  await ensureSnapshotDir();
+  const today = new Date().toISOString().slice(0, 10);
+  const slim = {
+    date: today,
+    checkedAt: result.collectedAt || new Date().toISOString(),
+    rows: (result.rows || []).map((row) => ({
+      keyword: row.keyword,
+      brand: row.brand,
+      region: row.region,
+      totalSearch: row.totalSearch,
+      searchVolumeStatus: row.searchVolumeStatus,
+      competitionLabel: row.competitionLabel,
+      supplyRatio: row.supplyRatio ?? null,
+      score: row.score
+    }))
+  };
+  await fs.writeFile(dailySnapshotPathFor(cfg, today), JSON.stringify(slim), "utf8");
+}
+
+async function listSnapshotDates(cfg) {
+  const dir = await ensureSnapshotDir();
+  const key = JSON.stringify({
+    brands: cfg.brands,
+    regions: cfg.regions,
+    customKeywords: cfg.customKeywords || []
+  });
+  const hash = crypto.createHash("sha1").update(key).digest("hex").slice(0, 12);
+  try {
+    const files = await fs.readdir(dir);
+    return files
+      .filter((name) => name.endsWith(`-${hash}.json`))
+      .map((name) => name.slice(0, 10))
+      .sort()
+      .reverse();
+  } catch { return []; }
+}
+
+async function readSnapshot(cfg, dateStr) {
+  return readJsonIfExists(dailySnapshotPathFor(cfg, dateStr));
+}
+
+async function pruneOldSnapshots(cfg, keepDays = 90) {
+  const dates = await listSnapshotDates(cfg);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - keepDays);
+  const cutoffStr = cutoff.toISOString().slice(0, 10);
+  for (const date of dates) {
+    if (date < cutoffStr) {
+      try { await fs.unlink(dailySnapshotPathFor(cfg, date)); } catch {}
+    }
+  }
+}
+
 async function readDraftHistory() {
   const items = await readJsonIfExists(DRAFT_HISTORY_PATH);
   return Array.isArray(items) ? items : [];
@@ -1276,6 +1347,8 @@ async function collectKeywords(cfg) {
     rows: topRows.sort((a, b) => b.score - a.score)
   };
   await fs.writeFile(cachePathFor(cfg), JSON.stringify(result, null, 2), "utf8");
+  await writeDailySnapshot(cfg, result);
+  await pruneOldSnapshots(cfg, 90);
   return result;
 }
 
@@ -1469,6 +1542,35 @@ const server = http.createServer(async (req, res) => {
       }
       const result = await collectKeywords(cfg);
       return json(res, 200, { ...result, cacheStatus: "fresh" });
+    }
+    if (url.pathname === "/api/snapshots") {
+      const cfg = applyKeywordOverrides(await loadConfig(), url);
+      const dates = await listSnapshotDates(cfg);
+      return json(res, 200, { ok: true, dates });
+    }
+    if (url.pathname === "/api/snapshots/compare") {
+      const cfg = applyKeywordOverrides(await loadConfig(), url);
+      const allDates = await listSnapshotDates(cfg);
+      const baseDate = url.searchParams.get("date") || allDates[1];
+      const today = new Date().toISOString().slice(0, 10);
+      const current = await readSnapshot(cfg, today);
+      const previous = baseDate ? await readSnapshot(cfg, baseDate) : null;
+      if (!current || !previous) {
+        return json(res, 200, { ok: true, available: false, reason: "비교할 과거 스냅샷이 아직 충분하지 않습니다." });
+      }
+      const prevMap = new Map(previous.rows.map((row) => [row.keyword, row]));
+      const diffs = current.rows.map((row) => {
+        const prevRow = prevMap.get(row.keyword);
+        const prevSearch = Number(prevRow?.totalSearch || 0);
+        const currSearch = Number(row.totalSearch || 0);
+        return {
+          ...row,
+          previousSearch: prevRow ? prevSearch : null,
+          searchChange: prevRow ? currSearch - prevSearch : null,
+          searchChangePct: prevRow && prevSearch > 0 ? Math.round(((currSearch - prevSearch) / prevSearch) * 1000) / 10 : null
+        };
+      });
+      return json(res, 200, { ok: true, available: true, baseDate, diffs });
     }
     if (url.pathname === "/api/content-intel") {
       if (!isAuthorizedRequest(req, url)) {
