@@ -178,7 +178,7 @@
   <div class="app">
     <aside class="rail">
       <div class="brand"><span class="brand-mark"></span><span>Franchise Insight</span></div>
-      <p class="hint">브랜드와 지역을 조합해 오늘 글쓰기 에이전트에 넘길 키워드를 고릅니다.</p>
+      <p class="hint">브랜드와 지역을 조합해 어디에 광고글을 써야 할지 판단합니다.</p>
       <section class="filter-card">
         <label class="label" for="brandQuery">브랜드 검색</label>
         <input id="brandQuery" placeholder="예: 메가커피" />
@@ -201,12 +201,12 @@
       <header class="topbar">
         <h1>키워드 경쟁 분석 대시보드</h1>
         <div class="top-meta">
-          <button class="btn small secondary" id="copyTop5">Top 5 복사</button>
+          <button class="btn small secondary" id="copyTop5">판단 Top 5 복사</button>
           <span id="dataStamp">저장 데이터</span>
           <span class="status" id="status">대기중</span>
           <details class="help">
             <summary>i</summary>
-            <div class="help-text">네이버 공식 API는 개별 블로그·카페 글 조회수를 제공하지 않습니다. 이 화면은 검색량, 블로그 문서 수, 최근 광고성 제목, 카페/블로그 출현 빈도를 묶어 노출 난이도와 글쓰기 우선순위를 추정합니다.</div>
+            <div class="help-text">네이버 공식 API는 개별 블로그·카페 글 조회수를 제공하지 않습니다. 이 화면은 검색량, 블로그 문서 수, 최근 광고성 제목, 반복 노출 블로그를 묶어 광고를 써볼 지역과 피해야 할 레드오션을 판단합니다.</div>
           </details>
         </div>
       </header>
@@ -238,12 +238,12 @@
         <section class="panel">
           <div class="panel-head">
             <div>
-              <p class="title">오늘 쓸 만한 키워드 추천</p>
-              <p class="sub">점수 = 검색량(최대10) + 경쟁보너스(최대1.4) + 추세보너스(최대2) + 의도보너스(최대2) × 신뢰도 배율. 행 클릭 시 항목별 점수 확인 가능.</p>
+              <p class="title">지역·브랜드 광고 우선순위</p>
+              <p class="sub">검색량, 최근 흐름, 콘텐츠 경쟁도를 함께 봅니다. 목적은 글을 자동으로 만드는 것이 아니라 어느 지역/브랜드를 광고로 밀지 데이터로 판단하는 것입니다.</p>
             </div>
             <div class="tabs">
               <button class="tab active" data-filter="all">전체</button>
-              <button class="tab" data-filter="write">오늘 작성</button>
+              <button class="tab" data-filter="write">광고 우선</button>
               <button class="tab" data-filter="niche">틈새</button>
             </div>
           </div>
@@ -251,7 +251,7 @@
             <table>
               <thead>
                 <tr>
-                  <th>순위</th><th>키워드</th><th>검색량</th><th>경쟁 상태</th><th>신뢰도</th><th>점수 <span style="font-weight:400;font-size:10px;color:var(--muted);">(검색량+경쟁+추세+의도)</span></th><th>복사</th>
+                  <th>순위</th><th>키워드</th><th>검색량</th><th>경쟁 상태</th><th>판단</th><th>점수 <span style="font-weight:400;font-size:10px;color:var(--muted);">(검색량+경쟁+추세+의도)</span></th><th>복사</th>
                 </tr>
               </thead>
               <tbody id="keywordRows"></tbody>
@@ -274,7 +274,7 @@
             <div id="detailTrendChart"></div>
             <p class="detail-insight" id="detailInsight"></p>
             <div class="detail-actions">
-              <button class="btn secondary small" id="detailCopyHandoff">글쓰기용 문구 복사</button>
+              <button class="btn secondary small" id="detailCopyHandoff">판단 메모 복사</button>
             </div>
             <div id="inlineDraftForm" class="inline-draft-form" hidden></div>
           </section>
@@ -308,8 +308,12 @@
               <div class="content-list" id="recentContentTop10"></div>
             </div>
           </details>
+          <details class="side-panel" open>
+            <summary><span class="summary-line"><span class="summary-title">벤치마킹할 블로그·카페</span><span>펼치기</span></span><span class="summary-note" id="benchmarkSummary">반복 노출 출처 요약</span></summary>
+            <div class="side-content"><div class="row-list" id="benchmarkAuthors"></div></div>
+          </details>
           <section class="panel">
-            <p class="title">글쓰기 앱으로 넘길 내용</p>
+            <p class="title">글 엔진에 넘길 판단 메모</p>
             <div class="row-list" id="handoffList" style="margin-top:10px"></div>
           </section>
           <details class="side-panel" id="historyPanel">
@@ -372,7 +376,7 @@
         const brandOk=state.selectedBrand==="전체"||row.brand===state.selectedBrand;
         const regionOk=state.selectedRegion==="전체"||row.region===state.selectedRegion||row.group===state.selectedRegion;
         if(!brandOk||!regionOk)return false;
-        if(state.filter==="write")return (row.priorityLabel||"").includes("오늘")||Number(row.score||0)>=10;
+        if(state.filter==="write")return adDecision(row).label==="광고 우선"||Number(row.score||0)>=10;
         if(state.filter==="niche")return row.competitionLabel==="틈새";
         return true;
       }).sort((a,b)=>Number(b.score||0)-Number(a.score||0)||Number(b.totalSearch||0)-Number(a.totalSearch||0));
@@ -441,9 +445,31 @@
       if(status==="partial")return"부분";
       return"확인필요";
     }
+    function adDecision(row) {
+      const label = row?.competitionLabel || "";
+      const total = Number(row?.totalSearch || 0);
+      const supply = Number(row?.supplyRatio ?? 0);
+      const seven = Number(row?.trend7d?.average || 0);
+      const thirty = Number(row?.trend30d?.average || 0);
+      const trendPct = thirty ? Math.round(((seven - thirty) / thirty) * 100) : 0;
+      if (label === "피하기" || supply >= 100) {
+        return { label: "레드오션 회피", cls: "bad", reason: "검색량 대비 콘텐츠가 많아 같은 키워드로 정면 진입하면 노출 경쟁이 큽니다. 옆동네나 다른 브랜드 조합을 비교하세요." };
+      }
+      if (label === "틈새" && total >= 100) {
+        return { label: "광고 우선", cls: "good", reason: "수요는 있는데 콘텐츠 공급이 상대적으로 적어 먼저 광고글을 써볼 만합니다." };
+      }
+      if (label === "따라쓰기") {
+        return { label: "벤치마킹 후 진입", cls: "warn", reason: "이미 광고성 글이 있으므로 상위 노출 글의 제목/구성/사진 흐름을 참고한 뒤 차별화가 필요합니다." };
+      }
+      if (trendPct >= 15) {
+        return { label: "상승 신호 관찰", cls: "info", reason: `최근 7일 관심도가 30일 평균보다 ${trendPct}% 높습니다. 이벤트성 상승인지 확인해볼 만합니다.` };
+      }
+      return { label: "관찰", cls: "info", reason: "수요와 경쟁이 아직 한쪽으로 뚜렷하지 않아 보조 후보로 비교하세요." };
+    }
     function handoff(row){
       const region=row.region||"전국", brand=row.brand||"";
-      return [`브랜드: ${brand}`,`지역: ${region}`,`핵심 키워드: ${row.keyword}`,`경쟁 상태: ${row.competitionLabel||"확인 필요"}`,`글 방향: ${row.writingBrief||row.reason||"지역명과 브랜드명을 앞세운 상담 유입형 글"}`,`제목 후보: ${row.suggestedTitle||`${region} ${brand} 양도양수 체크포인트`}`].join("\n");
+      const decision = adDecision(row);
+      return [`브랜드: ${brand}`,`지역: ${region}`,`핵심 키워드: ${row.keyword}`,`광고 판단: ${decision.label}`,`판단 근거: ${decision.reason}`,`검색량: ${metric(row.totalSearch,row.searchVolumeStatus)}`,`경쟁 상태: ${row.competitionLabel||"확인 필요"}`,`글 엔진 입력 예시: ${region} ${brand} 월매출 3500만원, 창업비용 1.7억`].join("\n");
     }
     function queryString(refresh=false){
       const qs=new URLSearchParams();
@@ -469,8 +495,9 @@
     }
     function renderHero(){
       const top=filteredRows()[0]||rows()[0];
-      if(!top){$("heroPick").innerHTML=`<span class="hero-label">오늘 1순위</span><h2 class="hero-title">분석 데이터가 없습니다</h2><div class="hero-meta">새 수집을 실행해 주세요.</div>`;return}
-      $("heroPick").innerHTML=`<span class="hero-label">오늘 1순위</span><h2 class="hero-title">${escapeHtml(top.keyword)}</h2><div class="hero-meta"><span class="badge ${badgeClass(top.competitionLabel)}">${escapeHtml(top.competitionLabel||"확인")}</span><span>검색량 <b class="metric-number">${metric(top.totalSearch,top.searchVolumeStatus)}</b></span><span>점수 <b class="metric-number">${Number(top.score||0).toFixed(1)}</b></span><span>${escapeHtml(top.region||"전국")} · ${escapeHtml(top.brand||"-")}</span></div>`;
+      if(!top){$("heroPick").innerHTML=`<span class="hero-label">오늘 먼저 볼 광고 후보</span><h2 class="hero-title">분석 데이터가 없습니다</h2><div class="hero-meta">새 수집을 실행해 주세요.</div>`;return}
+      const decision = adDecision(top);
+      $("heroPick").innerHTML=`<span class="hero-label">오늘 먼저 볼 광고 후보</span><h2 class="hero-title">${escapeHtml(top.keyword)}</h2><div class="hero-meta"><span class="badge ${decision.cls}">${escapeHtml(decision.label)}</span><span>검색량 <b class="metric-number">${metric(top.totalSearch,top.searchVolumeStatus)}</b></span><span>점수 <b class="metric-number">${Number(top.score||0).toFixed(1)}</b></span><span>${escapeHtml(top.region||"전국")} · ${escapeHtml(top.brand||"-")}</span></div>`;
     }
     function renderSummary(){
       const visible=filteredRows();
@@ -490,6 +517,7 @@
       const visible=filteredRows().slice(0,30);
       $("keywordRows").innerHTML=visible.map((row,index)=>{
         const insight=truncateText(buildDetailInsight(row),60);
+        const decision = adDecision(row);
         const hasBreakdown = ["searchScore","competitionBonus","trendBonus","intentBonus"].some((key) => row[key] !== undefined && row[key] !== null);
         const scorePart = (value) => value === undefined || value === null ? "-" : escapeHtml(Number.isFinite(Number(value)) ? Number(value).toFixed(1) : value);
         const breakdown = hasBreakdown ? `<div class="score-breakdown">검색량 ${scorePart(row.searchScore)} · 경쟁 ${scorePart(row.competitionBonus)} · 추세 ${scorePart(row.trendBonus)} · 의도 ${scorePart(row.intentBonus)}</div>` : "";
@@ -499,7 +527,7 @@
           <td><div class="keyword">${escapeHtml(row.keyword)}</div><div class="muted">${escapeHtml(row.region||"전국")} · ${escapeHtml(row.brand||"-")} · ${escapeHtml(insight)}</div></td>
           <td class="metric-number">${metric(row.totalSearch,row.searchVolumeStatus)}</td>
           <td><span class="badge ${badgeClass(row.competitionLabel)}">${escapeHtml(row.competitionLabel||"확인")}</span><div class="muted">${escapeHtml(row.competitionReason||"")}</div></td>
-          <td><span class="badge">${confidenceText(row.searchVolumeStatus)}</span></td>
+          <td><span class="badge ${decision.cls}">${escapeHtml(decision.label)}</span><div class="muted">${escapeHtml(truncateText(decision.reason,54))}</div></td>
           <td><span class="score metric-number">${Number(row.score||0).toFixed(1)}</span>${breakdown}</td>
           <td><button class="btn secondary small" data-copy-index="${index}">복사</button></td>
         </tr>`;
@@ -642,6 +670,30 @@
       const items=flattenContent().slice(0,10);
       $("contentSummary").textContent=items.length?`${items[0].query||items[0].source} 기준 ${items.length}건`:"최근 글 표본 없음";
       $("recentContentTop10").innerHTML=items.map((item,index)=>`<div class="content-row"><a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${index+1}. ${escapeHtml(item.title||"제목 없음")}</a><span>${escapeHtml(item.source)} · ${escapeHtml(item.author||"출처 확인")} · ${escapeHtml(item.postdate||"날짜 확인")} · ${item.ageDays??"?"}일 전</span><span>${escapeHtml(item.intent)} · 조회수 ${escapeHtml(item.viewStatus||"공식 API 미제공")} · ${escapeHtml(item.decision)}</span></div>`).join("")||`<p class="empty">최근 블로그·카페 글 표본이 없습니다.</p>`;
+      renderBenchmarks();
+    }
+    function renderBenchmarks(){
+      const items=flattenContent();
+      const byAuthor=new Map();
+      for(const item of items){
+        const author=String(item.author||"").trim();
+        if(!author||author==="출처 확인")continue;
+        const current=byAuthor.get(author)||{author,count:0,queries:new Set(),latest:item};
+        current.count+=1;
+        if(item.query)current.queries.add(item.query);
+        if((item.ageDays??999)<(current.latest?.ageDays??999))current.latest=item;
+        byAuthor.set(author,current);
+      }
+      const ranked=[...byAuthor.values()].sort((a,b)=>b.count-a.count||(a.latest?.ageDays??999)-(b.latest?.ageDays??999)).slice(0,6);
+      $("benchmarkSummary").textContent=ranked.length?`${ranked[0].author} 등 반복 노출 ${ranked.length}곳`:"반복 노출 출처 없음";
+      $("benchmarkAuthors").innerHTML=ranked.map((item,index)=>{
+        const queries=[...item.queries].slice(0,2).join(", ");
+        return `<div class="row">
+          <strong>${index+1}. ${escapeHtml(item.author)}</strong>
+          <span>최근 30일 표본 ${item.count}회 노출 · ${escapeHtml(queries||"검색어 확인")}</span>
+          <span>${escapeHtml(item.latest?.title||"최근 글 제목 확인")} · ${item.latest?.ageDays??"?"}일 전</span>
+        </div>`;
+      }).join("")||`<p class="empty">블로그·카페 표본을 갱신하면 반복 노출 출처가 보입니다.</p>`;
     }
     function renderHandoff(){
       const picks=filteredRows().slice(0,3);
@@ -649,9 +701,10 @@
     }
     function top5ShareText(){
       const date=new Date().toISOString().slice(0,10);
-      const lines=[`오늘의 추천 키워드 (${date})`,""];
+      const lines=[`오늘의 광고 판단 Top 5 (${date})`,""];
       filteredRows().slice(0,5).forEach((row,index)=>{
-        lines.push(`${index+1}. ${row.keyword} (${row.region||"전국"}) - 검색량 ${metric(row.totalSearch,row.searchVolumeStatus)} · ${row.competitionLabel||"확인"} · 점수 ${Number(row.score||0).toFixed(1)}`);
+        const decision = adDecision(row);
+        lines.push(`${index+1}. ${row.keyword} (${row.region||"전국"}) - ${decision.label} · 검색량 ${metric(row.totalSearch,row.searchVolumeStatus)} · ${row.competitionLabel||"확인"} · 점수 ${Number(row.score||0).toFixed(1)}`);
       });
       return lines.join("\n");
     }
